@@ -220,27 +220,30 @@
   <!-- CONTENT -->
   <main class="docs-content" id="docs-main">
 
-    <h1>API Reference</h1>
-    <p class="page-sub">Deploy static sites from your AI agent with a single HTTP request. Every deploy gets an instant HTTPS URL on a unique subdomain.</p>
+    <h1>Quick start in 60 seconds</h1>
+    <p class="page-sub">Paste HTML below and deploy it live. Your agent gets back an HTTPS URL immediately — no account, no config.</p>
 
     <!-- TRY IT NOW -->
     <h2 id="try-it">Try it now</h2>
-    <p>Enter a URL to see the exact curl command you'd use to deploy that page.</p>
+    <p>Paste HTML below. Click <strong>Deploy it live →</strong> and get a real live URL in under a second.</p>
 
     <div class="try-panel">
       <div class="try-header">
-        <span class="try-label">▸ interactive demo</span>
-        <span class="try-desc">Enter a URL or paste HTML below to generate your deploy command</span>
+        <span class="try-label">▸ interactive deploy</span>
+        <span class="try-desc">Paste HTML → hit deploy → get a live URL</span>
       </div>
       <div class="try-body">
-        <div class="try-row">
-          <span class="try-label-sm">URL to fetch</span>
-          <input type="url" class="try-input" id="try-url"
-            placeholder="https://example.com"
-            oninput="updateTryCurl()">
+        <div class="try-row" style="align-items:flex-start;">
+          <span class="try-label-sm" style="padding-top:8px;">HTML</span>
+          <textarea class="try-input" id="try-html" rows="6"
+            oninput="updateTryCurl()"
+            style="resize:vertical; min-height:120px; font-size:0.8125rem; line-height:1.5;"
+            placeholder="&lt;!DOCTYPE html&gt;
+&lt;h1&gt;Hello from my agent&lt;/h1&gt;
+&lt;p&gt;Deployed via pages.rosabuilds.com&lt;/p&gt;"></textarea>
         </div>
         <div class="try-row">
-          <span class="try-label-sm">Your API key</span>
+          <span class="try-label-sm">API key</span>
           <input type="text" class="try-input" id="try-key"
             placeholder="pages_agent_Kx9mR4pQ3w"
             oninput="updateTryCurl()"
@@ -251,11 +254,11 @@
           <span class="rose">$</span> <span class="hl">curl</span> -s -X POST https://pages.rosabuilds.com/api/upload \<br>
           &nbsp;&nbsp;<span class="hl">-H</span> "x-api-key: <span id="tc-key" class="rose">YOUR_API_KEY</span>" \<br>
           &nbsp;&nbsp;<span class="hl">-H</span> "Content-Type: application/json" \<br>
-          &nbsp;&nbsp;<span class="hl">-d</span> '{"files":[{"path":"index.html","content":"<span id="tc-content" class="rose">BASE64_CONTENT</span>"}]}'
+          &nbsp;&nbsp;<span class="hl">-d</span> '{"files":[{"path":"index.html","content":"<span id="tc-content" class="rose">BASE64</span>"}]}'
         </div>
 
         <div class="try-buttons">
-          <button class="btn btn-rose btn-sm" onclick="runTryDeploy()">Deploy it live →</button>
+          <button class="btn btn-rose btn-sm" onclick="runTryDeploy()" id="try-deploy-btn">Deploy it live →</button>
           <button class="btn btn-outline btn-sm" onclick="copyTryCurl()">Copy curl command</button>
         </div>
 
@@ -755,56 +758,66 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
 
   // ---- Try it now ----
   function updateTryCurl() {
-    const key   = document.getElementById('try-key').value.trim() || 'YOUR_API_KEY';
-    const url   = document.getElementById('try-url').value.trim();
-    let content = 'BASE64_CONTENT';
-    if (url) {
-      // show what the fetch-and-encode would look like
-      content = `$(curl -s "${url}" | base64)`;
+    const key  = document.getElementById('try-key').value.trim() || 'YOUR_API_KEY';
+    const html = document.getElementById('try-html').value.trim();
+    let preview = 'BASE64';
+    if (html) {
+      const b64 = btoa(unescape(encodeURIComponent(html)));
+      preview = b64.length > 32 ? b64.slice(0, 32) + '...' : b64;
     }
     document.getElementById('tc-key').textContent = key;
-    document.getElementById('tc-content').textContent = content.length > 40
-      ? content.slice(0, 40) + '...' : content;
+    document.getElementById('tc-content').textContent = preview;
   }
 
   function copyTryCurl() {
-    const key   = document.getElementById('try-key').value.trim() || 'YOUR_API_KEY';
-    const url   = document.getElementById('try-url').value.trim();
-    let fetchPart = '';
-    if (url) {
-      fetchPart = `CONTENT=$(curl -s "${url}" | base64)\n`;
-    } else {
-      fetchPart = `CONTENT=$(base64 -w0 index.html 2>/dev/null || base64 index.html)\n`;
-    }
-    const cmd = `${fetchPart}curl -s -X POST https://pages.rosabuilds.com/api/upload \\
+    const key  = document.getElementById('try-key').value.trim() || 'YOUR_API_KEY';
+    const html = document.getElementById('try-html').value.trim() || '<h1>Hello</h1>';
+    const b64  = btoa(unescape(encodeURIComponent(html)));
+    const cmd  = `curl -s -X POST https://pages.rosabuilds.com/api/upload \\
   -H "x-api-key: ${key}" \\
   -H "Content-Type: application/json" \\
-  -d "{\\"files\\":[{\\"path\\":\\"index.html\\",\\"content\\":\\"$CONTENT\\"}]}" \\
-| jq -r .url`;
-    navigator.clipboard.writeText(cmd).then(() => alert('Copied!'));
+  -d '{"files":[{"path":"index.html","content":"${b64}"}]}' | jq -r .url`;
+    navigator.clipboard.writeText(cmd).then(() => {
+      const btn = document.querySelector('[onclick="copyTryCurl()"]');
+      const orig = btn.textContent; btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
   }
 
   async function runTryDeploy() {
-    const key = document.getElementById('try-key').value.trim();
-    const url = document.getElementById('try-url').value.trim();
-    const out = document.getElementById('try-output');
+    const key  = document.getElementById('try-key').value.trim();
+    const html = document.getElementById('try-html').value.trim();
+    const out  = document.getElementById('try-output');
+    const btn  = document.getElementById('try-deploy-btn');
 
-    if (!key) { alert('Enter your API key first'); return; }
-    if (!url)  { alert('Enter a URL to fetch'); return; }
+    if (!key) {
+      out.innerHTML = '<span style="color:#e06c75">Enter your API key above first.</span>';
+      out.classList.add('show'); return;
+    }
+    const content = html || '<h1>Hello from pages.rosabuilds.com</h1><p>Deployed via the Try It Now panel.</p>';
 
-    out.textContent = 'Fetching and deploying...';
+    btn.textContent = 'Deploying...'; btn.disabled = true;
+    out.innerHTML = '<span style="color:rgba(232,221,212,0.4)">Deploying...</span>';
     out.classList.add('show');
 
     try {
-      // Fetch via our own CORS proxy isn't available, so we just show the curl command
-      out.innerHTML = `<span style="color:rgba(232,221,212,0.4)">To deploy a URL's content, run this in your terminal:</span>\n\n` +
-        `CONTENT=$(curl -s "${url}" | base64)\n` +
-        `curl -s -X POST https://pages.rosabuilds.com/api/upload \\\n` +
-        `  -H "x-api-key: ${key}" \\\n` +
-        `  -H "Content-Type: application/json" \\\n` +
-        `  -d "{\\"files\\":[{\\"path\\":\\"index.html\\",\\"content\\":\\"$CONTENT\\"}]}" | jq -r .url`;
+      const b64 = btoa(unescape(encodeURIComponent(content)));
+      const res = await fetch('https://pages.rosabuilds.com/api/upload', {
+        method: 'POST',
+        headers: { 'x-api-key': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: [{ path: 'index.html', content: b64 }] }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || res.statusText);
+
+      out.innerHTML =
+        `<span style="color:#4ec9b0">✓ Deployed!</span>\n\n` +
+        `<span class="url-link" onclick="window.open('${data.url}','_blank')">${data.url}</span>\n\n` +
+        `<span style="color:rgba(232,221,212,0.3)">id: ${data.id} · click the URL to open it</span>`;
     } catch (e) {
-      out.textContent = 'Error: ' + e.message;
+      out.innerHTML = `<span style="color:#e06c75">Error: ${e.message}</span>`;
+    } finally {
+      btn.textContent = 'Deploy it live →'; btn.disabled = false;
     }
   }
 
