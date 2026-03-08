@@ -192,14 +192,17 @@
     /* ---- Mobile adjustments for code section ---- */
     @media (max-width: 680px) {
       .ce-header { padding: 40px 0 24px; }
-      .trust-item { padding: 6px 14px; }
-      .trust-item:nth-child(n+4) { display: none; }
+      .trust-item { padding: 6px 12px; font-size: 0.75rem; }
+      .trust-item:nth-child(n+5) { display: none; }
       .ce-code { font-size: 0.8125rem; }
-      .trust-bar { overflow-x: auto; justify-content: flex-start; flex-wrap: nowrap; }
+      .trust-bar { overflow-x: auto; justify-content: flex-start; flex-wrap: nowrap; scrollbar-width: none; }
+      .trust-bar::-webkit-scrollbar { display: none; }
     }
     @media (max-width: 480px) {
       .ce-inner { padding: 0 16px; }
       .hero-cta .hero-cta-note { display: block; width: 100%; margin-top: 4px; }
+      .demo-result { flex-wrap: wrap; }
+      .demo-result-url { width: 100%; flex: none; }
     }
 
     /* ---- Example cards ---- */
@@ -884,9 +887,10 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       <div class="demo-status" id="demoStatus"></div>
       <div class="demo-error" id="demoError"></div>
       <div class="demo-result" id="demoResult">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#4ec9b0" stroke-width="1.75" stroke-linecap="round"/></svg>
-        <span class="demo-result-url" id="demoUrl" onclick="window.open(this.textContent,'_blank')"></span>
-        <button class="demo-result-copy" onclick="copyDemoUrl()">Copy URL</button>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;"><path d="M3 8l3 3 7-7" stroke="#4ec9b0" stroke-width="1.75" stroke-linecap="round"/></svg>
+        <span class="demo-result-url" id="demoUrl"></span>
+        <button class="demo-result-copy" onclick="copyDemoUrl()" id="demoCopyBtn">Copy URL</button>
+        <a class="demo-result-copy" id="demoOpenBtn" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">Open →</a>
       </div>
     </div>
   </div>
@@ -908,12 +912,18 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       padding:14px 16px;
       text-decoration:none;
       color:inherit;
-      transition:border-color 0.15s, transform 0.15s;
+      transition:border-color 0.15s, transform 0.15s, box-shadow 0.15s;
       display:block;
     }
-    .recent-card:hover { border-color:var(--rose); transform:translateY(-1px); }
-    .recent-card-id { font-family:var(--mono); font-size:0.8125rem; font-weight:600; color:var(--text); margin-bottom:4px; }
+    .recent-card:hover { border-color:var(--rose); transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,0.07); }
+    .recent-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+    .recent-card-dot { width:7px; height:7px; border-radius:50%; background:#28c840; flex-shrink:0; }
+    .recent-card-id { font-family:var(--mono); font-size:0.8125rem; font-weight:600; color:var(--text); }
+    .recent-card-meta { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:2px; }
     .recent-card-time { font-size:0.75rem; color:var(--muted); }
+    .recent-card-badge { font-size:0.7rem; font-family:var(--mono); background:var(--cream-dark); border:1px solid var(--border); border-radius:3px; padding:1px 5px; color:var(--muted); }
+    .recent-card-arrow { font-size:0.75rem; color:var(--rose); margin-left:auto; opacity:0; transition:opacity 0.15s; }
+    .recent-card:hover .recent-card-arrow { opacity:1; }
     .recent-empty { color:var(--muted); font-size:0.9rem; margin-top:24px; }
   </style>
   <div class="container">
@@ -1253,8 +1263,10 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         if (!res.ok) throw new Error(data.error || res.statusText);
 
         urlEl.textContent = data.url;
+        const openBtn = document.getElementById('demoOpenBtn');
+        if (openBtn) openBtn.href = data.url;
         result.classList.add('show');
-        status.textContent = '✓ Live in under a second.';
+        status.textContent = '✓ Live in under a second. Click the URL to open it.';
         // Refresh recent
         fetchRecent();
       } catch (e) {
@@ -1297,11 +1309,18 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
           : ago < 3600 ? Math.floor(ago/60) + 'm ago'
           : ago < 86400 ? Math.floor(ago/3600) + 'h ago'
           : Math.floor(ago/86400) + 'd ago';
-        const files = s.file_count ? `${s.file_count} file${s.file_count !== 1 ? 's' : ''}` : '';
-        const kb = s.size_bytes ? ` · ${(s.size_bytes/1024).toFixed(1)} KB` : '';
+        const filesBadge = s.file_count ? `<span class="recent-card-badge">${s.file_count} file${s.file_count !== 1 ? 's' : ''}</span>` : '';
+        const sizeBadge = s.size_bytes >= 1024 ? `<span class="recent-card-badge">${(s.size_bytes/1024).toFixed(1)} KB</span>` : '';
         return `<a href="${s.url}" target="_blank" class="recent-card">
+          <div class="recent-card-header">
+            <div class="recent-card-dot"></div>
+            <span class="recent-card-arrow">→</span>
+          </div>
           <div class="recent-card-id">${s.id}</div>
-          <div class="recent-card-time">${label}${files ? ' · ' + files + kb : ''}</div>
+          <div class="recent-card-meta">
+            <span class="recent-card-time">${label}</span>
+            ${filesBadge}${sizeBadge}
+          </div>
         </a>`;
       }).join('');
     } catch (e) {
