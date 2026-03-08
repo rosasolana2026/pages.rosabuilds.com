@@ -16,31 +16,32 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231c1410'/><text x='6' y='24' font-size='20' fill='%239b3060'>p</text></svg>">
   <style>
-    /* ---- Typewriter animation for terminal ---- */
-    .tl {
-      opacity: 0;
-      display: block;
-      animation: tl-in 0.18s ease forwards;
+    /* ---- Terminal typewriter ---- */
+    #term-out {
+      font-family: var(--mono);
+      font-size: 0.875rem;
+      line-height: 1.75;
+      color: #d0d0d0;
+      min-height: 200px;
     }
-    @keyframes tl-in {
-      from { opacity: 0; transform: translateY(2px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .t-comment { color: #6a9a6a; }
+    .t-prompt  { color: #4ec9b0; font-weight: 600; }
+    .t-cmd     { color: #d4d4d4; }
+    .t-flag    { color: #569cd6; }
+    .t-string  { color: #ce9178; }
+    .t-key     { color: #9cdcfe; }
+    .t-value   { color: #4ec9b0; }
+    .t-dim     { color: rgba(208,208,208,0.45); }
+    .t-success { color: #4ec9b0; font-weight: 500; }
+    .t-cursor  {
+      display: inline-block;
+      width: 8px; height: 1.1em;
+      background: #d0d0d0;
+      vertical-align: text-bottom;
+      margin-left: 1px;
+      animation: blink 1s step-end infinite;
     }
-    .tl:nth-child(1)  { animation-delay: 0.30s; }
-    .tl:nth-child(2)  { animation-delay: 0.55s; }
-    .tl:nth-child(3)  { animation-delay: 0.80s; }
-    .tl:nth-child(4)  { animation-delay: 1.00s; }
-    .tl:nth-child(5)  { animation-delay: 1.15s; }
-    .tl:nth-child(6)  { animation-delay: 1.30s; }
-    .tl:nth-child(7)  { animation-delay: 1.50s; }
-    .terminal-response {
-      opacity: 0;
-      animation: resp-in 0.45s ease 2.0s forwards;
-    }
-    @keyframes resp-in {
-      from { opacity: 0; transform: translateY(5px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
     /* ---- Live counter pill ---- */
     .hero-eyebrow-count {
@@ -152,6 +153,35 @@
     @media (max-width: 480px) {
       .ce-inner { padding: 0 16px; }
     }
+
+    /* ---- Example cards ---- */
+    .example-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+      display: block;
+    }
+    .example-card:hover {
+      border-color: var(--rose);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    .example-preview {
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 16px;
+    }
+    .example-meta { padding: 12px 14px 14px; }
+    .example-title { font-weight: 600; font-size: 0.875rem; color: var(--text); margin-bottom: 4px; }
+    .example-sub { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); }
   </style>
 </head>
 <body>
@@ -229,38 +259,7 @@
         <span class="terminal-title">bash — pages.rosabuilds.com</span>
       </div>
       <div class="terminal-body">
-        <div class="tl"><span class="t-comment"># Your agent just built something. Deploy it.</span></div>
-        <div class="tl">&nbsp;</div>
-        <div class="tl">
-          <span class="t-prompt">$</span>
-          <span class="t-cmd"> curl </span>
-          <span class="t-flag">-X POST</span>
-          <span class="t-cmd"> https://pages.rosabuilds.com/api/upload \</span>
-        </div>
-        <div class="tl">
-          <span class="t-cmd">&nbsp;&nbsp;</span>
-          <span class="t-flag">-H</span>
-          <span class="t-string"> "x-api-key: <span class="t-key">$PAGES_API_KEY</span>"</span>
-          <span class="t-cmd"> \</span>
-        </div>
-        <div class="tl">
-          <span class="t-cmd">&nbsp;&nbsp;</span>
-          <span class="t-flag">-H</span>
-          <span class="t-string"> "Content-Type: application/json"</span>
-          <span class="t-cmd"> \</span>
-        </div>
-        <div class="tl">
-          <span class="t-cmd">&nbsp;&nbsp;</span>
-          <span class="t-flag">-d</span>
-          <span class="t-string"> '{"files":[{"path":"index.html","content":"<span class="t-key">BASE64</span>"}]}'</span>
-        </div>
-        <div class="tl">&nbsp;</div>
-        <div class="terminal-response">
-          <div class="tl" style="animation-delay:0s;opacity:0;"><span class="t-dim">{</span></div>
-          <div class="tl" style="animation-delay:0.12s;opacity:0;"><span class="t-dim">&nbsp;&nbsp;</span><span class="t-key">"url"</span><span class="t-dim">: </span><span class="t-value">"https://a3f9c12e.pages.rosabuilds.com"</span><span class="t-dim">,</span></div>
-          <div class="tl" style="animation-delay:0.22s;opacity:0;"><span class="t-dim">&nbsp;&nbsp;</span><span class="t-key">"id"</span><span class="t-dim">: </span><span class="t-value">"a3f9c12e"</span></div>
-          <div class="tl" style="animation-delay:0.32s;opacity:0;"><span class="t-dim">}</span><span class="cursor"></span></div>
-        </div>
+        <div id="term-out"></div>
       </div>
       <div class="terminal-copy">
         <button class="btn-code" onclick="copyDemo(this)">Copy command</button>
@@ -311,6 +310,8 @@
     </div>
 
     <div class="ce-pane active" id="ce-curl">
+      <div style="position:relative;">
+      <button class="btn-code" style="position:absolute;top:20px;right:0;z-index:2;" onclick="copyCeCode('ce-curl',this)">Copy</button>
       <div class="ce-code"><pre><span class="hl-comment"># Encode your HTML, POST it, get back a live URL</span>
 <span class="hl-prompt">$</span> CONTENT=$(base64 -w0 index.html)
 <span class="hl-prompt">$</span> curl <span class="hl-flag">-s -X POST</span> https://pages.rosabuilds.com/api/upload <span class="hl-flag">\</span>
@@ -322,8 +323,11 @@
 <span class="hl-comment"># Output:</span>
 <span class="hl-value">https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
     </div>
+    </div>
 
     <div class="ce-pane" id="ce-python">
+      <div style="position:relative;">
+      <button class="btn-code" style="position:absolute;top:20px;right:0;z-index:2;" onclick="copyCeCode('ce-python',this)">Copy</button>
       <div class="ce-code"><pre><span class="hl-dim">import</span> requests, base64, os
 
 html = <span class="hl-string">"&lt;h1&gt;Hello from my agent&lt;/h1&gt;"</span>
@@ -337,9 +341,12 @@ resp = requests.post(
 
 url = resp.json()[<span class="hl-string">"url"</span>]
 print(url)  <span class="hl-comment"># https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
+      </div>
     </div>
 
     <div class="ce-pane" id="ce-node">
+      <div style="position:relative;">
+      <button class="btn-code" style="position:absolute;top:20px;right:0;z-index:2;" onclick="copyCeCode('ce-node',this)">Copy</button>
       <div class="ce-code"><pre><span class="hl-dim">const</span> html = <span class="hl-string">`&lt;h1&gt;Hello from my agent&lt;/h1&gt;`</span>;
 <span class="hl-dim">const</span> content = Buffer.from(html).toString(<span class="hl-string">'base64'</span>);
 
@@ -356,6 +363,7 @@ print(url)  <span class="hl-comment"># https://a3f9c12e.pages.rosabuilds.com</sp
 
 <span class="hl-dim">const</span> { url } = <span class="hl-dim">await</span> res.json();
 console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
+      </div>
     </div>
   </div>
 </section>
@@ -657,6 +665,79 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
   </div>
 </section>
 
+<!-- EXAMPLES — deployed by agents -->
+<section class="section" id="examples" style="background:var(--cream-dark);">
+  <div class="container">
+    <div class="section-label">Live examples</div>
+    <h2 class="section-title">See what agents deploy.</h2>
+    <p class="section-sub">These pages were built and hosted by an AI agent in under a second each — all via the REST API.</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; margin-top:40px;">
+
+      <a href="https://0a89d4f8.pages.rosabuilds.com" target="_blank" class="example-card">
+        <div class="example-preview" style="background:#0a0a0a;">
+          <div style="font-family:monospace;font-size:1.5rem;color:#4ec9b0;font-weight:700;line-height:1;">300<span style="color:#9b3060;opacity:.5;font-size:0.9em;">:</span>14<span style="color:#9b3060;opacity:.5;font-size:0.9em;">:</span>22</div>
+          <div style="font-size:0.65rem;color:rgba(232,232,232,0.3);margin-top:6px;letter-spacing:.1em;">DAYS : HRS : MIN</div>
+        </div>
+        <div class="example-meta">
+          <div class="example-title">Countdown timer</div>
+          <div class="example-sub">0a89d4f8 · live</div>
+        </div>
+      </a>
+
+      <a href="https://61e7d424.pages.rosabuilds.com" target="_blank" class="example-card">
+        <div class="example-preview" style="background:#0f0c0b;">
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#9b3060,#c2476e);display:flex;align-items:center;justify-content:center;color:white;font-size:1.1rem;font-family:Georgia,serif;margin:0 auto 8px;">R</div>
+          <div style="font-size:0.8rem;color:#e8ddd4;font-family:Georgia,serif;">Rosa Solana</div>
+          <div style="font-size:0.65rem;color:rgba(232,221,212,0.3);font-family:monospace;">@rosabuilds</div>
+        </div>
+        <div class="example-meta">
+          <div class="example-title">Link-in-bio page</div>
+          <div class="example-sub">61e7d424 · live</div>
+        </div>
+      </a>
+
+      <a href="https://5260c952.pages.rosabuilds.com" target="_blank" class="example-card">
+        <div class="example-preview" style="background:#0a0a0a;font-family:monospace;font-size:0.7rem;text-align:left;padding:14px 16px;">
+          <div style="color:#9cdcfe;">"sites"</div>
+          <div style="color:rgba(208,208,208,0.4);">: </div>
+          <div style="color:#4ec9b0;margin-top:2px;">42</div>
+          <div style="color:#9cdcfe;margin-top:4px;">"status"</div>
+          <div style="color:#ce9178;margin-top:2px;">"ok"</div>
+        </div>
+        <div class="example-meta">
+          <div class="example-title">JSON API viewer</div>
+          <div class="example-sub">5260c952 · live</div>
+        </div>
+      </a>
+
+      <a href="https://61735d1b.pages.rosabuilds.com" target="_blank" class="example-card">
+        <div class="example-preview" style="background:#0a0a0a;font-family:monospace;font-size:0.7rem;text-align:left;padding:14px 16px;">
+          <div style="color:#e8ddd4;font-size:0.85rem;font-family:Georgia,serif;font-style:italic;">Markdown</div>
+          <div style="color:rgba(208,208,208,0.4);margin-top:4px;"># heading</div>
+          <div style="color:rgba(208,208,208,0.4);">**bold** *italic*</div>
+          <div style="color:rgba(208,208,208,0.4);">`code`</div>
+        </div>
+        <div class="example-meta">
+          <div class="example-title">Markdown renderer</div>
+          <div class="example-sub">61735d1b · live</div>
+        </div>
+      </a>
+
+      <a href="https://ab7f4d3a.pages.rosabuilds.com" target="_blank" class="example-card">
+        <div class="example-preview" style="background:#050505;overflow:hidden;">
+          <canvas id="mini-art" width="180" height="90" style="opacity:.8;"></canvas>
+        </div>
+        <div class="example-meta">
+          <div class="example-title">Generative art page</div>
+          <div class="example-sub">ab7f4d3a · live</div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
 <!-- CTA STRIP -->
 <section class="section" style="background: var(--text); border-bottom: none;">
   <div class="container" style="text-align:center;">
@@ -744,12 +825,148 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     toggle.setAttribute('aria-expanded', open);
   });
 
+  // ---- Typewriter Terminal ----
+  (function() {
+    const out = document.getElementById('term-out');
+    if (!out) return;
+
+    // Each line: array of {cls, t} segments
+    const LINES = [
+      [{cls:'t-comment', t:'# Your agent just built something.'}],
+      [],
+      [
+        {cls:'t-prompt', t:'$ '},
+        {cls:'t-cmd', t:'curl '},
+        {cls:'t-flag', t:'-s -X POST '},
+        {cls:'t-cmd', t:'https://pages.rosabuilds.com/api/upload '},
+        {cls:'t-dim', t:'\\'},
+      ],
+      [
+        {cls:'t-cmd', t:'  '},
+        {cls:'t-flag', t:'-H '},
+        {cls:'t-string', t:'"x-api-key: '},
+        {cls:'t-key', t:'$PAGES_API_KEY'},
+        {cls:'t-string', t:'" '},
+        {cls:'t-dim', t:'\\'},
+      ],
+      [
+        {cls:'t-cmd', t:'  '},
+        {cls:'t-flag', t:'-H '},
+        {cls:'t-string', t:'"Content-Type: application/json" '},
+        {cls:'t-dim', t:'\\'},
+      ],
+      [
+        {cls:'t-cmd', t:'  '},
+        {cls:'t-flag', t:'-d '},
+        {cls:'t-string', t:"'{\"files\":[{\"path\":\"index.html\",\"content\":\"BASE64\"}]}'"},
+      ],
+    ];
+
+    const RESPONSE = [
+      [{cls:'t-dim', t:'{'}],
+      [{cls:'t-dim', t:'  '},{cls:'t-key', t:'"url"'},{cls:'t-dim', t:': '},{cls:'t-value', t:'"https://a3f9c12e.pages.rosabuilds.com"'},{cls:'t-dim', t:','}],
+      [{cls:'t-dim', t:'  '},{cls:'t-key', t:'"id"'},{cls:'t-dim', t:': '},{cls:'t-value', t:'"a3f9c12e"'}],
+      [{cls:'t-dim', t:'}'}],
+    ];
+
+    const CHAR_MS = 26;
+    const JITTER   = 14;
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    function mkLine() {
+      const d = document.createElement('div');
+      return d;
+    }
+
+    let cursor = null;
+
+    async function typeSegments(lineEl, segs, cur) {
+      for (const seg of segs) {
+        const span = document.createElement('span');
+        if (seg.cls) span.className = seg.cls;
+        lineEl.insertBefore(span, cur);
+        for (const ch of seg.t) {
+          span.textContent += ch;
+          await sleep(CHAR_MS + Math.random() * JITTER - JITTER / 2);
+        }
+      }
+    }
+
+    async function run() {
+      while (true) {
+        out.innerHTML = '';
+        cursor = document.createElement('span');
+        cursor.className = 't-cursor';
+        out.appendChild(cursor);
+
+        for (const lineSegs of LINES) {
+          const line = mkLine();
+          out.insertBefore(line, cursor);
+          line.appendChild(cursor);
+          if (lineSegs.length > 0) {
+            await typeSegments(line, lineSegs, cursor);
+          }
+          // move cursor after this line
+          if (cursor.parentNode === line) {
+            line.removeChild(cursor);
+            out.insertBefore(cursor, null);
+          }
+          await sleep(lineSegs.length ? 40 : 0);
+        }
+
+        // Simulating request...
+        await sleep(750);
+
+        // blank line
+        out.insertBefore(mkLine(), cursor);
+
+        // Response — fast fade-in line by line
+        for (const lineSegs of RESPONSE) {
+          const line = mkLine();
+          line.style.opacity = '0';
+          line.style.transition = 'opacity 0.18s';
+          out.insertBefore(line, cursor);
+          for (const seg of lineSegs) {
+            const span = document.createElement('span');
+            if (seg.cls) span.className = seg.cls;
+            span.textContent = seg.t;
+            line.appendChild(span);
+          }
+          await sleep(30);
+          line.style.opacity = '1';
+          await sleep(100);
+        }
+
+        // Success line
+        await sleep(300);
+        const successLine = mkLine();
+        successLine.style.opacity = '0';
+        successLine.style.transition = 'opacity 0.35s';
+        out.insertBefore(successLine, cursor);
+        const s1 = document.createElement('span');
+        s1.className = 't-success';
+        s1.textContent = '✓ Live at https://a3f9c12e.pages.rosabuilds.com';
+        successLine.appendChild(s1);
+        // remove cursor, it sits after success
+        if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+        await sleep(80);
+        successLine.style.opacity = '1';
+
+        // Pause, then loop
+        await sleep(5000);
+      }
+    }
+
+    run();
+  })();
+
   // Copy demo command
   function copyDemo(btn) {
     const cmd = `curl -s -X POST https://pages.rosabuilds.com/api/upload \\
   -H "x-api-key: $PAGES_API_KEY" \\
   -H "Content-Type: application/json" \\
-  -d '{"files":[{"path":"index.html","content":"SGVsbG8gV29ybGQ="}'`;
+  -d '{"files":[{"path":"index.html","content":"BASE64"}]}'`;
     navigator.clipboard.writeText(cmd).then(() => {
       const orig = btn.textContent;
       btn.textContent = 'Copied!';
@@ -763,6 +980,16 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     document.querySelectorAll('.ce-pane').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('ce-' + id).classList.add('active');
+  }
+
+  // Copy code in each ce-pane
+  function copyCeCode(paneId, btn) {
+    const pre = document.getElementById(paneId).querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
   }
 
   // Live deploy counter — fetches /api/stats every 30s
@@ -779,13 +1006,50 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         if (heroCount) heroCount.textContent = ' · ' + formatted + ' sites live';
         if (trustCount) trustCount.textContent = formatted;
       }
-    } catch (e) {
-      // Silently fall back — static UI still looks great
-    }
+    } catch (e) {}
   }
-
   fetchStats();
   setInterval(fetchStats, 30000);
+
+  // Mini generative art for the example card preview
+  (function() {
+    const c = document.getElementById('mini-art');
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    const W = c.width, H = c.height;
+    let pts = [];
+    for (let i = 0; i < 30; i++) {
+      pts.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random()-.5)*.5, vy: (Math.random()-.5)*.5,
+        c: Math.random() < .3 ? [155,48,96] : [232,221,212]
+      });
+    }
+    function frame() {
+      ctx.fillStyle='rgba(5,5,5,0.15)';
+      ctx.fillRect(0,0,W,H);
+      for (let i=0;i<pts.length;i++) {
+        const p=pts[i];
+        p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0||p.x>W) p.vx*=-1;
+        if(p.y<0||p.y>H) p.vy*=-1;
+        for(let j=i+1;j<pts.length;j++) {
+          const q=pts[j];
+          const d=Math.hypot(p.x-q.x,p.y-q.y);
+          if(d<60) {
+            const a=(1-d/60)*0.3;
+            ctx.strokeStyle=`rgba(${p.c[0]},${p.c[1]},${p.c[2]},${a})`;
+            ctx.lineWidth=.8;
+            ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();
+          }
+        }
+        ctx.fillStyle=`rgba(${p.c[0]},${p.c[1]},${p.c[2]},0.5)`;
+        ctx.beginPath();ctx.arc(p.x,p.y,1.2,0,Math.PI*2);ctx.fill();
+      }
+      requestAnimationFrame(frame);
+    }
+    frame();
+  })();
 
   // Active nav on scroll
   const sections = document.querySelectorAll('section[id]');
