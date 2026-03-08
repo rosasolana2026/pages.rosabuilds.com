@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — pages.rosabuilds.com</title>
+  <meta name="description" content="Manage your deployed sites, API keys, and usage on pages.rosabuilds.com.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231c1410'/><text x='6' y='24' font-size='20' fill='%239b3060'>p</text></svg>">
+  <style>
+    body { background: #f1ebe2; }
+
+    /* Full dashboard layout */
+    .app {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      grid-template-rows: 52px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Topbar */
+    .app-topbar {
+      grid-column: 1 / -1;
+      background: var(--cream);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .app-logo {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .app-logo em { font-style: normal; color: var(--rose); }
+
+    .app-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .plan-chip {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: var(--rose-dim);
+      color: var(--rose);
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .user-menu:hover { background: var(--cream-dark); }
+    .user-name { font-size: 0.875rem; font-weight: 500; color: var(--text); }
+    .user-chevron { color: var(--muted); }
+
+    /* Sidebar */
+    .app-sidebar {
+      background: var(--cream);
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      margin-bottom: 24px;
+    }
+
+    .sidebar-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding: 0 16px;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      font-size: 0.875rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+      border-radius: 0;
+      text-decoration: none;
+    }
+
+    .sidebar-item:hover { background: var(--cream-dark); color: var(--text); }
+
+    .sidebar-item.active {
+      background: var(--rose-dim);
+      color: var(--rose);
+      font-weight: 500;
+    }
+
+    .sidebar-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+
+    .sidebar-item.active .sidebar-icon { opacity: 1; }
+
+    .sidebar-badge {
+      margin-left: auto;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      background: var(--text);
+      color: var(--cream);
+      padding: 2px 6px;
+      border-radius: 99px;
+    }
+
+    .sidebar-item.active .sidebar-badge { background: var(--rose); }
+
+    /* Main area */
+    .app-main {
+      padding: 28px 32px;
+      overflow-y: auto;
+      background: #f1ebe2;
+    }
+
+    /* Page header */
+    .page-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 16px;
+    }
+
+    .page-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+      color: var(--text);
+    }
+
+    .page-subtitle {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .stat-value {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.875rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-delta {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .stat-delta.up { color: #4a9960; }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 10px 16px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-family: var(--sans);
+    }
+
+    .tab:hover  { color: var(--text); }
+    .tab.active { color: var(--rose); border-bottom-color: var(--rose); }
+
+    /* Sites table */
+    .table-container {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table-toolbar {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .table-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cream-dark);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 12px;
+      flex: 1;
+      max-width: 300px;
+    }
+
+    .table-search input {
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 0.875rem;
+      color: var(--text);
+      font-family: var(--sans);
+      width: 100%;
+    }
+
+    .table-search input::placeholder { color: var(--muted); }
+
+    .table-search svg { color: var(--muted); flex-shrink: 0; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th {
+      padding: 10px 16px;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--cream-dark);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td { border-bottom: none; }
+
+    .data-table tr:hover td { background: #f5efea; }
+
+    .site-name-cell { display: flex; align-items: center; gap: 10px; }
+
+    .site-thumb {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--rose-dim) 0%, var(--cream-dark) 100%);
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--rose);
+      font-weight: 600;
+    }
+
+    .site-label {
+      font-weight: 500;
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+
+    .site-id {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .site-url-link {
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      color: var(--rose);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.15s;
+    }
+
+    .site-url-link:hover { color: var(--rose2); }
+
+    .td-size  { font-size: 0.875rem; color: var(--muted); }
+    .td-date  { font-size: 0.8125rem; color: var(--muted); white-space: nowrap; }
+    .td-ttl   { font-size: 0.8125rem; }
+    .ttl-perm { color: var(--muted); }
+    .ttl-soon { color: var(--gold); font-weight: 500; }
+
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .data-table tr:hover .row-actions { opacity: 1; }
+
+    .icon-btn {
+      width: 28px;
+      height: 28px;
+      background: none;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+
+    .icon-btn:hover { background: var(--cream-dark); border-color: var(--border); color: var(--text); }
+    .icon-btn.danger:hover { color: #c0392b; background: rgba(192,57,43,0.06); border-color: rgba(192,57,43,0.15); }
+
+    /* Activity feed */
+    .activity-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 24px;
+    }
+
+    .activity-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .activity-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+
+    .activity-item:last-child { border-bottom: none; }
+    .activity-item:hover { background: var(--cream-dark); }
+
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .dot-deploy { background: var(--rose); }
+    .dot-delete { background: var(--muted); }
+    .dot-expire { background: var(--gold); }
+
+    .activity-body { flex: 1; min-width: 0; }
+    .activity-text { font-size: 0.875rem; color: var(--text); line-height: 1.4; }
+    .activity-text a { color: var(--rose); }
+    .activity-time { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+    /* API Key panel */
+    .key-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .key-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .key-title { font-weight: 600; font-size: 0.9375rem; color: var(--text); }
+
+    .key-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .key-value {
+      font-family: var(--mono);
+      font-size: 0.875rem;
+      padding: 11px 16px;
+      background: var(--cream-dark);
+      flex: 1;
+      color: var(--text);
+      user-select: all;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .key-copy {
+      padding: 0 16px;
+      height: 42px;
+      background: var(--cream);
+      border: none;
+      border-left: 1px solid var(--border);
+      cursor: pointer;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--rose);
+      font-family: var(--sans);
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .key-copy:hover { background: var(--cream-dark); }
+
+    .key-meta { font-size: 0.8125rem; color: var(--muted); }
+
+    /* Onboarding banner */
+    .onboard-banner {
+      background: var(--text);
+      border-radius: 8px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .onboard-text h3 {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+
+    .onboard-text p { font-size: 0.875rem; color: rgba(250,246,241,0.5); }
+
+    .onboard-close {
+      background: none;
+      border: none;
+      color: rgba(250,246,241,0.3);
+      cursor: pointer;
+      padding: 4px;
+      flex-shrink: 0;
+      transition: color 0.15s;
+    }
+
+    .onboard-close:hover { color: rgba(250,246,241,0.7); }
+
+    /* Empty state */
+    .empty-state {
+      padding: 64px 32px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--cream-dark);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      color: var(--muted);
+    }
+
+    .empty-title { font-weight: 600; font-size: 1rem; margin-bottom: 6px; }
+    .empty-desc  { font-size: 0.875rem; color: var(--muted); margin-bottom: 20px; }
+
+    /* Modal overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28,20,16,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--cream);
+      border-radius: 10px;
+      padding: 32px;
+      max-width: 500px;
+      width: 100%;
+      border: 1px solid var(--border);
+      box-shadow: 0 32px 80px rgba(28,20,16,0.2);
+    }
+
+    .modal h3 {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.375rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .modal p { font-size: 0.9rem; color: var(--muted); margin-bottom: 24px; }
+
+    .form-group { margin-bottom: 16px; }
+
+    .form-label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: var(--sans);
+      background: var(--cream);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-input:focus { border-color: var(--rose); }
+
+    .form-hint { font-size: 0.8125rem; color: var(--muted); margin-top: 5px; }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    /* File drop zone */
+    .drop-zone {
+      border: 2px dashed var(--border-dk);
+      border-radius: 8px;
+      padding: 32px;
+      text-align: center;
+      transition: all 0.15s;
+      cursor: pointer;
+      margin: 16px 0;
+    }
+
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--rose);
+      background: var(--rose-dim);
+    }
+
+    .drop-zone-icon { color: var(--muted); margin: 0 auto 10px; }
+    .drop-zone-text { font-size: 0.875rem; color: var(--muted); }
+    .drop-zone-text strong { color: var(--rose); }
+
+    /* Progress */
+    .deploy-progress {
+      display: none;
+      margin-top: 16px;
+    }
+
+    .deploy-progress.show { display: block; }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8125rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar-wrap {
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--rose);
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .deploy-result {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: rgba(74,153,96,0.08);
+      border: 1px solid rgba(74,153,96,0.2);
+      border-radius: 6px;
+    }
+
+    .deploy-result.show { display: block; }
+
+    .deploy-result-label { font-size: 0.75rem; font-weight: 600; color: #4a9960; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .deploy-result-url {
+      font-family: var(--mono);
+      font-size: 0.875rem;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    .deploy-result-url a { color: var(--rose); }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .app-sidebar { display: none; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .app-main { padding: 16px; }
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- TOPBAR -->
+  <header class="app-topbar">
+    <a href="index.html" class="app-logo">
+      <div class="nav-logo-mark" style="width:24px;height:24px;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="2" width="5" height="7" rx="1" fill="white" opacity="0.9"/>
+          <rect x="9" y="2" width="5" height="4" rx="1" fill="#9b3060"/>
+          <rect x="9" y="8" width="5" height="6" rx="1" fill="white" opacity="0.5"/>
+          <rect x="2" y="11" width="5" height="3" rx="1" fill="white" opacity="0.4"/>
+        </svg>
+      </div>
+      pages<em>.rosabuilds</em>
+    </a>
+
+    <div class="app-topbar-right">
+      <span class="plan-chip">Hobby</span>
+      <a href="index.html#pricing" class="btn btn-rose btn-sm">Upgrade to Pro</a>
+      <div class="user-menu">
+        <div class="dash-avatar">R</div>
+        <span class="user-name">rosalinda</span>
+        <svg class="user-chevron" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="app-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Main</div>
+      <a class="sidebar-item active" onclick="showSection('sites')">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="3" width="12" height="10" rx="1.5"/>
+          <path d="M5 3v10M2 6h13"/>
+        </svg>
+        Sites
+        <span class="sidebar-badge">3</span>
+      </a>
+      <a class="sidebar-item" onclick="showSection('deploy')">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 2v8M5 5l3-3 3 3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 11v2a1 1 0 001 1h8a1 1 0 001-1v-2" stroke-linecap="round"/>
+        </svg>
+        Deploy
+      </a>
+      <a class="sidebar-item" onclick="showSection('activity')">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2 8h2l2-4 2 8 2-6 2 4 2-2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Activity
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Account</div>
+      <a class="sidebar-item" onclick="showSection('keys')">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="5.5" cy="9.5" r="3"/>
+          <path d="M8 7l5-5M11 2l2 2M13 4l-1 1" stroke-linecap="round"/>
+        </svg>
+        API Keys
+      </a>
+      <a class="sidebar-item" onclick="showSection('usage')">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2 13L5 8l3 3 3-5 3 4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Usage
+      </a>
+      <a class="sidebar-item" href="index.html#pricing">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="4" width="12" height="9" rx="1.5"/>
+          <path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/>
+        </svg>
+        Upgrade
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Help</div>
+      <a class="sidebar-item" href="docs.html">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="2" width="10" height="12" rx="1.5"/>
+          <path d="M6 5h4M6 8h4M6 11h2" stroke-linecap="round"/>
+        </svg>
+        Docs
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="app-main">
+
+    <!-- ONBOARDING BANNER -->
+    <div class="onboard-banner" id="onboard-banner">
+      <div class="onboard-text">
+        <h3>Welcome to pages.rosabuilds</h3>
+        <p>Your API key is ready. Deploy your first site with one curl command — see the <a href="docs.html" style="color:rgba(250,246,241,0.7);">quickstart</a>.</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <a href="docs.html#quickstart" class="btn btn-sm" style="background:rgba(250,246,241,0.1);color:var(--cream);border:1px solid rgba(250,246,241,0.15);">View quickstart</a>
+        <button class="onboard-close" onclick="document.getElementById('onboard-banner').style.display='none'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION: SITES -->
+    <div id="section-sites">
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Active sites</div>
+          <div class="stat-value">3</div>
+          <div class="stat-delta">of 5 on Hobby plan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Bandwidth used</div>
+          <div class="stat-value">142<span style="font-size:1rem;"> MB</span></div>
+          <div class="stat-delta">of 1 GB this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total deploys</div>
+          <div class="stat-value">9</div>
+          <div class="stat-delta up">↑ 4 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg deploy time</div>
+          <div class="stat-value">0.4<span style="font-size:1rem;">s</span></div>
+          <div class="stat-delta">across all deploys</div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-container">
+        <div class="table-toolbar">
+          <div class="table-search">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="6" cy="6" r="4"/><path d="M10 10l2 2" stroke-linecap="round"/>
+            </svg>
+            <input type="text" placeholder="Search sites..." id="site-search" oninput="filterSites(this.value)">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openDeployModal()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 2v10M2 7h10" stroke-linecap="round"/>
+            </svg>
+            Deploy new
+          </button>
+        </div>
+
+        <div class="tabs" style="padding:0 16px;margin-bottom:0;">
+          <button class="tab active">All sites</button>
+          <button class="tab">Active</button>
+          <button class="tab">Expiring soon</button>
+        </div>
+
+        <table class="data-table" id="sites-table">
+          <thead>
+            <tr>
+              <th>Site</th>
+              <th>URL</th>
+              <th>Size</th>
+              <th>Deployed</th>
+              <th>Expires</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="sites-tbody">
+            <tr>
+              <td>
+                <div class="site-name-cell">
+                  <div class="site-thumb">Q1</div>
+                  <div>
+                    <div class="site-label">Q1 Sales Report</div>
+                    <div class="site-id">dep_01j8xt9r</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <a href="#" class="site-url-link">
+                  k9xm2p.pages.rosabuilds.com
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8l6-6M4 2h4v4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </td>
+              <td class="td-size">142 KB</td>
+              <td class="td-date">Mar 8, 12:14am</td>
+              <td class="td-ttl ttl-soon">in 21h</td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="Copy URL" onclick="copyUrl('https://k9xm2p.pages.rosabuilds.com', this)">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="7" height="8" rx="1"/><path d="M2 9V2h7" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Redeploy">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 6A4 4 0 012 6M3 3l-1 3 3-1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete" onclick="deleteSite(this)">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h9M5 3V2h3v1M4 3v7a1 1 0 001 1h3a1 1 0 001-1V3" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="site-name-cell">
+                  <div class="site-thumb" style="background:rgba(176,141,87,0.1);color:var(--gold);">AG</div>
+                  <div>
+                    <div class="site-label">Agent status page</div>
+                    <div class="site-id">dep_01j7mm4a</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <a href="#" class="site-url-link">
+                  agent-status.pages.rosabuilds.com
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8l6-6M4 2h4v4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </td>
+              <td class="td-size">38 KB</td>
+              <td class="td-date">Mar 7, 11:30pm</td>
+              <td class="td-ttl ttl-perm">Permanent</td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="Copy URL" onclick="copyUrl('https://agent-status.pages.rosabuilds.com', this)">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="7" height="8" rx="1"/><path d="M2 9V2h7" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Redeploy">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 6A4 4 0 012 6M3 3l-1 3 3-1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete" onclick="deleteSite(this)">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h9M5 3V2h3v1M4 3v7a1 1 0 001 1h3a1 1 0 001-1V3" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="site-name-cell">
+                  <div class="site-thumb" style="background:rgba(28,20,16,0.06);color:var(--muted);">PR</div>
+                  <div>
+                    <div class="site-label">PR preview #47</div>
+                    <div class="site-id">dep_01j6ab1q</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <a href="#" class="site-url-link">
+                  pr-47-preview.pages.rosabuilds.com
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8l6-6M4 2h4v4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </td>
+              <td class="td-size">210 KB</td>
+              <td class="td-date">Mar 6, 4:02pm</td>
+              <td class="td-ttl ttl-perm">Permanent</td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="Copy URL" onclick="copyUrl('https://pr-47-preview.pages.rosabuilds.com', this)">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="7" height="8" rx="1"/><path d="M2 9V2h7" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Redeploy">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 6A4 4 0 012 6M3 3l-1 3 3-1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete" onclick="deleteSite(this)">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h9M5 3V2h3v1M4 3v7a1 1 0 001 1h3a1 1 0 001-1V3" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Activity -->
+      <div class="activity-card">
+        <div class="activity-header">
+          <span class="activity-title">Recent activity</span>
+          <a href="#" class="btn btn-ghost btn-sm">View all</a>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot dot-deploy"></span>
+          <div class="activity-body">
+            <div class="activity-text">Deployed <a href="#">k9xm2p.pages.rosabuilds.com</a> — Q1 Sales Report (142 KB)</div>
+            <div class="activity-time">Today at 12:14am · 0.3s</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot dot-deploy"></span>
+          <div class="activity-body">
+            <div class="activity-text">Deployed <a href="#">agent-status.pages.rosabuilds.com</a> — Agent status page (38 KB)</div>
+            <div class="activity-time">Yesterday at 11:30pm · 0.4s</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot dot-expire"></span>
+          <div class="activity-body">
+            <div class="activity-text">Site <code style="font-size:0.8em;">tmp-8xzk1.pages.rosabuilds.com</code> auto-deleted (TTL expired)</div>
+            <div class="activity-time">Mar 7 at 3:00pm</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot dot-deploy"></span>
+          <div class="activity-body">
+            <div class="activity-text">Deployed <a href="#">pr-47-preview.pages.rosabuilds.com</a> — PR preview #47 (210 KB)</div>
+            <div class="activity-time">Mar 6 at 4:02pm · 0.5s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: DEPLOY (hidden) -->
+    <div id="section-deploy" style="display:none;">
+      <div class="page-header-row">
+        <div>
+          <div class="page-title">Deploy a site</div>
+          <div class="page-subtitle">Upload a .tar.gz or .zip and get a live URL instantly</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <div>
+          <div class="key-card">
+            <div class="key-header">
+              <span class="key-title">Upload bundle</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Label <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+              <input type="text" class="form-input" placeholder="e.g. Q1 report" id="deploy-label">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Subdomain slug <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+              <input type="text" class="form-input" placeholder="auto-generated if blank" id="deploy-slug">
+              <div class="form-hint">Lowercase letters, numbers, hyphens only</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">TTL (hours)</label>
+              <input type="number" class="form-input" value="24" min="1" id="deploy-ttl">
+              <div class="form-hint">Hobby plan max: 24h · Set to 0 for permanent (Pro+)</div>
+            </div>
+
+            <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="handleDrop(event)">
+              <svg class="drop-zone-icon" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M16 4v16M10 10l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 22v4a2 2 0 002 2h16a2 2 0 002-2v-4" stroke-linecap="round"/>
+              </svg>
+              <div class="drop-zone-text"><strong>Click to upload</strong> or drag and drop</div>
+              <div class="drop-zone-text" style="margin-top:4px;font-size:0.8125rem;">tar.gz or zip, up to 10 MB</div>
+            </div>
+            <input type="file" id="file-input" accept=".tar.gz,.zip,.gz" style="display:none" onchange="fileSelected(this)">
+
+            <div class="deploy-progress" id="deploy-progress">
+              <div class="progress-label">
+                <span id="progress-status">Uploading...</span>
+                <span id="progress-pct">0%</span>
+              </div>
+              <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+              </div>
+            </div>
+
+            <div class="deploy-result" id="deploy-result">
+              <div class="deploy-result-label">✓ Deployed successfully</div>
+              <div class="deploy-result-url">
+                <a id="result-url" href="#" target="_blank"></a>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:16px;" onclick="simulateDeploy()" id="deploy-btn">
+              Deploy
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="key-card" style="margin-bottom:16px;">
+            <div class="key-header" style="margin-bottom:12px;">
+              <span class="key-title">Or deploy via API</span>
+            </div>
+            <div class="code-block" style="margin:0;">
+              <div class="code-block-header">
+                <span class="code-lang">bash</span>
+              </div>
+              <div class="code-body" style="font-size:0.8125rem;"><pre><span class="hl-prompt">$</span> curl <span class="hl-flag">-X POST</span> \
+  https://sites.rosabuilds.com/deploy \
+  <span class="hl-flag">-H</span> <span class="hl-string">"Authorization: Bearer \
+  pk_live_••••••••••••"</span> \
+  <span class="hl-flag">-F</span> <span class="hl-string">"file=@bundle.tar.gz"</span> \
+  <span class="hl-flag">-F</span> <span class="hl-string">"ttl_hours=24"</span></pre></div>
+            </div>
+            <a href="docs.html" class="btn btn-ghost btn-sm" style="margin-top:12px;">Full API docs →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: KEYS (hidden) -->
+    <div id="section-keys" style="display:none;">
+      <div class="page-header-row">
+        <div>
+          <div class="page-title">API Keys</div>
+          <div class="page-subtitle">Use these keys to authenticate deploy requests</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="alert('Create key — upgrade to Pro for multiple keys')">+ New key</button>
+      </div>
+
+      <div class="key-card">
+        <div class="key-header">
+          <span class="key-title">Default key</span>
+          <span class="badge badge-live">Active</span>
+        </div>
+        <div class="key-row">
+          <div class="key-value" id="api-key-display">pk_live_••••••••••••••••••••••••••••••••</div>
+          <button class="key-copy" onclick="revealKey(this)">Reveal</button>
+        </div>
+        <div class="key-meta">Created Mar 8, 2025 · Last used just now · Hobby plan (1 key max)</div>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);display:flex;gap:10px;">
+          <button class="btn btn-outline btn-sm" onclick="copyApiKey()">Copy key</button>
+          <button class="btn btn-outline btn-sm" style="color:#c0392b;border-color:rgba(192,57,43,0.2);" onclick="if(confirm('Regenerate key? All existing uses will stop working.')) alert('Key regenerated.')">Regenerate</button>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding:20px;background:var(--cream-dark);border:1px solid var(--border);border-radius:8px;">
+        <p style="font-size:0.875rem;color:var(--muted);margin:0;">
+          <strong style="color:var(--text);">Multiple keys</strong> are available on Pro and Team plans. Useful for running multiple agents with isolated credentials.
+          <a href="index.html#pricing" style="color:var(--rose);">Upgrade →</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- SECTION: USAGE (hidden) -->
+    <div id="section-usage" style="display:none;">
+      <div class="page-header-row">
+        <div>
+          <div class="page-title">Usage</div>
+          <div class="page-subtitle">March 2025 · Hobby plan</div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Sites used</div>
+          <div class="stat-value">3 <span style="font-size:1rem;color:var(--muted);">/ 5</span></div>
+          <div class="stat-delta">60% of plan limit</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Bandwidth</div>
+          <div class="stat-value">142 <span style="font-size:1rem;color:var(--muted);">MB</span></div>
+          <div class="stat-delta">of 1 GB · 14%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Deploys this month</div>
+          <div class="stat-value">9</div>
+          <div class="stat-delta">no monthly limit</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Largest deploy</div>
+          <div class="stat-value">210 <span style="font-size:1rem;color:var(--muted);">KB</span></div>
+          <div class="stat-delta">of 10 MB limit</div>
+        </div>
+      </div>
+
+      <div class="key-card" style="margin-top:8px;">
+        <div class="key-header" style="margin-bottom:16px;">
+          <span class="key-title">Bandwidth this month</span>
+          <span style="font-size:0.875rem;color:var(--muted);">142 MB of 1,024 MB</span>
+        </div>
+        <div style="height:6px;background:var(--border);border-radius:99px;overflow:hidden;">
+          <div style="height:100%;width:14%;background:var(--rose);border-radius:99px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;">
+          <span style="font-size:0.75rem;color:var(--muted);">0</span>
+          <span style="font-size:0.75rem;color:var(--muted);">1 GB</span>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding:20px 24px;background:var(--text);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+        <div>
+          <div style="font-family:var(--serif);font-style:italic;font-size:1.125rem;color:var(--cream);margin-bottom:4px;">Need more capacity?</div>
+          <div style="font-size:0.875rem;color:rgba(250,246,241,0.45);">Pro gives you unlimited sites, 50 GB bandwidth, and permanent TTLs for $9/mo.</div>
+        </div>
+        <a href="index.html#pricing" class="btn btn-rose btn-sm" style="white-space:nowrap;">Upgrade to Pro</a>
+      </div>
+    </div>
+
+    <!-- SECTION: ACTIVITY (hidden) -->
+    <div id="section-activity" style="display:none;">
+      <div class="page-header-row">
+        <div>
+          <div class="page-title">Activity log</div>
+          <div class="page-subtitle">All deploy and account events</div>
+        </div>
+      </div>
+      <div class="activity-card">
+        <div class="activity-item">
+          <span class="activity-dot dot-deploy"></span>
+          <div class="activity-body">
+            <div class="activity-text">Deployed <a href="#">k9xm2p.pages.rosabuilds.com</a> — Q1 Sales Report (142 KB, 0.3s)</div>
+            <div class="activity-time">Mar 8, 2025 · 12:14am</div>
+          </div>
+          <span class="badge badge-live" style="white-space:nowrap;">deploy</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot dot-deploy"></span>
+          <div class="activity-body">
+            <div class="activity-text">Deployed <a href="#">agent-status.pages.rosabuilds.com</a> — Agent status page (38 KB, 0.4s)</div>
+            <div class="activity-time">Mar 7, 2025 · 11:30pm</div>
+          </div>
+          <span class="badge badge-live" style="white-space:nowrap;">deploy</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot dot-expire"></span>
+          <div class="activity-body">
+            <div class="activity-text">Auto-deleted <code style="font-size:0.8em;">tmp-8xzk1.pages.rosabuilds.com</code> — TTL expired after 24h</div>
+            <div class="activity-time">Mar 7, 2025 · 3:00pm</div>
+          </div>
+          <span class="badge badge-new" style="white-space:nowrap;">expired</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot dot-deploy"></span>
+          <div class="activity-body">
+            <div class="activity-text">Deployed <a href="#">pr-47-preview.pages.rosabuilds.com</a> — PR preview #47 (210 KB, 0.5s)</div>
+            <div class="activity-time">Mar 6, 2025 · 4:02pm</div>
+          </div>
+          <span class="badge badge-live" style="white-space:nowrap;">deploy</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot dot-delete"></span>
+          <div class="activity-body">
+            <div class="activity-text">Deleted <code style="font-size:0.8em;">old-site.pages.rosabuilds.com</code> manually</div>
+            <div class="activity-time">Mar 5, 2025 · 9:45am</div>
+          </div>
+          <span class="badge badge-free" style="white-space:nowrap;">deleted</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- DEPLOY MODAL -->
+<div class="modal-overlay" id="deploy-modal">
+  <div class="modal">
+    <h3>Deploy a new site</h3>
+    <p>Upload your bundle and get a live HTTPS URL in under a second.</p>
+    <div class="modal-actions" style="margin-top:0;margin-bottom:0;justify-content:flex-start;">
+      <a href="#" onclick="closeDeployModal();showSection('deploy');return false;" class="btn btn-primary">Open deploy panel</a>
+      <a href="docs.html#quickstart" class="btn btn-outline">API quickstart</a>
+      <button class="btn btn-ghost" onclick="closeDeployModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Section switcher
+  function showSection(name) {
+    ['sites','deploy','activity','keys','usage'].forEach(s => {
+      const el = document.getElementById('section-'+s);
+      if (el) el.style.display = s === name ? '' : 'none';
+    });
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    event && event.currentTarget && event.currentTarget.classList.add('active');
+  }
+
+  // Deploy modal
+  function openDeployModal() {
+    document.getElementById('deploy-modal').classList.add('open');
+  }
+  function closeDeployModal() {
+    document.getElementById('deploy-modal').classList.remove('open');
+  }
+  document.getElementById('deploy-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeployModal();
+  });
+
+  // Copy URL helper
+  function copyUrl(url, btn) {
+    navigator.clipboard.writeText(url).then(() => {
+      const orig = btn.title;
+      btn.title = 'Copied!';
+      btn.style.color = 'var(--rose)';
+      setTimeout(() => { btn.title = orig; btn.style.color = ''; }, 2000);
+    });
+  }
+
+  // Copy API key
+  function copyApiKey() {
+    navigator.clipboard.writeText('pk_live_example_key_here').then(() => alert('API key copied!'));
+  }
+
+  // Reveal key
+  function revealKey(btn) {
+    const display = document.getElementById('api-key-display');
+    if (btn.textContent === 'Reveal') {
+      display.textContent = 'pk_live_r05a3x9mQ2v8kNpLwT7dYjX1uA4bCfGh';
+      btn.textContent = 'Hide';
+    } else {
+      display.textContent = 'pk_live_••••••••••••••••••••••••••••••••';
+      btn.textContent = 'Reveal';
+    }
+  }
+
+  // Site search filter
+  function filterSites(q) {
+    document.querySelectorAll('#sites-tbody tr').forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(q.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  // Delete site row
+  function deleteSite(btn) {
+    if (confirm('Delete this site? The URL will stop working immediately.')) {
+      const row = btn.closest('tr');
+      row.style.opacity = '0.4';
+      row.style.transition = 'opacity 0.3s';
+      setTimeout(() => {
+        row.remove();
+        // update count
+        const countEl = document.querySelector('.stat-value');
+        if (countEl) {
+          const n = parseInt(countEl.textContent) - 1;
+          countEl.textContent = n;
+        }
+      }, 300);
+    }
+  }
+
+  // File drag/drop
+  function dragOver(e) {
+    e.preventDefault();
+    document.getElementById('drop-zone').classList.add('drag-over');
+  }
+  function dragLeave(e) {
+    document.getElementById('drop-zone').classList.remove('drag-over');
+  }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('drop-zone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) showSelectedFile(file);
+  }
+  function fileSelected(input) {
+    if (input.files[0]) showSelectedFile(input.files[0]);
+  }
+  function showSelectedFile(file) {
+    const dz = document.getElementById('drop-zone');
+    dz.innerHTML = `
+      <svg class="drop-zone-icon" width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#9b3060" stroke-width="1.5">
+        <rect x="4" y="2" width="20" height="24" rx="2"/>
+        <path d="M9 9h10M9 13h10M9 17h6" stroke-linecap="round"/>
+      </svg>
+      <div class="drop-zone-text" style="color:var(--text);font-weight:500;">${file.name}</div>
+      <div class="drop-zone-text" style="margin-top:4px;">${(file.size/1024).toFixed(0)} KB · Ready to deploy</div>
+    `;
+  }
+
+  // Simulate deploy
+  function simulateDeploy() {
+    const btn = document.getElementById('deploy-btn');
+    const progress = document.getElementById('deploy-progress');
+    const result = document.getElementById('deploy-result');
+    const fill = document.getElementById('progress-fill');
+    const pct = document.getElementById('progress-pct');
+    const status = document.getElementById('progress-status');
+
+    btn.disabled = true;
+    btn.textContent = 'Deploying...';
+    progress.classList.add('show');
+    result.classList.remove('show');
+
+    const slug = document.getElementById('deploy-slug').value || Math.random().toString(36).slice(2,8);
+    const url = `https://${slug}.pages.rosabuilds.com`;
+
+    let p = 0;
+    const iv = setInterval(() => {
+      p += Math.random() * 25;
+      if (p >= 100) { p = 100; clearInterval(iv); }
+      fill.style.width = p + '%';
+      pct.textContent = Math.round(p) + '%';
+      if (p >= 60) status.textContent = 'Extracting...';
+      if (p >= 85) status.textContent = 'Going live...';
+      if (p === 100) {
+        status.textContent = 'Done!';
+        setTimeout(() => {
+          progress.classList.remove('show');
+          result.classList.add('show');
+          const link = document.getElementById('result-url');
+          link.textContent = url;
+          link.href = '#';
+          btn.disabled = false;
+          btn.textContent = 'Deploy another';
+        }, 400);
+      }
+    }, 120);
+  }
+
+  // Keyboard: close modal on Esc
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDeployModal();
+  });
+</script>
+</body>
+</html>

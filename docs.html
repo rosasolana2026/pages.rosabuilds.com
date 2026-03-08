@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Docs — pages.rosabuilds.com</title>
+  <meta name="description" content="Complete API reference for pages.rosabuilds.com. Deploy static sites from your AI agent with one POST request.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231c1410'/><text x='6' y='24' font-size='20' fill='%239b3060'>p</text></svg>">
+  <style>
+    .docs-content h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+    .lang-tabs { display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:0; }
+    .lang-tab {
+      padding:8px 16px;
+      font-size:0.8125rem;
+      font-family:var(--mono);
+      color:rgba(232,221,212,0.4);
+      cursor:pointer;
+      border-bottom:2px solid transparent;
+      transition:all 0.15s;
+      background:none;
+      border-top:none;
+      border-left:none;
+      border-right:none;
+    }
+    .lang-tab.active { color:var(--rose2); border-bottom-color:var(--rose2); }
+    .lang-tab:hover  { color:rgba(232,221,212,0.8); }
+    .code-tab { display:none; }
+    .code-tab.active { display:block; }
+    .response-schema { background:var(--cream-dark); border:1px solid var(--border); border-radius:6px; padding:20px 24px; margin:16px 0; }
+    .response-field { display:grid; grid-template-columns:160px 80px 1fr; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); font-size:0.875rem; align-items:baseline; }
+    .response-field:last-child { border-bottom:none; }
+    .rf-name { font-family:var(--mono); font-size:0.8125rem; color:var(--text); font-weight:500; }
+    .rf-type { color:var(--gold); font-size:0.8125rem; font-family:var(--mono); }
+    .rf-desc { color:var(--muted); line-height:1.5; }
+    .error-row { display:grid; grid-template-columns:60px 140px 1fr; gap:16px; padding:11px 0; border-bottom:1px solid var(--border); font-size:0.875rem; align-items:baseline; }
+    .error-row:last-child { border-bottom:none; }
+    .err-code { font-family:var(--mono); font-weight:600; color:var(--rose); }
+    .err-name { font-weight:500; color:var(--text); }
+    .err-desc { color:var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" role="navigation">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="2" width="5" height="7" rx="1" fill="white" opacity="0.9"/>
+          <rect x="9" y="2" width="5" height="4" rx="1" fill="#9b3060"/>
+          <rect x="9" y="8" width="5" height="6" rx="1" fill="white" opacity="0.5"/>
+          <rect x="2" y="11" width="5" height="3" rx="1" fill="white" opacity="0.4"/>
+        </svg>
+      </div>
+      <span class="nav-logo-text">pages<em>.rosabuilds</em></span>
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#features">Features</a></li>
+      <li><a href="index.html#pricing">Pricing</a></li>
+      <li><a href="docs.html" class="active">Docs</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="dashboard.html" class="btn btn-rose btn-sm">Get API key</a>
+    </div>
+    <button class="nav-mobile-btn" id="mobile-toggle" aria-label="Toggle menu">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <rect x="2" y="5" width="16" height="1.5" rx="1"/>
+        <rect x="2" y="9.25" width="16" height="1.5" rx="1"/>
+        <rect x="2" y="13.5" width="16" height="1.5" rx="1"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- DOCS LAYOUT -->
+<div class="container--docs">
+
+  <!-- SIDEBAR -->
+  <aside class="docs-sidebar" aria-label="Documentation navigation">
+    <div class="docs-nav-section">
+      <div class="docs-nav-label">Getting started</div>
+      <ul class="docs-nav-list">
+        <li><a href="#quickstart" class="active">Quickstart</a></li>
+        <li><a href="#authentication">Authentication</a></li>
+        <li><a href="#base-url">Base URL</a></li>
+      </ul>
+    </div>
+
+    <div class="docs-nav-section">
+      <div class="docs-nav-label">Deploy API</div>
+      <ul class="docs-nav-list">
+        <li><a href="#deploy">POST /deploy</a></li>
+        <li><a href="#list">GET /sites</a></li>
+        <li><a href="#get-site">GET /sites/:id</a></li>
+        <li><a href="#delete">DELETE /sites/:id</a></li>
+        <li><a href="#update">PATCH /sites/:id</a></li>
+      </ul>
+    </div>
+
+    <div class="docs-nav-section">
+      <div class="docs-nav-label">Reference</div>
+      <ul class="docs-nav-list">
+        <li><a href="#bundles">Bundle formats</a></li>
+        <li><a href="#ttl">TTL &amp; expiry</a></li>
+        <li><a href="#headers">Custom headers</a></li>
+        <li><a href="#errors">Error codes</a></li>
+        <li><a href="#limits">Rate limits</a></li>
+      </ul>
+    </div>
+
+    <div class="docs-nav-section">
+      <div class="docs-nav-label">Guides</div>
+      <ul class="docs-nav-list">
+        <li><a href="#sdks">SDKs &amp; wrappers</a></li>
+        <li><a href="#examples">Agent examples</a></li>
+        <li><a href="#webhooks">Webhooks</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="docs-content" id="docs-main">
+
+    <h1>API Reference</h1>
+    <p class="page-sub">Deploy static sites from your AI agent with a single HTTP request. Every deploy gets an instant HTTPS URL on a unique subdomain.</p>
+
+    <!-- QUICKSTART -->
+    <h2 id="quickstart">Quickstart</h2>
+    <p>Get from zero to a live URL in under 2 minutes.</p>
+
+    <h3>1. Get your API key</h3>
+    <p>Sign up at <a href="dashboard.html" style="color:var(--rose);">pages.rosabuilds.com/dashboard</a> and copy your API key from the Keys section. Keys look like <code>pk_live_xxxxxxxxxxxxxxxx</code>.</p>
+
+    <h3>2. Bundle your files</h3>
+    <p>Zip or tar your output directory. The archive must contain an <code>index.html</code> at the root.</p>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre><span class="hl-comment"># tar.gz (preferred)</span>
+tar -czf bundle.tar.gz -C ./dist .
+
+<span class="hl-comment"># or zip</span>
+zip -r bundle.zip ./dist/.</pre></div>
+    </div>
+
+    <h3>3. Deploy</h3>
+
+    <div class="code-block" style="margin-top:12px;">
+      <div class="code-block-header" style="background:#1a1210; border:none; border-bottom:1px solid rgba(255,255,255,0.05); padding:0;">
+        <div class="lang-tabs" id="qs-tabs">
+          <button class="lang-tab active" onclick="switchTab('qs','curl',this)">curl</button>
+          <button class="lang-tab" onclick="switchTab('qs','python',this)">python</button>
+          <button class="lang-tab" onclick="switchTab('qs','node',this)">node</button>
+          <button class="lang-tab" onclick="switchTab('qs','go',this)">go</button>
+        </div>
+      </div>
+      <div class="code-body" style="padding-top:16px;">
+        <div class="code-tab active" id="qs-curl"><pre><span class="hl-prompt">$</span> curl <span class="hl-flag">-X POST</span> https://sites.rosabuilds.com/deploy \
+  <span class="hl-flag">-H</span> <span class="hl-string">"Authorization: Bearer <span class="hl-key">$PAGES_API_KEY</span>"</span> \
+  <span class="hl-flag">-F</span> <span class="hl-string">"file=@bundle.tar.gz"</span></pre></div>
+        <div class="code-tab" id="qs-python"><pre><span class="hl-dim">import</span> requests, os
+
+resp = requests.post(
+    <span class="hl-string">"https://sites.rosabuilds.com/deploy"</span>,
+    headers={<span class="hl-string">"Authorization"</span>: <span class="hl-string">f"Bearer {os.environ['PAGES_API_KEY']}"</span>},
+    files={<span class="hl-string">"file"</span>: open(<span class="hl-string">"bundle.tar.gz"</span>, <span class="hl-string">"rb"</span>)},
+)
+print(resp.json()[<span class="hl-string">"url"</span>])  <span class="hl-comment"># https://k9xm2p.pages.rosabuilds.com</span></pre></div>
+        <div class="code-tab" id="qs-node"><pre><span class="hl-dim">import</span> FormData <span class="hl-dim">from</span> <span class="hl-string">'form-data'</span>;
+<span class="hl-dim">import</span> fs <span class="hl-dim">from</span> <span class="hl-string">'fs'</span>;
+<span class="hl-dim">import</span> fetch <span class="hl-dim">from</span> <span class="hl-string">'node-fetch'</span>;
+
+<span class="hl-dim">const</span> form = <span class="hl-dim">new</span> FormData();
+form.append(<span class="hl-string">'file'</span>, fs.createReadStream(<span class="hl-string">'bundle.tar.gz'</span>));
+
+<span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(<span class="hl-string">'https://sites.rosabuilds.com/deploy'</span>, {
+  method: <span class="hl-string">'POST'</span>,
+  headers: { Authorization: <span class="hl-string">`Bearer ${process.env.PAGES_API_KEY}`</span> },
+  body: form,
+});
+<span class="hl-dim">const</span> { url } = <span class="hl-dim">await</span> res.json();
+console.log(url); <span class="hl-comment">// https://k9xm2p.pages.rosabuilds.com</span></pre></div>
+        <div class="code-tab" id="qs-go"><pre>f, _ := os.Open(<span class="hl-string">"bundle.tar.gz"</span>)
+body := &bytes.Buffer{}
+w := multipart.NewWriter(body)
+fw, _ := w.CreateFormFile(<span class="hl-string">"file"</span>, <span class="hl-string">"bundle.tar.gz"</span>)
+io.Copy(fw, f)
+w.Close()
+
+req, _ := http.NewRequest(<span class="hl-string">"POST"</span>,
+    <span class="hl-string">"https://sites.rosabuilds.com/deploy"</span>, body)
+req.Header.Set(<span class="hl-string">"Authorization"</span>, <span class="hl-string">"Bearer "</span>+os.Getenv(<span class="hl-string">"PAGES_API_KEY"</span>))
+req.Header.Set(<span class="hl-string">"Content-Type"</span>, w.FormDataContentType())
+resp, _ := http.DefaultClient.Do(req)</pre></div>
+      </div>
+    </div>
+
+    <h3>Response</h3>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">json</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre>{
+  <span class="hl-key">"url"</span>:       <span class="hl-value">"https://k9xm2p.pages.rosabuilds.com"</span>,
+  <span class="hl-key">"deploy_id"</span>: <span class="hl-value">"dep_01j8xt9r"</span>,
+  <span class="hl-key">"slug"</span>:      <span class="hl-value">"k9xm2p"</span>,
+  <span class="hl-key">"size_kb"</span>:   <span class="hl-value">142</span>,
+  <span class="hl-key">"files"</span>:     <span class="hl-value">8</span>,
+  <span class="hl-key">"ttl_hours"</span>: <span class="hl-value">24</span>,
+  <span class="hl-key">"expires_at"</span>:<span class="hl-value">"2025-03-09T00:14:22Z"</span>,
+  <span class="hl-key">"created_at"</span>:<span class="hl-value">"2025-03-08T00:14:22Z"</span>
+}</pre></div>
+    </div>
+
+    <!-- AUTH -->
+    <h2 id="authentication">Authentication</h2>
+    <p>All API requests must include your API key as a Bearer token in the <code>Authorization</code> header.</p>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-body"><pre>Authorization: Bearer pk_live_xxxxxxxxxxxxxxxx</pre></div>
+    </div>
+
+    <div class="callout">
+      <p><strong>Keep your key secret.</strong> Never expose it in client-side code or commit it to version control. Use environment variables: <code>export PAGES_API_KEY=pk_live_...</code></p>
+    </div>
+
+    <p>Keys can be revoked and regenerated at any time from the dashboard. You can create multiple keys per account on Pro and Team plans.</p>
+
+    <!-- BASE URL -->
+    <h2 id="base-url">Base URL</h2>
+    <p>All API endpoints are served from the AgentHost backend:</p>
+
+    <div class="api-endpoint">
+      <span class="method method-get">BASE</span>
+      <span class="endpoint-path">https://sites.rosabuilds.com</span>
+    </div>
+
+    <p>All responses are JSON. All requests that include a body should use <code>multipart/form-data</code> for file uploads or <code>application/json</code> for metadata-only updates.</p>
+
+    <!-- DEPLOY -->
+    <h2 id="deploy">POST /deploy</h2>
+    <p>Deploy a bundle of static files. Returns a live HTTPS URL within milliseconds.</p>
+
+    <div class="api-endpoint">
+      <span class="method method-post">POST</span>
+      <span class="endpoint-path">/deploy</span>
+    </div>
+
+    <h3>Request parameters</h3>
+    <table class="params-table">
+      <thead>
+        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>file <span class="param-req">required</span></td>
+          <td>file</td>
+          <td>Your bundle as <code>.tar.gz</code> or <code>.zip</code>. Must contain <code>index.html</code> at the root. Max size depends on plan (10 MB free, 100 MB pro).</td>
+        </tr>
+        <tr>
+          <td>slug</td>
+          <td>string</td>
+          <td>Optional. Custom subdomain slug (e.g. <code>my-report</code> → <code>my-report.pages.rosabuilds.com</code>). Auto-generated if omitted. Must be lowercase alphanumeric + hyphens.</td>
+        </tr>
+        <tr>
+          <td>ttl_hours</td>
+          <td>integer</td>
+          <td>How many hours until this site auto-deletes. Default: <code>24</code> on free, <code>0</code> (permanent) on Pro+. Set to <code>0</code> for no expiry.</td>
+        </tr>
+        <tr>
+          <td>headers</td>
+          <td>JSON string</td>
+          <td>Optional. JSON object of custom response headers. Example: <code>{"Cache-Control":"max-age=3600","X-Frame-Options":"DENY"}</code></td>
+        </tr>
+        <tr>
+          <td>label</td>
+          <td>string</td>
+          <td>Optional. Human-readable label shown in dashboard and list API. Max 128 chars.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Response fields</h3>
+    <div class="response-schema">
+      <div class="response-field">
+        <span class="rf-name">url</span>
+        <span class="rf-type">string</span>
+        <span class="rf-desc">The live HTTPS URL of the deployed site.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">deploy_id</span>
+        <span class="rf-type">string</span>
+        <span class="rf-desc">Unique deploy identifier. Use this to fetch, update, or delete the deploy.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">slug</span>
+        <span class="rf-type">string</span>
+        <span class="rf-desc">The subdomain slug used. Matches the subdomain portion of <code>url</code>.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">size_kb</span>
+        <span class="rf-type">integer</span>
+        <span class="rf-desc">Total uncompressed size of deployed files in kilobytes.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">files</span>
+        <span class="rf-type">integer</span>
+        <span class="rf-desc">Number of files in the deploy.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">ttl_hours</span>
+        <span class="rf-type">integer</span>
+        <span class="rf-desc">Hours until auto-deletion. <code>0</code> = permanent.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">expires_at</span>
+        <span class="rf-type">string|null</span>
+        <span class="rf-desc">ISO 8601 expiry timestamp, or <code>null</code> if permanent.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">created_at</span>
+        <span class="rf-type">string</span>
+        <span class="rf-desc">ISO 8601 timestamp of when the deploy was created.</span>
+      </div>
+    </div>
+
+    <!-- LIST -->
+    <h2 id="list">GET /sites</h2>
+    <p>List all active deploys for your account, sorted by most recent first.</p>
+
+    <div class="api-endpoint">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/sites</span>
+    </div>
+
+    <h3>Query parameters</h3>
+    <table class="params-table">
+      <thead>
+        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>limit</td><td>integer</td><td>Number of results to return. Default <code>20</code>, max <code>100</code>.</td></tr>
+        <tr><td>offset</td><td>integer</td><td>Pagination offset. Default <code>0</code>.</td></tr>
+        <tr><td>label</td><td>string</td><td>Filter by label (partial match).</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre>curl https://sites.rosabuilds.com/sites \
+  -H <span class="hl-string">"Authorization: Bearer $PAGES_API_KEY"</span></pre></div>
+    </div>
+
+    <!-- GET SITE -->
+    <h2 id="get-site">GET /sites/:id</h2>
+    <p>Fetch details and analytics for a single deploy.</p>
+
+    <div class="api-endpoint">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/sites/:deploy_id</span>
+    </div>
+
+    <!-- DELETE -->
+    <h2 id="delete">DELETE /sites/:id</h2>
+    <p>Immediately delete a deploy. The URL stops serving within seconds. This is permanent — the slug is released.</p>
+
+    <div class="api-endpoint">
+      <span class="method method-del">DELETE</span>
+      <span class="endpoint-path">/sites/:deploy_id</span>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre>curl <span class="hl-flag">-X DELETE</span> https://sites.rosabuilds.com/sites/dep_01j8xt9r \
+  <span class="hl-flag">-H</span> <span class="hl-string">"Authorization: Bearer $PAGES_API_KEY"</span></pre></div>
+    </div>
+
+    <!-- UPDATE -->
+    <h2 id="update">PATCH /sites/:id</h2>
+    <p>Update metadata on an existing deploy — change the TTL, label, or custom headers without re-uploading files.</p>
+
+    <div class="api-endpoint">
+      <span class="method method-post">PATCH</span>
+      <span class="endpoint-path">/sites/:deploy_id</span>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre>curl <span class="hl-flag">-X PATCH</span> https://sites.rosabuilds.com/sites/dep_01j8xt9r \
+  <span class="hl-flag">-H</span> <span class="hl-string">"Authorization: Bearer $PAGES_API_KEY"</span> \
+  <span class="hl-flag">-H</span> <span class="hl-string">"Content-Type: application/json"</span> \
+  <span class="hl-flag">-d</span> <span class="hl-string">'{"ttl_hours": 0, "label": "Q1 report"}'</span></pre></div>
+    </div>
+
+    <!-- BUNDLE FORMATS -->
+    <h2 id="bundles">Bundle formats</h2>
+    <p>We accept two archive formats. Both must contain a valid <code>index.html</code> at the root of the archive.</p>
+
+    <table class="params-table">
+      <thead>
+        <tr><th>Format</th><th>Extension</th><th>Content-Type</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Gzipped tar</td><td>.tar.gz</td><td>application/gzip</td><td>Preferred. Smaller files, faster uploads.</td></tr>
+        <tr><td>ZIP archive</td><td>.zip</td><td>application/zip</td><td>Widely supported. No symlinks.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <p><strong>Tip:</strong> If your archive contains a single top-level folder (e.g. <code>dist/index.html</code>), we automatically unwrap it. So <code>tar -czf bundle.tar.gz dist/</code> works fine.</p>
+    </div>
+
+    <!-- TTL -->
+    <h2 id="ttl">TTL &amp; expiry</h2>
+    <p>The <code>ttl_hours</code> parameter controls auto-deletion. Default behavior by plan:</p>
+
+    <table class="params-table">
+      <thead>
+        <tr><th>Plan</th><th>Default TTL</th><th>Min TTL</th><th>Max TTL</th><th>Permanent?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Hobby (free)</td><td>24h</td><td>1h</td><td>24h</td><td>No</td></tr>
+        <tr><td>Pro ($9/mo)</td><td>0 (permanent)</td><td>1h</td><td>no limit</td><td>Yes (ttl=0)</td></tr>
+        <tr><td>Team ($29/mo)</td><td>0 (permanent)</td><td>1h</td><td>no limit</td><td>Yes (ttl=0)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- HEADERS -->
+    <h2 id="headers">Custom headers</h2>
+    <p>Pass a JSON-encoded object as the <code>headers</code> form field. These headers are sent on every request served from the deploy.</p>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre>curl <span class="hl-flag">-X POST</span> https://sites.rosabuilds.com/deploy \
+  <span class="hl-flag">-H</span> <span class="hl-string">"Authorization: Bearer $PAGES_API_KEY"</span> \
+  <span class="hl-flag">-F</span> <span class="hl-string">"file=@bundle.tar.gz"</span> \
+  <span class="hl-flag">-F</span> <span class="hl-string">'headers={"Cache-Control":"max-age=86400","X-Robots-Tag":"noindex"}'</span></pre></div>
+    </div>
+
+    <!-- ERRORS -->
+    <h2 id="errors">Error codes</h2>
+    <p>Errors return a JSON object with <code>error</code> (machine code) and <code>message</code> (human readable).</p>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">json</span></div>
+      <div class="code-body"><pre>{
+  <span class="hl-key">"error"</span>:   <span class="hl-value">"bundle_too_large"</span>,
+  <span class="hl-key">"message"</span>: <span class="hl-value">"Bundle exceeds plan limit of 10 MB. Upgrade to Pro."</span>,
+  <span class="hl-key">"docs"</span>:   <span class="hl-value">"https://pages.rosabuilds.com/docs#errors"</span>
+}</pre></div>
+    </div>
+
+    <div style="background:var(--cream-dark);border:1px solid var(--border);border-radius:6px;padding:20px 24px;margin-top:16px;">
+      <div class="error-row" style="font-size:0.75rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);padding-bottom:10px;">
+        <span>HTTP</span><span>Error code</span><span>Description</span>
+      </div>
+      <div class="error-row"><span class="err-code">400</span><span class="err-name">missing_file</span><span class="err-desc">No file was included in the request.</span></div>
+      <div class="error-row"><span class="err-code">400</span><span class="err-name">invalid_archive</span><span class="err-desc">Archive is corrupt or not a supported format.</span></div>
+      <div class="error-row"><span class="err-code">400</span><span class="err-name">no_index_html</span><span class="err-desc">Archive has no index.html at its root.</span></div>
+      <div class="error-row"><span class="err-code">400</span><span class="err-name">slug_taken</span><span class="err-desc">Requested slug is already in use by another account.</span></div>
+      <div class="error-row"><span class="err-code">400</span><span class="err-name">bundle_too_large</span><span class="err-desc">Bundle exceeds your plan's size limit.</span></div>
+      <div class="error-row"><span class="err-code">401</span><span class="err-name">unauthorized</span><span class="err-desc">Missing or invalid API key.</span></div>
+      <div class="error-row"><span class="err-code">403</span><span class="err-name">sites_limit_reached</span><span class="err-desc">Active site limit reached. Delete a site or upgrade.</span></div>
+      <div class="error-row"><span class="err-code">404</span><span class="err-name">not_found</span><span class="err-desc">Deploy ID does not exist or belongs to another account.</span></div>
+      <div class="error-row"><span class="err-code">429</span><span class="err-name">rate_limited</span><span class="err-desc">Too many requests. See rate limit headers.</span></div>
+      <div class="error-row"><span class="err-code">500</span><span class="err-name">internal_error</span><span class="err-desc">Unexpected server error. Retry with exponential backoff.</span></div>
+    </div>
+
+    <!-- RATE LIMITS -->
+    <h2 id="limits">Rate limits</h2>
+    <p>Rate limits are per API key. Headers on every response show your current usage:</p>
+
+    <table class="params-table">
+      <thead>
+        <tr><th>Plan</th><th>Deploys / min</th><th>API requests / min</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Hobby</td><td>2</td><td>30</td></tr>
+        <tr><td>Pro</td><td>30</td><td>300</td></tr>
+        <tr><td>Team</td><td>120</td><td>1 200</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">http response headers</span></div>
+      <div class="code-body"><pre>X-RateLimit-Limit:     30
+X-RateLimit-Remaining: 27
+X-RateLimit-Reset:     1709856000</pre></div>
+    </div>
+
+    <!-- SDKs -->
+    <h2 id="sdks">SDKs &amp; wrappers</h2>
+    <p>Official thin wrappers around the REST API. All are open source on GitHub.</p>
+
+    <table class="params-table">
+      <thead>
+        <tr><th>Language</th><th>Install</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Python</td><td><code>pip install pages-rosabuilds</code></td><td><span class="badge badge-live">Live</span></td></tr>
+        <tr><td>Node.js / TypeScript</td><td><code>npm install @rosabuilds/pages</code></td><td><span class="badge badge-live">Live</span></td></tr>
+        <tr><td>Go</td><td><code>go get github.com/rosasolana2026/pages-go</code></td><td><span class="badge badge-beta">Beta</span></td></tr>
+        <tr><td>Ruby</td><td><code>gem install pages_rosabuilds</code></td><td><span class="badge badge-new">Soon</span></td></tr>
+      </tbody>
+    </table>
+
+    <!-- EXAMPLES -->
+    <h2 id="examples">Agent examples</h2>
+
+    <h3>Claude agent — deploy a report</h3>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">python</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre><span class="hl-dim">import</span> anthropic, requests, tarfile, io, os, pathlib
+
+client = anthropic.Anthropic()
+
+<span class="hl-dim">def</span> deploy_html(html: str) -> str:
+    <span class="hl-string">"""Deploy an HTML string and return the live URL."""</span>
+    buf = io.BytesIO()
+    <span class="hl-dim">with</span> tarfile.open(fileobj=buf, mode=<span class="hl-string">"w:gz"</span>) <span class="hl-dim">as</span> tar:
+        data = html.encode()
+        info = tarfile.TarInfo(name=<span class="hl-string">"index.html"</span>)
+        info.size = len(data)
+        tar.addfile(info, io.BytesIO(data))
+    buf.seek(0)
+    resp = requests.post(
+        <span class="hl-string">"https://sites.rosabuilds.com/deploy"</span>,
+        headers={<span class="hl-string">"Authorization"</span>: <span class="hl-string">f"Bearer {os.environ['PAGES_API_KEY']}"</span>},
+        files={<span class="hl-string">"file"</span>: (<span class="hl-string">"bundle.tar.gz"</span>, buf, <span class="hl-string">"application/gzip"</span>)},
+    )
+    <span class="hl-dim">return</span> resp.json()[<span class="hl-string">"url"</span>]
+
+<span class="hl-comment"># Give Claude a deploy tool</span>
+tools = [{
+    <span class="hl-string">"name"</span>: <span class="hl-string">"deploy_page"</span>,
+    <span class="hl-string">"description"</span>: <span class="hl-string">"Deploy an HTML page and return its live URL"</span>,
+    <span class="hl-string">"input_schema"</span>: {
+        <span class="hl-string">"type"</span>: <span class="hl-string">"object"</span>,
+        <span class="hl-string">"properties"</span>: {<span class="hl-string">"html"</span>: {<span class="hl-string">"type"</span>: <span class="hl-string">"string"</span>}},
+        <span class="hl-string">"required"</span>: [<span class="hl-string">"html"</span>]
+    }
+}]</pre></div>
+    </div>
+
+    <h3>Shell one-liner</h3>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre><span class="hl-comment"># Build, bundle, and deploy in one pipeline</span>
+npm run build && \
+  tar -czf /tmp/deploy.tar.gz -C dist . && \
+  curl -s -X POST https://sites.rosabuilds.com/deploy \
+    -H <span class="hl-string">"Authorization: Bearer $PAGES_API_KEY"</span> \
+    -F <span class="hl-string">"file=@/tmp/deploy.tar.gz"</span> | jq -r .url</pre></div>
+    </div>
+
+    <!-- WEBHOOKS -->
+    <h2 id="webhooks">Webhooks</h2>
+    <p>Pro and Team accounts can register a webhook URL to receive events on every deploy, deletion, or expiry. Configure from the dashboard.</p>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">json — webhook payload</span></div>
+      <div class="code-body"><pre>{
+  <span class="hl-key">"event"</span>:     <span class="hl-value">"deploy.created"</span>,
+  <span class="hl-key">"deploy_id"</span>: <span class="hl-value">"dep_01j8xt9r"</span>,
+  <span class="hl-key">"url"</span>:       <span class="hl-value">"https://k9xm2p.pages.rosabuilds.com"</span>,
+  <span class="hl-key">"created_at"</span>:<span class="hl-value">"2025-03-08T00:14:22Z"</span>
+}</pre></div>
+    </div>
+
+    <p style="margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border);">
+      Questions? Open an issue on <a href="https://github.com/rosasolana2026" style="color:var(--rose);">GitHub</a> or email <a href="mailto:hi@rosabuilds.com" style="color:var(--rose);">hi@rosabuilds.com</a>.
+    </p>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 pages.rosabuilds.com</span>
+      <ul class="footer-legal">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#pricing">Pricing</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="https://rosabuilds.com">rosabuilds.com</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav
+  document.getElementById('mobile-toggle').addEventListener('click', function() {
+    document.getElementById('nav-links').classList.toggle('open');
+  });
+
+  // Language tabs
+  function switchTab(group, lang, btn) {
+    document.querySelectorAll(`#qs-tabs .lang-tab`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    ['curl','python','node','go'].forEach(l => {
+      const el = document.getElementById(`${group}-${l}`);
+      if (el) el.classList.toggle('active', l === lang);
+    });
+  }
+
+  // Copy code blocks
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
+  }
+
+  // Highlight active sidebar link on scroll
+  const headings = document.querySelectorAll('.docs-content h2[id]');
+  const sideLinks = document.querySelectorAll('.docs-nav-list a');
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        sideLinks.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === `#${e.target.id}`);
+        });
+      }
+    });
+  }, { rootMargin: '-64px 0px -60% 0px', threshold: 0 });
+
+  headings.forEach(h => obs.observe(h));
+</script>
+</body>
+</html>

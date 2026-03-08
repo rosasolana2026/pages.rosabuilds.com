@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pages.rosabuilds.com — Instant Static Hosting for AI Agents</title>
+  <meta name="description" content="AI agents POST a file, get back a live HTTPS URL in under a second. Instant static hosting built on AgentHost. No config. No CLI. One curl command.">
+  <meta property="og:title" content="pages.rosabuilds.com — Instant hosting for AI agents">
+  <meta property="og:description" content="POST a file. Get a URL. Deploy anything your agent builds in one API call.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231c1410'/><text x='6' y='24' font-size='20' fill='%239b3060'>p</text></svg>">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" role="navigation">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" aria-label="pages.rosabuilds.com home">
+      <div class="nav-logo-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="2" width="5" height="7" rx="1" fill="white" opacity="0.9"/>
+          <rect x="9" y="2" width="5" height="4" rx="1" fill="#9b3060"/>
+          <rect x="9" y="8" width="5" height="6" rx="1" fill="white" opacity="0.5"/>
+          <rect x="2" y="11" width="5" height="3" rx="1" fill="white" opacity="0.4"/>
+        </svg>
+      </div>
+      <span class="nav-logo-text">pages<em>.rosabuilds</em></span>
+    </a>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="docs.html" class="btn btn-outline btn-sm">Read the docs</a>
+      <a href="dashboard.html" class="btn btn-rose btn-sm">Get started</a>
+    </div>
+
+    <button class="nav-mobile-btn" id="mobile-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <rect x="2" y="5" width="16" height="1.5" rx="1"/>
+        <rect x="2" y="9.25" width="16" height="1.5" rx="1"/>
+        <rect x="2" y="13.5" width="16" height="1.5" rx="1"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      Live · Built on AgentHost
+    </div>
+
+    <h1 class="hero-title">
+      Your agent builds it.<br>
+      We host it <em>instantly.</em>
+    </h1>
+
+    <p class="hero-sub">
+      POST a file. Get back a live HTTPS URL in under a second.
+      No config, no CLI, no deploy pipeline. One curl command from anywhere your agent runs.
+    </p>
+
+    <div class="hero-cta">
+      <a href="dashboard.html" class="btn btn-primary btn-lg">Get your API key</a>
+      <a href="docs.html" class="btn btn-outline btn-lg">View the API →</a>
+      <span class="hero-cta-note">Free tier · No credit card</span>
+    </div>
+
+    <!-- Terminal demo -->
+    <div class="hero-terminal" role="img" aria-label="API demo showing a curl command deploying a site">
+      <div class="terminal-bar">
+        <div class="terminal-dots">
+          <span class="terminal-dot td-red"></span>
+          <span class="terminal-dot td-amber"></span>
+          <span class="terminal-dot td-green"></span>
+        </div>
+        <span class="terminal-title">bash — pages.rosabuilds.com/deploy</span>
+      </div>
+      <div class="terminal-body">
+        <span class="terminal-line"><span class="t-comment"># Your agent just built something. Deploy it.</span></span>
+        <span class="terminal-line">&nbsp;</span>
+        <span class="terminal-line">
+          <span class="t-prompt">$</span>
+          <span class="t-cmd"> curl </span>
+          <span class="t-flag">-X POST</span>
+          <span class="t-cmd"> https://sites.rosabuilds.com/deploy \</span>
+        </span>
+        <span class="terminal-line">
+          <span class="t-cmd">&nbsp;&nbsp;</span>
+          <span class="t-flag">-H</span>
+          <span class="t-string"> "Authorization: Bearer <span class="t-key">$PAGES_API_KEY</span>"</span>
+          <span class="t-cmd"> \</span>
+        </span>
+        <span class="terminal-line">
+          <span class="t-cmd">&nbsp;&nbsp;</span>
+          <span class="t-flag">-F</span>
+          <span class="t-string"> "file=@./output.tar.gz"</span>
+        </span>
+        <span class="terminal-line">&nbsp;</span>
+        <div class="terminal-response">
+          <span class="terminal-line"><span class="t-dim">{</span></span>
+          <span class="terminal-line"><span class="t-dim">&nbsp;&nbsp;</span><span class="t-key">"url"</span><span class="t-dim">: </span><span class="t-value">"https://k9xm2p.pages.rosabuilds.com"</span><span class="t-dim">,</span></span>
+          <span class="terminal-line"><span class="t-dim">&nbsp;&nbsp;</span><span class="t-key">"deploy_id"</span><span class="t-dim">: </span><span class="t-value">"dep_01j8xt9r"</span><span class="t-dim">,</span></span>
+          <span class="terminal-line"><span class="t-dim">&nbsp;&nbsp;</span><span class="t-key">"size_kb"</span><span class="t-dim">: </span><span class="t-value">142</span><span class="t-dim">,</span></span>
+          <span class="terminal-line"><span class="t-dim">&nbsp;&nbsp;</span><span class="t-key">"ttl_hours"</span><span class="t-dim">: </span><span class="t-value">24</span></span>
+          <span class="terminal-line"><span class="t-dim">}</span><span class="cursor"></span></span>
+        </div>
+      </div>
+      <div class="terminal-copy">
+        <button class="btn-code" onclick="copyDemo(this)">Copy command</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF BAR -->
+<div class="proof-bar">
+  <div class="container">
+    <div class="proof-inner">
+      <div class="proof-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9b3060" stroke-width="1.5"/><path d="M4.5 7l2 2 3-3" stroke="#9b3060" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span><strong>HTTPS</strong> on every deploy</span>
+      </div>
+      <div class="proof-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9b3060" stroke-width="1.5"/><path d="M4.5 7l2 2 3-3" stroke="#9b3060" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span><strong>&lt; 1 second</strong> deploy time</span>
+      </div>
+      <div class="proof-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9b3060" stroke-width="1.5"/><path d="M4.5 7l2 2 3-3" stroke="#9b3060" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span><strong>tar.gz + zip</strong> supported</span>
+      </div>
+      <div class="proof-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9b3060" stroke-width="1.5"/><path d="M4.5 7l2 2 3-3" stroke="#9b3060" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span><strong>Instant subdomain</strong> on deploy</span>
+      </div>
+      <div class="proof-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9b3060" stroke-width="1.5"/><path d="M4.5 7l2 2 3-3" stroke="#9b3060" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>Built on <strong>AgentHost</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">Three steps. One API call.</h2>
+    <p class="section-sub">No account setup, no deploy config, no waiting. Your agent gets a URL it can share immediately.</p>
+
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-title">Get an API key</div>
+        <p class="step-desc">Sign up and grab your API key from the dashboard. Paste it into your agent's environment as <code>PAGES_API_KEY</code>. Takes 30 seconds.</p>
+      </div>
+      <div class="step">
+        <div class="step-title">Bundle your output</div>
+        <p class="step-desc">Your agent zips or tars its output — HTML, CSS, JS, images, whatever it built. We accept <code>.tar.gz</code> and <code>.zip</code> up to your plan's size limit.</p>
+      </div>
+      <div class="step">
+        <div class="step-title">POST and get a URL</div>
+        <p class="step-desc">One <code>curl -F "file=@bundle.tar.gz"</code> to our deploy endpoint. The JSON response contains the live HTTPS URL. Done. Your agent can share it immediately.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything an agent needs.<br>Nothing it doesn't.</h2>
+    <p class="section-sub">Built specifically for programmatic deployment. No human-in-the-loop required at any step.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10l4 4 10-10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-title">Instant HTTPS</div>
+        <p class="feature-desc">Every deploy gets TLS automatically. No cert management, no domain config. The URL in the response is live immediately.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.75"/><path d="M7 5V4a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.75"/></svg>
+        </div>
+        <div class="feature-title">Unique subdomains</div>
+        <p class="feature-desc">Each deploy gets its own subdomain on <code>pages.rosabuilds.com</code>. Collision-free. Shareable. Works in any browser.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3v3M10 14v3M3 10h3M14 10h3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.75"/></svg>
+        </div>
+        <div class="feature-title">TTL control</div>
+        <p class="feature-desc">Set how long a deployment lives — 1 hour to permanent. Free tier sites auto-expire after 24h. Pro sites persist until you delete them.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 14l4-4 3 3 5-7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-title">Deploy history</div>
+        <p class="feature-desc">Every deploy is logged with its URL, size, timestamp, and TTL. Query the list API or browse from the dashboard. Rollback in one call.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.75"/><rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.75"/><rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.75"/><rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.75"/></svg>
+        </div>
+        <div class="feature-title">Idempotent updates</div>
+        <p class="feature-desc">Deploy to the same slug repeatedly to update in place. Your URL stays the same across redeploys — no broken links when content changes.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3C6.13 3 3 6.13 3 10s3.13 7 7 7 7-3.13 7-7-3.13-7-7-7z" stroke="currentColor" stroke-width="1.75"/><path d="M10 7v4l2.5 2.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        </div>
+        <div class="feature-title">Bandwidth analytics</div>
+        <p class="feature-desc">See how many times each URL was accessed, total bytes served, and geographic distribution. Pro plan includes detailed per-deploy metrics.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 8h12M4 12h8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.75"/></svg>
+        </div>
+        <div class="feature-title">Custom headers</div>
+        <p class="feature-desc">Set cache-control, CORS, and custom response headers per deploy. Pass them as JSON in the request. No extra round trips.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.75"/><path d="M7.5 10.5l2 2 3-3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        </div>
+        <div class="feature-title">Custom domains</div>
+        <p class="feature-desc">Point your own domain to any deploy with a CNAME record. Pro and Team plans. Automatic TLS provisioning within minutes.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 17l4-4m0 0L4 9l9-6 3 3-6 9-3-3z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-title">Framework-free</div>
+        <p class="feature-desc">Serve raw HTML, React builds, Vue dist folders, Svelte output — anything that's static files. Zero opinions on how you built it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VS COMPARISON -->
+<section class="section" id="compare">
+  <div class="container">
+    <div class="section-label">Comparison</div>
+    <h2 class="section-title">Better than the alternative.</h2>
+    <p class="section-sub">here.now is a blank React app. We actually ship.</p>
+
+    <div style="overflow-x: auto;">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th class="compare-highlight">pages.rosabuilds</th>
+            <th>here.now</th>
+            <th>Netlify Drop</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>API-first deploy</td>
+            <td class="col-us check">✓ Full REST API</td>
+            <td class="col-them cross">✗ UI only</td>
+            <td class="col-them">✓ Partial</td>
+          </tr>
+          <tr>
+            <td>Agent-native (no human flow)</td>
+            <td class="col-us check">✓ Designed for agents</td>
+            <td class="col-them cross">✗ Not functional</td>
+            <td class="col-them cross">✗ Requires login</td>
+          </tr>
+          <tr>
+            <td>Deploy time</td>
+            <td class="col-us check">✓ &lt; 1 second</td>
+            <td class="col-them cross">✗ N/A (not live)</td>
+            <td class="col-them">~5–15 seconds</td>
+          </tr>
+          <tr>
+            <td>Instant subdomain</td>
+            <td class="col-us check">✓ Immediate</td>
+            <td class="col-them cross">✗</td>
+            <td class="col-them">✓</td>
+          </tr>
+          <tr>
+            <td>TTL / auto-expiry</td>
+            <td class="col-us check">✓ Per-deploy TTL</td>
+            <td class="col-them cross">✗</td>
+            <td class="col-them cross">✗</td>
+          </tr>
+          <tr>
+            <td>Free tier</td>
+            <td class="col-us check">✓ 5 sites, 24h TTL</td>
+            <td class="col-them cross">✗ Not launched</td>
+            <td class="col-them">✓ Limited</td>
+          </tr>
+          <tr>
+            <td>tar.gz upload</td>
+            <td class="col-us check">✓ zip + tar.gz</td>
+            <td class="col-them cross">✗</td>
+            <td class="col-them">zip only</td>
+          </tr>
+          <tr>
+            <td>Deploy history + rollback</td>
+            <td class="col-us check">✓ Full log + API</td>
+            <td class="col-them cross">✗</td>
+            <td class="col-them">✓ UI only</td>
+          </tr>
+          <tr>
+            <td>Custom domains</td>
+            <td class="col-us check">✓ Pro+</td>
+            <td class="col-them cross">✗</td>
+            <td class="col-them">✓ Paid</td>
+          </tr>
+          <tr>
+            <td>Actually works today</td>
+            <td class="col-us check">✓ Live now</td>
+            <td class="col-them cross">✗ Blank app</td>
+            <td class="col-them check">✓</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Simple, honest pricing.</h2>
+    <p class="section-sub">Start free. Upgrade when your agent ships more.</p>
+
+    <div class="pricing-grid">
+      <!-- Free -->
+      <div class="pricing-card">
+        <div class="pricing-plan">Hobby</div>
+        <div class="pricing-price">
+          <span class="pricing-amount">$0</span>
+          <span class="pricing-period">/ month</span>
+        </div>
+        <p class="pricing-desc">For prototyping and testing. Get your agent deployed today.</p>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>5 active sites</li>
+          <li>10 MB per deploy</li>
+          <li>1 GB bandwidth / month</li>
+          <li>24-hour TTL on sites</li>
+          <li>Instant subdomain</li>
+          <li>HTTPS included</li>
+          <li>Basic deploy history</li>
+        </ul>
+        <div class="pricing-cta">
+          <a href="dashboard.html" class="btn btn-outline" style="width:100%;justify-content:center;">Get started free</a>
+        </div>
+      </div>
+
+      <!-- Pro -->
+      <div class="pricing-card pricing-card--featured">
+        <div class="pricing-plan">Pro</div>
+        <div class="pricing-price">
+          <span class="pricing-amount">$9</span>
+          <span class="pricing-period">/ month</span>
+        </div>
+        <p class="pricing-desc">For agents that ship daily. Persistent URLs, higher limits.</p>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Unlimited active sites</li>
+          <li>100 MB per deploy</li>
+          <li>50 GB bandwidth / month</li>
+          <li>Permanent sites (no expiry)</li>
+          <li>Instant subdomain</li>
+          <li>HTTPS included</li>
+          <li>Full deploy history + rollback</li>
+          <li>Custom headers per deploy</li>
+          <li>Deploy webhooks</li>
+          <li>Priority support</li>
+        </ul>
+        <div class="pricing-cta">
+          <a href="dashboard.html" class="btn btn-rose" style="width:100%;justify-content:center;">Start Pro trial</a>
+        </div>
+      </div>
+
+      <!-- Team -->
+      <div class="pricing-card">
+        <div class="pricing-plan">Team</div>
+        <div class="pricing-price">
+          <span class="pricing-amount">$29</span>
+          <span class="pricing-period">/ month</span>
+        </div>
+        <p class="pricing-desc">For AI operators running multiple agents across projects.</p>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Everything in Pro</li>
+          <li>500 MB per deploy</li>
+          <li>500 GB bandwidth / month</li>
+          <li>Custom domains (unlimited)</li>
+          <li>Auto TLS on custom domains</li>
+          <li>Per-deploy analytics</li>
+          <li>Team members (up to 5)</li>
+          <li>Multiple API keys</li>
+          <li>Audit log</li>
+          <li>SLA + dedicated support</li>
+        </ul>
+        <div class="pricing-cta">
+          <a href="dashboard.html" class="btn btn-outline" style="width:100%;justify-content:center;">Contact us</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA STRIP -->
+<section class="section" style="background: var(--text); border-bottom: none;">
+  <div class="container" style="text-align:center;">
+    <p style="font-size:0.8125rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:rgba(250,246,241,0.4); margin-bottom:16px;">Ready to deploy</p>
+    <h2 style="font-family:var(--serif); font-style:italic; font-size:clamp(1.75rem,4vw,3rem); font-weight:500; color:var(--cream); margin-bottom:16px; max-width:600px; margin-left:auto; margin-right:auto; line-height:1.15;">
+      Your agent shipped something.<br>Give it a URL.
+    </h2>
+    <p style="color:rgba(250,246,241,0.45); font-size:1rem; max-width:440px; margin: 0 auto 36px; font-weight:300;">
+      One API key. One curl command. Live in under a second.
+    </p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <a href="dashboard.html" class="btn btn-rose btn-lg">Get started free</a>
+      <a href="docs.html" class="btn" style="background:rgba(250,246,241,0.1); color:var(--cream); border:1px solid rgba(250,246,241,0.15); padding:13px 28px; font-size:0.9375rem;">Read the docs</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:12px;">
+          <div class="nav-logo-mark">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="2" width="5" height="7" rx="1" fill="white" opacity="0.9"/>
+              <rect x="9" y="2" width="5" height="4" rx="1" fill="#9b3060"/>
+              <rect x="9" y="8" width="5" height="6" rx="1" fill="white" opacity="0.5"/>
+              <rect x="2" y="11" width="5" height="3" rx="1" fill="white" opacity="0.4"/>
+            </svg>
+          </div>
+          <span class="nav-logo-text">pages<em>.rosabuilds</em></span>
+        </div>
+        <p>Instant static hosting for AI agents. POST a file, get a URL. Built on AgentHost by <a href="https://rosabuilds.com" style="color:var(--rose);">rosabuilds.com</a>.</p>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-col-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="#compare">vs. here.now</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Developers</div>
+        <ul class="footer-col-links">
+          <li><a href="docs.html">API Reference</a></li>
+          <li><a href="docs.html#quickstart">Quickstart</a></li>
+          <li><a href="docs.html#sdks">SDKs</a></li>
+          <li><a href="docs.html#examples">Examples</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-col-links">
+          <li><a href="https://rosabuilds.com">rosabuilds.com</a></li>
+          <li><a href="https://sites.rosabuilds.com">AgentHost</a></li>
+          <li><a href="https://dreaming.press">dreaming.press</a></li>
+          <li><a href="https://github.com/rosasolana2026">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 pages.rosabuilds.com · Part of <a href="https://rosabuilds.com" style="color:var(--muted);">rosabuilds.com</a></span>
+      <ul class="footer-legal">
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Status</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav
+  const toggle = document.getElementById('mobile-toggle');
+  const links  = document.getElementById('nav-links');
+  toggle.addEventListener('click', () => {
+    const open = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open);
+  });
+
+  // Copy demo command
+  function copyDemo(btn) {
+    const cmd = `curl -X POST https://sites.rosabuilds.com/deploy \\
+  -H "Authorization: Bearer $PAGES_API_KEY" \\
+  -F "file=@./output.tar.gz"`;
+    navigator.clipboard.writeText(cmd).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
+  }
+
+  // Active nav on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) cur = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === `#${cur}`);
+    });
+  }, { passive: true });
+</script>
+</body>
+</html>
