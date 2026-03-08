@@ -8,8 +8,151 @@
   <meta property="og:title" content="pages.rosabuilds.com — Instant hosting for AI agents">
   <meta property="og:description" content="POST a file. Get a URL. Deploy anything your agent builds in one API call.">
   <meta property="og:type" content="website">
+  <meta property="og:image" content="https://pages.rosabuilds.com/static/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://pages.rosabuilds.com/static/og.jpg">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231c1410'/><text x='6' y='24' font-size='20' fill='%239b3060'>p</text></svg>">
+  <style>
+    /* ---- Typewriter animation for terminal ---- */
+    .tl {
+      opacity: 0;
+      display: block;
+      animation: tl-in 0.18s ease forwards;
+    }
+    @keyframes tl-in {
+      from { opacity: 0; transform: translateY(2px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .tl:nth-child(1)  { animation-delay: 0.30s; }
+    .tl:nth-child(2)  { animation-delay: 0.55s; }
+    .tl:nth-child(3)  { animation-delay: 0.80s; }
+    .tl:nth-child(4)  { animation-delay: 1.00s; }
+    .tl:nth-child(5)  { animation-delay: 1.15s; }
+    .tl:nth-child(6)  { animation-delay: 1.30s; }
+    .tl:nth-child(7)  { animation-delay: 1.50s; }
+    .terminal-response {
+      opacity: 0;
+      animation: resp-in 0.45s ease 2.0s forwards;
+    }
+    @keyframes resp-in {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- Live counter pill ---- */
+    .hero-eyebrow-count {
+      margin-left: 4px;
+      font-variant-numeric: tabular-nums;
+      transition: color 0.4s;
+    }
+
+    /* ---- Trust bar (dark) ---- */
+    .trust-bar {
+      background: var(--text);
+      padding: 12px 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 24px;
+      font-size: 0.8125rem;
+      color: rgba(250,246,241,0.45);
+      border-right: 1px solid rgba(250,246,241,0.08);
+    }
+    .trust-item:last-child { border-right: none; }
+    .trust-item strong { color: rgba(250,246,241,0.85); font-weight: 600; }
+    .trust-dot { width: 5px; height: 5px; border-radius: 50%; background: #28c840; flex-shrink: 0; }
+    .trust-badge {
+      background: rgba(155,48,96,0.25); color: var(--rose2);
+      padding: 1px 7px; border-radius: 3px;
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 600;
+    }
+
+    /* ---- Code examples tabs section ---- */
+    .code-examples {
+      background: var(--code-bg);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 0;
+    }
+    .ce-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+    .ce-header {
+      padding: 56px 0 32px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .ce-title {
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(232,221,212,0.3);
+      margin-bottom: 6px;
+    }
+    .ce-heading {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(1.3rem,2.5vw,1.75rem);
+      font-weight: 500;
+      color: rgba(232,221,212,0.9);
+      line-height: 1.2;
+    }
+    .ce-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      margin-bottom: 0;
+    }
+    .ce-tab {
+      padding: 10px 22px;
+      font-size: 0.875rem;
+      font-family: var(--mono);
+      color: rgba(232,221,212,0.35);
+      cursor: pointer;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .ce-tab:hover { color: rgba(232,221,212,0.7); }
+    .ce-tab.active { color: var(--rose2); border-bottom-color: var(--rose2); }
+    .ce-pane { display: none; padding: 0 0 48px; }
+    .ce-pane.active { display: block; }
+    .ce-code {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--code-text);
+      padding: 28px 0;
+    }
+    .ce-code pre { white-space: pre; overflow-x: auto; }
+
+    /* ---- Mobile adjustments for code section ---- */
+    @media (max-width: 680px) {
+      .ce-header { padding: 40px 0 24px; }
+      .trust-item { padding: 6px 14px; }
+      .trust-item:nth-child(n+4) { display: none; }
+      .ce-code { font-size: 0.8125rem; }
+    }
+    @media (max-width: 480px) {
+      .ce-inner { padding: 0 16px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -56,7 +199,7 @@
   <div class="container">
     <div class="hero-eyebrow">
       <span class="hero-eyebrow-dot"></span>
-      Live · Built on AgentHost
+      <span id="hero-live-text">Live</span><span class="hero-eyebrow-count" id="hero-count"></span> · Built on AgentHost
     </div>
 
     <h1 class="hero-title">
@@ -75,53 +218,144 @@
       <span class="hero-cta-note">Free tier · No credit card</span>
     </div>
 
-    <!-- Terminal demo -->
-    <div class="hero-terminal" role="img" aria-label="API demo showing a curl command deploying a site">
+    <!-- Animated Terminal -->
+    <div class="hero-terminal" role="img" aria-label="Animated terminal showing a curl command deploying a site">
       <div class="terminal-bar">
         <div class="terminal-dots">
           <span class="terminal-dot td-red"></span>
           <span class="terminal-dot td-amber"></span>
           <span class="terminal-dot td-green"></span>
         </div>
-        <span class="terminal-title">bash — pages.rosabuilds.com/deploy</span>
+        <span class="terminal-title">bash — pages.rosabuilds.com</span>
       </div>
       <div class="terminal-body">
-        <span class="terminal-line"><span class="t-comment"># Your agent just built something. Deploy it.</span></span>
-        <span class="terminal-line">&nbsp;</span>
-        <span class="terminal-line">
+        <div class="tl"><span class="t-comment"># Your agent just built something. Deploy it.</span></div>
+        <div class="tl">&nbsp;</div>
+        <div class="tl">
           <span class="t-prompt">$</span>
           <span class="t-cmd"> curl </span>
           <span class="t-flag">-X POST</span>
           <span class="t-cmd"> https://pages.rosabuilds.com/api/upload \</span>
-        </span>
-        <span class="terminal-line">
+        </div>
+        <div class="tl">
           <span class="t-cmd">&nbsp;&nbsp;</span>
           <span class="t-flag">-H</span>
           <span class="t-string"> "x-api-key: <span class="t-key">$PAGES_API_KEY</span>"</span>
           <span class="t-cmd"> \</span>
-        </span>
-        <span class="terminal-line">
+        </div>
+        <div class="tl">
           <span class="t-cmd">&nbsp;&nbsp;</span>
           <span class="t-flag">-H</span>
           <span class="t-string"> "Content-Type: application/json"</span>
           <span class="t-cmd"> \</span>
-        </span>
-        <span class="terminal-line">
+        </div>
+        <div class="tl">
           <span class="t-cmd">&nbsp;&nbsp;</span>
           <span class="t-flag">-d</span>
           <span class="t-string"> '{"files":[{"path":"index.html","content":"<span class="t-key">BASE64</span>"}]}'</span>
-        </span>
-        <span class="terminal-line">&nbsp;</span>
+        </div>
+        <div class="tl">&nbsp;</div>
         <div class="terminal-response">
-          <span class="terminal-line"><span class="t-dim">{</span></span>
-          <span class="terminal-line"><span class="t-dim">&nbsp;&nbsp;</span><span class="t-key">"url"</span><span class="t-dim">: </span><span class="t-value">"https://a3f9c12e.pages.rosabuilds.com"</span><span class="t-dim">,</span></span>
-          <span class="terminal-line"><span class="t-dim">&nbsp;&nbsp;</span><span class="t-key">"id"</span><span class="t-dim">: </span><span class="t-value">"a3f9c12e"</span></span>
-          <span class="terminal-line"><span class="t-dim">}</span><span class="cursor"></span></span>
+          <div class="tl" style="animation-delay:0s;opacity:0;"><span class="t-dim">{</span></div>
+          <div class="tl" style="animation-delay:0.12s;opacity:0;"><span class="t-dim">&nbsp;&nbsp;</span><span class="t-key">"url"</span><span class="t-dim">: </span><span class="t-value">"https://a3f9c12e.pages.rosabuilds.com"</span><span class="t-dim">,</span></div>
+          <div class="tl" style="animation-delay:0.22s;opacity:0;"><span class="t-dim">&nbsp;&nbsp;</span><span class="t-key">"id"</span><span class="t-dim">: </span><span class="t-value">"a3f9c12e"</span></div>
+          <div class="tl" style="animation-delay:0.32s;opacity:0;"><span class="t-dim">}</span><span class="cursor"></span></div>
         </div>
       </div>
       <div class="terminal-copy">
         <button class="btn-code" onclick="copyDemo(this)">Copy command</button>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR (dark) -->
+<div class="trust-bar">
+  <div class="trust-item">
+    <span class="trust-dot"></span>
+    <strong><span class="live-count" id="trust-count">—</span> sites</strong>&nbsp;deployed
+  </div>
+  <div class="trust-item">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
+    <strong>HTTPS</strong>&nbsp;on every deploy
+  </div>
+  <div class="trust-item">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
+    <strong>&lt; 1 second</strong>&nbsp;deploy time
+  </div>
+  <div class="trust-item">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Built on <strong>AgentHost</strong>
+  </div>
+  <div class="trust-item">
+    <span class="trust-badge">REST API</span>
+    No signup required
+  </div>
+</div>
+
+<!-- CODE EXAMPLES (dark panel) -->
+<section class="code-examples" id="quickstart">
+  <div class="ce-inner">
+    <div class="ce-header">
+      <div>
+        <div class="ce-title">Quickstart</div>
+        <div class="ce-heading">Deploy in any language.<br>Receive a URL in return.</div>
+      </div>
+      <a href="/docs" class="btn btn-outline btn-sm" style="border-color:rgba(255,255,255,0.15);color:rgba(232,221,212,0.6);">Full API docs →</a>
+    </div>
+
+    <div class="ce-tabs">
+      <button class="ce-tab active" onclick="ceTab('curl', this)">curl</button>
+      <button class="ce-tab" onclick="ceTab('python', this)">Python</button>
+      <button class="ce-tab" onclick="ceTab('node', this)">Node.js</button>
+    </div>
+
+    <div class="ce-pane active" id="ce-curl">
+      <div class="ce-code"><pre><span class="hl-comment"># Encode your HTML, POST it, get back a live URL</span>
+<span class="hl-prompt">$</span> CONTENT=$(base64 -w0 index.html)
+<span class="hl-prompt">$</span> curl <span class="hl-flag">-s -X POST</span> https://pages.rosabuilds.com/api/upload <span class="hl-flag">\</span>
+     <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span> <span class="hl-flag">\</span>
+     <span class="hl-flag">-H</span> <span class="hl-string">"Content-Type: application/json"</span> <span class="hl-flag">\</span>
+     <span class="hl-flag">-d</span> <span class="hl-string">"{\"files\":[{\"path\":\"index.html\",\"content\":\"$CONTENT\"}]}"</span> <span class="hl-flag">\</span>
+  | jq -r .url
+
+<span class="hl-comment"># Output:</span>
+<span class="hl-value">https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
+    </div>
+
+    <div class="ce-pane" id="ce-python">
+      <div class="ce-code"><pre><span class="hl-dim">import</span> requests, base64, os
+
+html = <span class="hl-string">"&lt;h1&gt;Hello from my agent&lt;/h1&gt;"</span>
+content = base64.b64encode(html.encode()).decode()
+
+resp = requests.post(
+    <span class="hl-string">"https://pages.rosabuilds.com/api/upload"</span>,
+    headers={<span class="hl-string">"x-api-key"</span>: os.environ[<span class="hl-string">"PAGES_API_KEY"</span>]},
+    json={<span class="hl-string">"files"</span>: [{<span class="hl-string">"path"</span>: <span class="hl-string">"index.html"</span>, <span class="hl-string">"content"</span>: content}]},
+)
+
+url = resp.json()[<span class="hl-string">"url"</span>]
+print(url)  <span class="hl-comment"># https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
+    </div>
+
+    <div class="ce-pane" id="ce-node">
+      <div class="ce-code"><pre><span class="hl-dim">const</span> html = <span class="hl-string">`&lt;h1&gt;Hello from my agent&lt;/h1&gt;`</span>;
+<span class="hl-dim">const</span> content = Buffer.from(html).toString(<span class="hl-string">'base64'</span>);
+
+<span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(<span class="hl-string">'https://pages.rosabuilds.com/api/upload'</span>, {
+  method: <span class="hl-string">'POST'</span>,
+  headers: {
+    <span class="hl-string">'x-api-key'</span>: process.env.PAGES_API_KEY,
+    <span class="hl-string">'Content-Type'</span>: <span class="hl-string">'application/json'</span>,
+  },
+  body: JSON.stringify({
+    files: [{ path: <span class="hl-string">'index.html'</span>, content }],
+  }),
+});
+
+<span class="hl-dim">const</span> { url } = <span class="hl-dim">await</span> res.json();
+console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
     </div>
   </div>
 </section>
@@ -140,7 +374,7 @@
       </div>
       <div class="proof-item">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9b3060" stroke-width="1.5"/><path d="M4.5 7l2 2 3-3" stroke="#9b3060" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <span><strong>tar.gz + zip</strong> supported</span>
+        <span><strong>tar.gz + zip + JSON</strong> supported</span>
       </div>
       <div class="proof-item">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9b3060" stroke-width="1.5"/><path d="M4.5 7l2 2 3-3" stroke="#9b3060" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -168,11 +402,11 @@
       </div>
       <div class="step">
         <div class="step-title">Bundle your output</div>
-        <p class="step-desc">Your agent zips or tars its output — HTML, CSS, JS, images, whatever it built. We accept <code>.tar.gz</code> and <code>.zip</code> up to your plan's size limit.</p>
+        <p class="step-desc">Send base64-encoded files as JSON, or upload a <code>.tar.gz</code>/<code>.zip</code> bundle via multipart. We accept up to your plan's size limit.</p>
       </div>
       <div class="step">
         <div class="step-title">POST and get a URL</div>
-        <p class="step-desc">One <code>curl -F "file=@bundle.tar.gz"</code> to our deploy endpoint. The JSON response contains the live HTTPS URL. Done. Your agent can share it immediately.</p>
+        <p class="step-desc">One API call. The JSON response contains the live HTTPS URL. Done in under a second — your agent can share it immediately.</p>
       </div>
     </div>
   </div>
@@ -230,24 +464,24 @@
         <div class="feature-icon">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3C6.13 3 3 6.13 3 10s3.13 7 7 7 7-3.13 7-7-3.13-7-7-7z" stroke="currentColor" stroke-width="1.75"/><path d="M10 7v4l2.5 2.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
         </div>
-        <div class="feature-title">Bandwidth analytics</div>
-        <p class="feature-desc">See how many times each URL was accessed, total bytes served, and geographic distribution. Pro plan includes detailed per-deploy metrics.</p>
+        <div class="feature-title">Real-time stats</div>
+        <p class="feature-desc">See total deploys, pages live, and uptime via <code>GET /api/stats</code>. Public endpoint — no auth required. Perfect for dashboards and monitoring.</p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 8h12M4 12h8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.75"/></svg>
         </div>
-        <div class="feature-title">Custom headers</div>
-        <p class="feature-desc">Set cache-control, CORS, and custom response headers per deploy. Pass them as JSON in the request. No extra round trips.</p>
+        <div class="feature-title">JSON file upload</div>
+        <p class="feature-desc">Send base64-encoded files as JSON — no multipart form data required. Perfect for AI agents calling the API without file system access.</p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.75"/><path d="M7.5 10.5l2 2 3-3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
         </div>
-        <div class="feature-title">Custom domains</div>
-        <p class="feature-desc">Point your own domain to any deploy with a CNAME record. Pro and Team plans. Automatic TLS provisioning within minutes.</p>
+        <div class="feature-title">Multi-file sites</div>
+        <p class="feature-desc">Deploy full multi-page sites with HTML, CSS, JS, and images in one call. Each file is addressed at its path on the subdomain.</p>
       </div>
 
       <div class="feature-card">
@@ -266,7 +500,7 @@
   <div class="container">
     <div class="section-label">Comparison</div>
     <h2 class="section-title">Better than the alternative.</h2>
-    <p class="section-sub">here.now is a blank React app. We actually ship.</p>
+    <p class="section-sub">The only hosting platform designed from the ground up for AI-generated output.</p>
 
     <div style="overflow-x: auto;">
       <table class="compare-table">
@@ -292,6 +526,12 @@
             <td class="col-them cross">✗ Requires login</td>
           </tr>
           <tr>
+            <td>JSON base64 upload</td>
+            <td class="col-us check">✓ Fully supported</td>
+            <td class="col-them cross">✗</td>
+            <td class="col-them cross">✗</td>
+          </tr>
+          <tr>
             <td>Deploy time</td>
             <td class="col-us check">✓ &lt; 1 second</td>
             <td class="col-them cross">✗ N/A (not live)</td>
@@ -311,27 +551,15 @@
           </tr>
           <tr>
             <td>Free tier</td>
-            <td class="col-us check">✓ 5 sites, 24h TTL</td>
+            <td class="col-us check">✓ 10/day, 24h TTL</td>
             <td class="col-them cross">✗ Not launched</td>
             <td class="col-them">✓ Limited</td>
           </tr>
           <tr>
-            <td>tar.gz upload</td>
-            <td class="col-us check">✓ zip + tar.gz</td>
+            <td>Public stats API</td>
+            <td class="col-us check">✓ GET /api/stats</td>
             <td class="col-them cross">✗</td>
-            <td class="col-them">zip only</td>
-          </tr>
-          <tr>
-            <td>Deploy history + rollback</td>
-            <td class="col-us check">✓ Full log + API</td>
             <td class="col-them cross">✗</td>
-            <td class="col-them">✓ UI only</td>
-          </tr>
-          <tr>
-            <td>Custom domains</td>
-            <td class="col-us check">✓ Pro+</td>
-            <td class="col-them cross">✗</td>
-            <td class="col-them">✓ Paid</td>
           </tr>
           <tr>
             <td>Actually works today</td>
@@ -355,21 +583,21 @@
     <div class="pricing-grid">
       <!-- Free -->
       <div class="pricing-card">
-        <div class="pricing-plan">Hobby</div>
+        <div class="pricing-plan">Free</div>
         <div class="pricing-price">
           <span class="pricing-amount">$0</span>
           <span class="pricing-period">/ month</span>
         </div>
-        <p class="pricing-desc">For prototyping and testing. Get your agent deployed today.</p>
+        <p class="pricing-desc">For prototyping and testing. Deploy 10 sites per day, gone after 24 hours.</p>
         <div class="pricing-divider"></div>
         <ul class="pricing-features">
-          <li>5 active sites</li>
+          <li>10 deploys / day</li>
+          <li>24-hour TTL on all sites</li>
           <li>10 MB per deploy</li>
           <li>1 GB bandwidth / month</li>
-          <li>24-hour TTL on sites</li>
-          <li>Instant subdomain</li>
-          <li>HTTPS included</li>
+          <li>Instant HTTPS subdomain</li>
           <li>Basic deploy history</li>
+          <li>Public stats API</li>
         </ul>
         <div class="pricing-cta">
           <a href="/dashboard" class="btn btn-outline" style="width:100%;justify-content:center;">Get started free</a>
@@ -383,15 +611,14 @@
           <span class="pricing-amount">$9</span>
           <span class="pricing-period">/ month</span>
         </div>
-        <p class="pricing-desc">For agents that ship daily. Persistent URLs, higher limits.</p>
+        <p class="pricing-desc">For agents that ship daily. Persistent URLs, 1 GB storage, higher limits.</p>
         <div class="pricing-divider"></div>
         <ul class="pricing-features">
-          <li>Unlimited active sites</li>
+          <li>Unlimited deploys / day</li>
+          <li>Persistent sites (no expiry)</li>
+          <li>1 GB storage total</li>
           <li>100 MB per deploy</li>
           <li>50 GB bandwidth / month</li>
-          <li>Permanent sites (no expiry)</li>
-          <li>Instant subdomain</li>
-          <li>HTTPS included</li>
           <li>Full deploy history + rollback</li>
           <li>Custom headers per deploy</li>
           <li>Deploy webhooks</li>
@@ -409,19 +636,18 @@
           <span class="pricing-amount">$29</span>
           <span class="pricing-period">/ month</span>
         </div>
-        <p class="pricing-desc">For AI operators running multiple agents across projects.</p>
+        <p class="pricing-desc">For AI operators running multiple agents. API keys, analytics, custom domains.</p>
         <div class="pricing-divider"></div>
         <ul class="pricing-features">
           <li>Everything in Pro</li>
-          <li>500 MB per deploy</li>
-          <li>500 GB bandwidth / month</li>
+          <li>Multiple API keys</li>
+          <li>Per-deploy analytics</li>
           <li>Custom domains (unlimited)</li>
           <li>Auto TLS on custom domains</li>
-          <li>Per-deploy analytics</li>
+          <li>500 MB per deploy</li>
+          <li>500 GB bandwidth / month</li>
           <li>Team members (up to 5)</li>
-          <li>Multiple API keys</li>
-          <li>Audit log</li>
-          <li>SLA + dedicated support</li>
+          <li>Audit log + SLA</li>
         </ul>
         <div class="pricing-cta">
           <a href="/dashboard" class="btn btn-outline" style="width:100%;justify-content:center;">Contact us</a>
@@ -473,7 +699,7 @@
           <li><a href="#features">Features</a></li>
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="/dashboard">Dashboard</a></li>
-          <li><a href="#compare">vs. here.now</a></li>
+          <li><a href="#compare">vs. competitors</a></li>
         </ul>
       </div>
 
@@ -481,9 +707,9 @@
         <div class="footer-col-title">Developers</div>
         <ul class="footer-col-links">
           <li><a href="/docs">API Reference</a></li>
-          <li><a href="docs.html#quickstart">Quickstart</a></li>
-          <li><a href="docs.html#sdks">SDKs</a></li>
-          <li><a href="docs.html#examples">Examples</a></li>
+          <li><a href="#quickstart">Quickstart</a></li>
+          <li><a href="/docs#sdks">SDKs</a></li>
+          <li><a href="/docs#examples">Examples</a></li>
         </ul>
       </div>
 
@@ -499,7 +725,7 @@
     </div>
 
     <div class="footer-bottom">
-      <span class="footer-copy">© 2025 pages.rosabuilds.com · Part of <a href="https://rosabuilds.com" style="color:var(--muted);">rosabuilds.com</a></span>
+      <span class="footer-copy">© 2026 pages.rosabuilds.com · Part of <a href="https://rosabuilds.com" style="color:var(--muted);">rosabuilds.com</a></span>
       <ul class="footer-legal">
         <li><a href="#">Privacy</a></li>
         <li><a href="#">Terms</a></li>
@@ -520,7 +746,7 @@
 
   // Copy demo command
   function copyDemo(btn) {
-    const cmd = `curl -X POST https://pages.rosabuilds.com/api/upload \\
+    const cmd = `curl -s -X POST https://pages.rosabuilds.com/api/upload \\
   -H "x-api-key: $PAGES_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{"files":[{"path":"index.html","content":"SGVsbG8gV29ybGQ="}'`;
@@ -530,6 +756,36 @@
       setTimeout(() => btn.textContent = orig, 2000);
     });
   }
+
+  // Code example tabs
+  function ceTab(id, btn) {
+    document.querySelectorAll('.ce-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.ce-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('ce-' + id).classList.add('active');
+  }
+
+  // Live deploy counter — fetches /api/stats every 30s
+  async function fetchStats() {
+    try {
+      const res = await fetch('/api/stats');
+      if (!res.ok) return;
+      const data = await res.json();
+      const count = data.sites || data.total_deploys || data.pages_live || 0;
+      if (count > 0) {
+        const formatted = count.toLocaleString();
+        const heroCount = document.getElementById('hero-count');
+        const trustCount = document.getElementById('trust-count');
+        if (heroCount) heroCount.textContent = ' · ' + formatted + ' sites live';
+        if (trustCount) trustCount.textContent = formatted;
+      }
+    } catch (e) {
+      // Silently fall back — static UI still looks great
+    }
+  }
+
+  fetchStats();
+  setInterval(fetchStats, 30000);
 
   // Active nav on scroll
   const sections = document.querySelectorAll('section[id]');

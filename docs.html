@@ -8,36 +8,131 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231c1410'/><text x='6' y='24' font-size='20' fill='%239b3060'>p</text></svg>">
   <style>
-    .docs-content h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+    /* ---- Lang tabs ---- */
     .lang-tabs { display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:0; }
     .lang-tab {
-      padding:8px 16px;
-      font-size:0.8125rem;
-      font-family:var(--mono);
-      color:rgba(232,221,212,0.4);
-      cursor:pointer;
-      border-bottom:2px solid transparent;
-      transition:all 0.15s;
-      background:none;
-      border-top:none;
-      border-left:none;
-      border-right:none;
+      padding:8px 18px; font-size:0.8125rem; font-family:var(--mono);
+      color:rgba(232,221,212,0.4); cursor:pointer;
+      border:none; border-bottom:2px solid transparent;
+      background:none; transition:all 0.15s;
     }
     .lang-tab.active { color:var(--rose2); border-bottom-color:var(--rose2); }
-    .lang-tab:hover  { color:rgba(232,221,212,0.8); }
+    .lang-tab:hover  { color:rgba(232,221,212,0.7); }
     .code-tab { display:none; }
     .code-tab.active { display:block; }
-    .response-schema { background:var(--cream-dark); border:1px solid var(--border); border-radius:6px; padding:20px 24px; margin:16px 0; }
-    .response-field { display:grid; grid-template-columns:160px 80px 1fr; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); font-size:0.875rem; align-items:baseline; }
+
+    /* ---- Response schema ---- */
+    .response-schema {
+      background:var(--cream-dark); border:1px solid var(--border);
+      border-radius:6px; padding:20px 24px; margin:16px 0;
+    }
+    .response-field {
+      display:grid; grid-template-columns:160px 80px 1fr;
+      gap:12px; padding:10px 0;
+      border-bottom:1px solid var(--border); font-size:0.875rem; align-items:baseline;
+    }
     .response-field:last-child { border-bottom:none; }
     .rf-name { font-family:var(--mono); font-size:0.8125rem; color:var(--text); font-weight:500; }
     .rf-type { color:var(--gold); font-size:0.8125rem; font-family:var(--mono); }
     .rf-desc { color:var(--muted); line-height:1.5; }
-    .error-row { display:grid; grid-template-columns:60px 140px 1fr; gap:16px; padding:11px 0; border-bottom:1px solid var(--border); font-size:0.875rem; align-items:baseline; }
+
+    /* ---- Error table rows ---- */
+    .error-row {
+      display:grid; grid-template-columns:60px 160px 1fr;
+      gap:16px; padding:11px 0;
+      border-bottom:1px solid var(--border); font-size:0.875rem; align-items:baseline;
+    }
     .error-row:last-child { border-bottom:none; }
     .err-code { font-family:var(--mono); font-weight:600; color:var(--rose); }
-    .err-name { font-weight:500; color:var(--text); }
+    .err-name { font-weight:500; color:var(--text); font-family:var(--mono); font-size:0.8125rem; }
     .err-desc { color:var(--muted); }
+
+    /* ---- Try it now panel ---- */
+    .try-panel {
+      background: var(--code-bg);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 24px 0 40px;
+    }
+    .try-header {
+      background: #1e1410;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .try-label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--rose2);
+      font-family: var(--mono);
+    }
+    .try-desc {
+      font-size: 0.8125rem;
+      color: rgba(232,221,212,0.3);
+    }
+    .try-body { padding: 20px; }
+    .try-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .try-label-sm {
+      font-size: 0.8125rem;
+      color: rgba(232,221,212,0.4);
+      font-family: var(--mono);
+      width: 90px;
+      flex-shrink: 0;
+    }
+    .try-input {
+      flex: 1;
+      min-width: 200px;
+      font-family: var(--mono);
+      font-size: 0.875rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 5px;
+      padding: 8px 12px;
+      color: var(--code-text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .try-input:focus { border-color: var(--rose); }
+    .try-input::placeholder { color: rgba(232,221,212,0.2); }
+    .try-output {
+      margin-top: 16px;
+      padding: 16px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 0.875rem;
+      color: var(--code-text);
+      min-height: 48px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      display: none;
+    }
+    .try-output.show { display: block; }
+    .try-output .url-link { color: var(--rose2); text-decoration: underline; cursor: pointer; }
+    .try-curl-preview {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      color: rgba(232,221,212,0.45);
+      line-height: 1.7;
+    }
+    .try-curl-preview .hl { color: rgba(232,221,212,0.75); }
+    .try-curl-preview .rose { color: var(--rose2); }
+    .try-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+    .docs-content h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
   </style>
 </head>
 <body>
@@ -58,8 +153,8 @@
     </a>
     <ul class="nav-links" id="nav-links">
       <li><a href="/">Home</a></li>
-      <li><a href="index.html#features">Features</a></li>
-      <li><a href="index.html#pricing">Pricing</a></li>
+      <li><a href="/#features">Features</a></li>
+      <li><a href="/#pricing">Pricing</a></li>
       <li><a href="/docs" class="active">Docs</a></li>
       <li><a href="/dashboard">Dashboard</a></li>
     </ul>
@@ -84,29 +179,29 @@
     <div class="docs-nav-section">
       <div class="docs-nav-label">Getting started</div>
       <ul class="docs-nav-list">
-        <li><a href="#quickstart" class="active">Quickstart</a></li>
+        <li><a href="#try-it" class="active">Try it now</a></li>
+        <li><a href="#quickstart">Quickstart</a></li>
         <li><a href="#authentication">Authentication</a></li>
         <li><a href="#base-url">Base URL</a></li>
       </ul>
     </div>
 
     <div class="docs-nav-section">
-      <div class="docs-nav-label">Deploy API</div>
+      <div class="docs-nav-label">API Reference</div>
       <ul class="docs-nav-list">
         <li><a href="#deploy">POST /api/upload</a></li>
-        <li><a href="#list">GET /sites</a></li>
-        <li><a href="#get-site">GET /sites/:id</a></li>
-        <li><a href="#delete">DELETE /sites/:id</a></li>
-        <li><a href="#update">PATCH /sites/:id</a></li>
+        <li><a href="#update">POST /api/update/:id</a></li>
+        <li><a href="#list">GET /api/sites</a></li>
+        <li><a href="#delete">DELETE /api/sites/:id</a></li>
+        <li><a href="#stats">GET /api/stats</a></li>
+        <li><a href="#health">GET /api/health</a></li>
       </ul>
     </div>
 
     <div class="docs-nav-section">
       <div class="docs-nav-label">Reference</div>
       <ul class="docs-nav-list">
-        <li><a href="#bundles">Bundle formats</a></li>
-        <li><a href="#ttl">TTL &amp; expiry</a></li>
-        <li><a href="#headers">Custom headers</a></li>
+        <li><a href="#file-formats">File formats</a></li>
         <li><a href="#errors">Error codes</a></li>
         <li><a href="#limits">Rate limits</a></li>
       </ul>
@@ -115,7 +210,7 @@
     <div class="docs-nav-section">
       <div class="docs-nav-label">Guides</div>
       <ul class="docs-nav-list">
-        <li><a href="#sdks">SDKs &amp; wrappers</a></li>
+        <li><a href="#sdks">SDKs &amp; snippets</a></li>
         <li><a href="#examples">Agent examples</a></li>
         <li><a href="#webhooks">Webhooks</a></li>
       </ul>
@@ -128,6 +223,46 @@
     <h1>API Reference</h1>
     <p class="page-sub">Deploy static sites from your AI agent with a single HTTP request. Every deploy gets an instant HTTPS URL on a unique subdomain.</p>
 
+    <!-- TRY IT NOW -->
+    <h2 id="try-it">Try it now</h2>
+    <p>Enter a URL to see the exact curl command you'd use to deploy that page.</p>
+
+    <div class="try-panel">
+      <div class="try-header">
+        <span class="try-label">▸ interactive demo</span>
+        <span class="try-desc">Enter a URL or paste HTML below to generate your deploy command</span>
+      </div>
+      <div class="try-body">
+        <div class="try-row">
+          <span class="try-label-sm">URL to fetch</span>
+          <input type="url" class="try-input" id="try-url"
+            placeholder="https://example.com"
+            oninput="updateTryCurl()">
+        </div>
+        <div class="try-row">
+          <span class="try-label-sm">Your API key</span>
+          <input type="text" class="try-input" id="try-key"
+            placeholder="pages_agent_Kx9mR4pQ3w"
+            oninput="updateTryCurl()"
+            value="">
+        </div>
+
+        <div class="try-curl-preview" id="try-curl-preview">
+          <span class="rose">$</span> <span class="hl">curl</span> -s -X POST https://pages.rosabuilds.com/api/upload \<br>
+          &nbsp;&nbsp;<span class="hl">-H</span> "x-api-key: <span id="tc-key" class="rose">YOUR_API_KEY</span>" \<br>
+          &nbsp;&nbsp;<span class="hl">-H</span> "Content-Type: application/json" \<br>
+          &nbsp;&nbsp;<span class="hl">-d</span> '{"files":[{"path":"index.html","content":"<span id="tc-content" class="rose">BASE64_CONTENT</span>"}]}'
+        </div>
+
+        <div class="try-buttons">
+          <button class="btn btn-rose btn-sm" onclick="runTryDeploy()">Deploy it live →</button>
+          <button class="btn btn-outline btn-sm" onclick="copyTryCurl()">Copy curl command</button>
+        </div>
+
+        <div class="try-output" id="try-output"></div>
+      </div>
+    </div>
+
     <!-- QUICKSTART -->
     <h2 id="quickstart">Quickstart</h2>
     <p>Get from zero to a live URL in under 2 minutes.</p>
@@ -135,70 +270,65 @@
     <h3>1. Get your API key</h3>
     <p>Visit <a href="/dashboard" style="color:var(--rose);">pages.rosabuilds.com/dashboard</a>, enter your API key, and start deploying. The default agent key is <code>pages_agent_Kx9mR4pQ3w</code>.</p>
 
-    <h3>2. Bundle your files</h3>
-    <p>Zip or tar your output directory. The archive must contain an <code>index.html</code> at the root.</p>
-
-    <div class="code-block">
-      <div class="code-block-header">
-        <span class="code-lang">bash</span>
-        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-      </div>
-      <div class="code-body"><pre><span class="hl-comment"># tar.gz (preferred)</span>
-tar -czf bundle.tar.gz -C ./dist .
-
-<span class="hl-comment"># or zip</span>
-zip -r bundle.zip ./dist/.</pre></div>
-    </div>
-
-    <h3>3. Deploy</h3>
-
+    <h3>2. Deploy a file</h3>
     <div class="code-block" style="margin-top:12px;">
       <div class="code-block-header" style="background:#1a1210; border:none; border-bottom:1px solid rgba(255,255,255,0.05); padding:0;">
         <div class="lang-tabs" id="qs-tabs">
           <button class="lang-tab active" onclick="switchTab('qs','curl',this)">curl</button>
           <button class="lang-tab" onclick="switchTab('qs','python',this)">python</button>
           <button class="lang-tab" onclick="switchTab('qs','node',this)">node</button>
-          <button class="lang-tab" onclick="switchTab('qs','go',this)">go</button>
         </div>
       </div>
-      <div class="code-body" style="padding-top:16px;">
-        <div class="code-tab active" id="qs-curl"><pre><span class="hl-prompt">$</span> curl <span class="hl-flag">-X POST</span> https://pages.rosabuilds.com/api/upload \
-  <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: <span class="hl-key">$PAGES_API_KEY</span>"</span> \
-  <span class="hl-flag">-F</span> <span class="hl-string">"file=@index.html"</span></pre></div>
-        <div class="code-tab" id="qs-python"><pre><span class="hl-dim">import</span> requests, os
+      <div class="code-body" style="padding-top:18px;">
+        <div class="code-tab active" id="qs-curl"><pre><span class="hl-comment"># Base64-encode your HTML and POST it</span>
+<span class="hl-prompt">$</span> CONTENT=$(base64 -w0 index.html 2>/dev/null || base64 index.html)
+<span class="hl-prompt">$</span> curl <span class="hl-flag">-s -X POST</span> https://pages.rosabuilds.com/api/upload \
+     <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span> \
+     <span class="hl-flag">-H</span> <span class="hl-string">"Content-Type: application/json"</span> \
+     <span class="hl-flag">-d</span> <span class="hl-string">"{\"files\":[{\"path\":\"index.html\",\"content\":\"$CONTENT\"}]}"</span> \
+  | jq -r .url
+
+<span class="hl-comment"># Response:</span>
+<span class="hl-value">https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
+
+        <div class="code-tab" id="qs-python"><pre><span class="hl-dim">import</span> requests, base64, os
+
+html = <span class="hl-string">"&lt;h1&gt;Hello from my agent&lt;/h1&gt;"</span>
+content = base64.b64encode(html.encode()).decode()
 
 resp = requests.post(
     <span class="hl-string">"https://pages.rosabuilds.com/api/upload"</span>,
-    headers={<span class="hl-string">"x-api-key"</span>: os.environ[<span class="hl-string">'PAGES_API_KEY'</span>]},
-    files={<span class="hl-string">"file"</span>: open(<span class="hl-string">"index.html"</span>, <span class="hl-string">"rb"</span>)},
+    headers={<span class="hl-string">"x-api-key"</span>: os.environ[<span class="hl-string">"PAGES_API_KEY"</span>]},
+    json={<span class="hl-string">"files"</span>: [{<span class="hl-string">"path"</span>: <span class="hl-string">"index.html"</span>, <span class="hl-string">"content"</span>: content}]},
 )
-print(resp.json()[<span class="hl-string">"url"</span>])  <span class="hl-comment"># https://k9xm2p.pages.rosabuilds.com</span></pre></div>
-        <div class="code-tab" id="qs-node"><pre><span class="hl-dim">import</span> FormData <span class="hl-dim">from</span> <span class="hl-string">'form-data'</span>;
-<span class="hl-dim">import</span> fs <span class="hl-dim">from</span> <span class="hl-string">'fs'</span>;
-<span class="hl-dim">import</span> fetch <span class="hl-dim">from</span> <span class="hl-string">'node-fetch'</span>;
+url = resp.json()[<span class="hl-string">"url"</span>]
+print(url)  <span class="hl-comment"># https://a3f9c12e.pages.rosabuilds.com</span>
 
-<span class="hl-dim">const</span> form = <span class="hl-dim">new</span> FormData();
-form.append(<span class="hl-string">'file'</span>, fs.createReadStream(<span class="hl-string">'bundle.tar.gz'</span>));
+<span class="hl-comment"># Multi-file deploy</span>
+resp = requests.post(
+    <span class="hl-string">"https://pages.rosabuilds.com/api/upload"</span>,
+    headers={<span class="hl-string">"x-api-key"</span>: os.environ[<span class="hl-string">"PAGES_API_KEY"</span>]},
+    json={<span class="hl-string">"files"</span>: [
+        {<span class="hl-string">"path"</span>: <span class="hl-string">"index.html"</span>, <span class="hl-string">"content"</span>: base64.b64encode(html_bytes).decode()},
+        {<span class="hl-string">"path"</span>: <span class="hl-string">"style.css"</span>,  <span class="hl-string">"content"</span>: base64.b64encode(css_bytes).decode()},
+    ]},
+)</pre></div>
+
+        <div class="code-tab" id="qs-node"><pre><span class="hl-dim">const</span> html = <span class="hl-string">`&lt;!DOCTYPE html&gt;&lt;h1&gt;Hello from my agent&lt;/h1&gt;`</span>;
+<span class="hl-dim">const</span> content = Buffer.from(html).toString(<span class="hl-string">'base64'</span>);
 
 <span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(<span class="hl-string">'https://pages.rosabuilds.com/api/upload'</span>, {
   method: <span class="hl-string">'POST'</span>,
-  headers: { <span class="hl-string">'x-api-key'</span>: process.env.PAGES_API_KEY },
-  body: form,
+  headers: {
+    <span class="hl-string">'x-api-key'</span>: process.env.PAGES_API_KEY,
+    <span class="hl-string">'Content-Type'</span>: <span class="hl-string">'application/json'</span>,
+  },
+  body: JSON.stringify({
+    files: [{ path: <span class="hl-string">'index.html'</span>, content }],
+  }),
 });
-<span class="hl-dim">const</span> { url } = <span class="hl-dim">await</span> res.json();
-console.log(url); <span class="hl-comment">// https://k9xm2p.pages.rosabuilds.com</span></pre></div>
-        <div class="code-tab" id="qs-go"><pre>f, _ := os.Open(<span class="hl-string">"bundle.tar.gz"</span>)
-body := &bytes.Buffer{}
-w := multipart.NewWriter(body)
-fw, _ := w.CreateFormFile(<span class="hl-string">"file"</span>, <span class="hl-string">"bundle.tar.gz"</span>)
-io.Copy(fw, f)
-w.Close()
-
-req, _ := http.NewRequest(<span class="hl-string">"POST"</span>,
-    <span class="hl-string">"https://pages.rosabuilds.com/api/upload"</span>, body)
-req.Header.Set(<span class="hl-string">"x-api-key"</span>, os.Getenv(<span class="hl-string">"PAGES_API_KEY"</span>))
-req.Header.Set(<span class="hl-string">"Content-Type"</span>, w.FormDataContentType())
-resp, _ := http.DefaultClient.Do(req)</pre></div>
+<span class="hl-dim">const</span> { url, id } = <span class="hl-dim">await</span> res.json();
+console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
       </div>
     </div>
 
@@ -209,46 +339,35 @@ resp, _ := http.DefaultClient.Do(req)</pre></div>
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
       <div class="code-body"><pre>{
-  <span class="hl-key">"url"</span>:       <span class="hl-value">"https://k9xm2p.pages.rosabuilds.com"</span>,
-  <span class="hl-key">"deploy_id"</span>: <span class="hl-value">"dep_01j8xt9r"</span>,
-  <span class="hl-key">"slug"</span>:      <span class="hl-value">"k9xm2p"</span>,
-  <span class="hl-key">"size_kb"</span>:   <span class="hl-value">142</span>,
-  <span class="hl-key">"files"</span>:     <span class="hl-value">8</span>,
-  <span class="hl-key">"ttl_hours"</span>: <span class="hl-value">24</span>,
-  <span class="hl-key">"expires_at"</span>:<span class="hl-value">"2025-03-09T00:14:22Z"</span>,
-  <span class="hl-key">"created_at"</span>:<span class="hl-value">"2025-03-08T00:14:22Z"</span>
+  <span class="hl-key">"url"</span>: <span class="hl-value">"https://a3f9c12e.pages.rosabuilds.com"</span>,
+  <span class="hl-key">"id"</span>:  <span class="hl-value">"a3f9c12e"</span>
 }</pre></div>
     </div>
 
     <!-- AUTH -->
     <h2 id="authentication">Authentication</h2>
-    <p>All API requests must include your API key in the <code>x-api-key</code> header.</p>
+    <p>All write API requests must include your API key in the <code>x-api-key</code> header.</p>
 
     <div class="code-block">
-      <div class="code-block-header">
-        <span class="code-lang">http</span>
-      </div>
+      <div class="code-block-header"><span class="code-lang">http header</span></div>
       <div class="code-body"><pre>x-api-key: pages_agent_Kx9mR4pQ3w</pre></div>
     </div>
 
     <div class="callout">
-      <p><strong>Keep your key secret.</strong> Never expose it in client-side code or commit it to version control. Use environment variables: <code>export PAGES_API_KEY=pk_live_...</code></p>
+      <p><strong>Keep your key secret.</strong> Never expose it in client-side code or commit it to version control. Use environment variables: <code>export PAGES_API_KEY=pages_agent_...</code></p>
     </div>
 
-    <p>Keys can be revoked and regenerated at any time from the dashboard. You can create multiple keys per account on Pro and Team plans.</p>
+    <p>The <code>GET /api/stats</code> and <code>GET /api/health</code> endpoints are public — no auth required.</p>
 
     <!-- BASE URL -->
     <h2 id="base-url">Base URL</h2>
-    <p>All API endpoints are served from the AgentHost backend:</p>
-
     <div class="api-endpoint">
       <span class="method method-get">BASE</span>
       <span class="endpoint-path">https://pages.rosabuilds.com/api</span>
     </div>
+    <p>All responses are JSON. Requests with a body should use <code>Content-Type: application/json</code> (for base64 JSON uploads) or <code>multipart/form-data</code> (for direct file uploads).</p>
 
-    <p>All responses are JSON. All requests that include a body should use <code>multipart/form-data</code> for file uploads or <code>application/json</code> for metadata-only updates.</p>
-
-    <!-- DEPLOY -->
+    <!-- POST /api/upload -->
     <h2 id="deploy">POST /api/upload</h2>
     <p>Deploy files and get an instant HTTPS URL. Accepts JSON with base64-encoded files or multipart form data.</p>
 
@@ -257,104 +376,72 @@ resp, _ := http.DefaultClient.Do(req)</pre></div>
       <span class="endpoint-path">/api/upload</span>
     </div>
 
-    <h3>Request parameters</h3>
+    <h3>JSON body (recommended for agents)</h3>
     <table class="params-table">
-      <thead>
-        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-      </thead>
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>files <span class="param-req">required</span></td>
+          <td>array</td>
+          <td>Array of file objects: <code>[{path: "index.html", content: "BASE64"}]</code>. Content must be base64-encoded.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Multipart form (for file uploads)</h3>
+    <table class="params-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
       <tbody>
         <tr>
           <td>file <span class="param-req">required</span></td>
           <td>file</td>
-          <td>Your bundle as <code>.tar.gz</code> or <code>.zip</code>. Must contain <code>index.html</code> at the root. Max size depends on plan (10 MB free, 100 MB pro).</td>
-        </tr>
-        <tr>
-          <td>slug</td>
-          <td>string</td>
-          <td>Optional. Custom subdomain slug (e.g. <code>my-report</code> → <code>my-report.pages.rosabuilds.com</code>). Auto-generated if omitted. Must be lowercase alphanumeric + hyphens.</td>
-        </tr>
-        <tr>
-          <td>ttl_hours</td>
-          <td>integer</td>
-          <td>How many hours until this site auto-deletes. Default: <code>24</code> on free, <code>0</code> (permanent) on Pro+. Set to <code>0</code> for no expiry.</td>
-        </tr>
-        <tr>
-          <td>headers</td>
-          <td>JSON string</td>
-          <td>Optional. JSON object of custom response headers. Example: <code>{"Cache-Control":"max-age=3600","X-Frame-Options":"DENY"}</code></td>
-        </tr>
-        <tr>
-          <td>label</td>
-          <td>string</td>
-          <td>Optional. Human-readable label shown in dashboard and list API. Max 128 chars.</td>
+          <td>One or more files to deploy. Use multiple <code>-F file=@filename</code> for multifile. Max 100 MB total.</td>
         </tr>
       </tbody>
     </table>
 
-    <h3>Response fields</h3>
+    <h3>Response</h3>
     <div class="response-schema">
       <div class="response-field">
         <span class="rf-name">url</span>
         <span class="rf-type">string</span>
-        <span class="rf-desc">The live HTTPS URL of the deployed site.</span>
+        <span class="rf-desc">Live HTTPS URL of the deployed site. Immediately accessible.</span>
       </div>
       <div class="response-field">
-        <span class="rf-name">deploy_id</span>
+        <span class="rf-name">id</span>
         <span class="rf-type">string</span>
-        <span class="rf-desc">Unique deploy identifier. Use this to fetch, update, or delete the deploy.</span>
-      </div>
-      <div class="response-field">
-        <span class="rf-name">slug</span>
-        <span class="rf-type">string</span>
-        <span class="rf-desc">The subdomain slug used. Matches the subdomain portion of <code>url</code>.</span>
-      </div>
-      <div class="response-field">
-        <span class="rf-name">size_kb</span>
-        <span class="rf-type">integer</span>
-        <span class="rf-desc">Total uncompressed size of deployed files in kilobytes.</span>
-      </div>
-      <div class="response-field">
-        <span class="rf-name">files</span>
-        <span class="rf-type">integer</span>
-        <span class="rf-desc">Number of files in the deploy.</span>
-      </div>
-      <div class="response-field">
-        <span class="rf-name">ttl_hours</span>
-        <span class="rf-type">integer</span>
-        <span class="rf-desc">Hours until auto-deletion. <code>0</code> = permanent.</span>
-      </div>
-      <div class="response-field">
-        <span class="rf-name">expires_at</span>
-        <span class="rf-type">string|null</span>
-        <span class="rf-desc">ISO 8601 expiry timestamp, or <code>null</code> if permanent.</span>
-      </div>
-      <div class="response-field">
-        <span class="rf-name">created_at</span>
-        <span class="rf-type">string</span>
-        <span class="rf-desc">ISO 8601 timestamp of when the deploy was created.</span>
+        <span class="rf-desc">8-character hex site ID. Use with update and delete endpoints.</span>
       </div>
     </div>
 
-    <!-- LIST -->
-    <h2 id="list">GET /sites</h2>
-    <p>List all active deploys for your account, sorted by most recent first.</p>
+    <!-- POST /api/update/:id -->
+    <h2 id="update">POST /api/update/:id</h2>
+    <p>Replace all files in an existing site. Same URL is preserved. Useful for iterative agent workflows.</p>
+
+    <div class="api-endpoint">
+      <span class="method method-post">POST</span>
+      <span class="endpoint-path">/api/update/:id</span>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre><span class="hl-prompt">$</span> curl <span class="hl-flag">-X POST</span> https://pages.rosabuilds.com/api/update/<span class="hl-key">a3f9c12e</span> \
+  <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span> \
+  <span class="hl-flag">-H</span> <span class="hl-string">"Content-Type: application/json"</span> \
+  <span class="hl-flag">-d</span> <span class="hl-string">'{"files":[{"path":"index.html","content":"<span class="hl-key">NEW_BASE64</span>"}]}'</span></pre></div>
+    </div>
+
+    <!-- GET /api/sites -->
+    <h2 id="list">GET /api/sites</h2>
+    <p>List all deployed sites for your API key, sorted by most recent first.</p>
 
     <div class="api-endpoint">
       <span class="method method-get">GET</span>
-      <span class="endpoint-path">/sites</span>
+      <span class="endpoint-path">/api/sites</span>
     </div>
-
-    <h3>Query parameters</h3>
-    <table class="params-table">
-      <thead>
-        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>limit</td><td>integer</td><td>Number of results to return. Default <code>20</code>, max <code>100</code>.</td></tr>
-        <tr><td>offset</td><td>integer</td><td>Pagination offset. Default <code>0</code>.</td></tr>
-        <tr><td>label</td><td>string</td><td>Filter by label (partial match).</td></tr>
-      </tbody>
-    </table>
 
     <div class="code-block">
       <div class="code-block-header">
@@ -365,22 +452,28 @@ resp, _ := http.DefaultClient.Do(req)</pre></div>
   -H <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span></pre></div>
     </div>
 
-    <!-- GET SITE -->
-    <h2 id="get-site">GET /sites/:id</h2>
-    <p>Fetch details and analytics for a single deploy.</p>
-
-    <div class="api-endpoint">
-      <span class="method method-get">GET</span>
-      <span class="endpoint-path">/sites/:deploy_id</span>
+    <h3>Response</h3>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">json</span></div>
+      <div class="code-body"><pre>[
+  {
+    <span class="hl-key">"id"</span>:           <span class="hl-value">"a3f9c12e"</span>,
+    <span class="hl-key">"url"</span>:          <span class="hl-value">"https://a3f9c12e.pages.rosabuilds.com"</span>,
+    <span class="hl-key">"file_count"</span>:   <span class="hl-value">3</span>,
+    <span class="hl-key">"size_bytes"</span>:   <span class="hl-value">14820</span>,
+    <span class="hl-key">"created_at"</span>:   <span class="hl-value">1741392000</span>,
+    <span class="hl-key">"updated_at"</span>:   <span class="hl-value">1741392000</span>
+  }
+]</pre></div>
     </div>
 
-    <!-- DELETE -->
-    <h2 id="delete">DELETE /sites/:id</h2>
-    <p>Immediately delete a deploy. The URL stops serving within seconds. This is permanent — the slug is released.</p>
+    <!-- DELETE /api/sites/:id -->
+    <h2 id="delete">DELETE /api/sites/:id</h2>
+    <p>Immediately delete a site. The URL stops serving within seconds. Permanent — slug is released.</p>
 
     <div class="api-endpoint">
       <span class="method method-del">DELETE</span>
-      <span class="endpoint-path">/sites/:deploy_id</span>
+      <span class="endpoint-path">/api/sites/:id</span>
     </div>
 
     <div class="code-block">
@@ -388,209 +481,227 @@ resp, _ := http.DefaultClient.Do(req)</pre></div>
         <span class="code-lang">bash</span>
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <div class="code-body"><pre>curl <span class="hl-flag">-X DELETE</span> https://pages.rosabuilds.com/api/sites/dep_01j8xt9r \
+      <div class="code-body"><pre>curl <span class="hl-flag">-X DELETE</span> https://pages.rosabuilds.com/api/sites/<span class="hl-key">a3f9c12e</span> \
   <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span></pre></div>
     </div>
 
-    <!-- UPDATE -->
-    <h2 id="update">PATCH /sites/:id</h2>
-    <p>Update metadata on an existing deploy — change the TTL, label, or custom headers without re-uploading files.</p>
+    <!-- GET /api/stats -->
+    <h2 id="stats">GET /api/stats</h2>
+    <p>Public stats endpoint — no authentication required. Returns platform-wide metrics.</p>
 
     <div class="api-endpoint">
-      <span class="method method-post">PATCH</span>
-      <span class="endpoint-path">/sites/:deploy_id</span>
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/api/stats</span>
     </div>
 
     <div class="code-block">
-      <div class="code-block-header">
-        <span class="code-lang">bash</span>
-        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-      </div>
-      <div class="code-body"><pre>curl <span class="hl-flag">-X PATCH</span> https://pages.rosabuilds.com/api/sites/dep_01j8xt9r \
-  <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span> \
-  <span class="hl-flag">-H</span> <span class="hl-string">"Content-Type: application/json"</span> \
-  <span class="hl-flag">-d</span> <span class="hl-string">'{"ttl_hours": 0, "label": "Q1 report"}'</span></pre></div>
+      <div class="code-block-header"><span class="code-lang">json — response</span></div>
+      <div class="code-body"><pre>{
+  <span class="hl-key">"sites"</span>:          <span class="hl-value">42</span>,
+  <span class="hl-key">"total_deploys"</span>:  <span class="hl-value">42</span>,
+  <span class="hl-key">"pages_live"</span>:     <span class="hl-value">42</span>,
+  <span class="hl-key">"uptime_seconds"</span>: <span class="hl-value">86400</span>
+}</pre></div>
     </div>
 
-    <!-- BUNDLE FORMATS -->
-    <h2 id="bundles">Bundle formats</h2>
-    <p>We accept two archive formats. Both must contain a valid <code>index.html</code> at the root of the archive.</p>
+    <!-- GET /api/health -->
+    <h2 id="health">GET /api/health</h2>
+    <p>Health check endpoint. Returns server status and current site count.</p>
+
+    <div class="api-endpoint">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/api/health</span>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">json — response</span></div>
+      <div class="code-body"><pre>{ <span class="hl-key">"status"</span>: <span class="hl-value">"ok"</span>, <span class="hl-key">"sites"</span>: <span class="hl-value">42</span> }</pre></div>
+    </div>
+
+    <!-- FILE FORMATS -->
+    <h2 id="file-formats">File formats</h2>
+    <p>Two upload modes are supported:</p>
 
     <table class="params-table">
-      <thead>
-        <tr><th>Format</th><th>Extension</th><th>Content-Type</th><th>Notes</th></tr>
-      </thead>
+      <thead><tr><th>Mode</th><th>Content-Type</th><th>Format</th><th>Best for</th></tr></thead>
       <tbody>
-        <tr><td>Gzipped tar</td><td>.tar.gz</td><td>application/gzip</td><td>Preferred. Smaller files, faster uploads.</td></tr>
-        <tr><td>ZIP archive</td><td>.zip</td><td>application/zip</td><td>Widely supported. No symlinks.</td></tr>
+        <tr>
+          <td>JSON + base64</td>
+          <td><code>application/json</code></td>
+          <td><code>{"files":[{"path":"...","content":"BASE64"}]}</code></td>
+          <td>AI agents, programmatic use</td>
+        </tr>
+        <tr>
+          <td>Multipart</td>
+          <td><code>multipart/form-data</code></td>
+          <td><code>-F "file=@index.html"</code> (one or more)</td>
+          <td>Shell scripts, direct file uploads</td>
+        </tr>
       </tbody>
     </table>
 
     <div class="callout callout-info">
-      <p><strong>Tip:</strong> If your archive contains a single top-level folder (e.g. <code>dist/index.html</code>), we automatically unwrap it. So <code>tar -czf bundle.tar.gz dist/</code> works fine.</p>
+      <p><strong>Multi-file tip:</strong> You can deploy entire sites with multiple files — HTML, CSS, JS, images — in one call. Just include all files in the <code>files</code> array. Each file is served at its <code>path</code> on the subdomain.</p>
     </div>
 
-    <!-- TTL -->
-    <h2 id="ttl">TTL &amp; expiry</h2>
-    <p>The <code>ttl_hours</code> parameter controls auto-deletion. Default behavior by plan:</p>
-
-    <table class="params-table">
-      <thead>
-        <tr><th>Plan</th><th>Default TTL</th><th>Min TTL</th><th>Max TTL</th><th>Permanent?</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Hobby (free)</td><td>24h</td><td>1h</td><td>24h</td><td>No</td></tr>
-        <tr><td>Pro ($9/mo)</td><td>0 (permanent)</td><td>1h</td><td>no limit</td><td>Yes (ttl=0)</td></tr>
-        <tr><td>Team ($29/mo)</td><td>0 (permanent)</td><td>1h</td><td>no limit</td><td>Yes (ttl=0)</td></tr>
-      </tbody>
-    </table>
-
-    <!-- HEADERS -->
-    <h2 id="headers">Custom headers</h2>
-    <p>Pass a JSON-encoded object as the <code>headers</code> form field. These headers are sent on every request served from the deploy.</p>
-
-    <div class="code-block">
-      <div class="code-block-header">
-        <span class="code-lang">bash</span>
-        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-      </div>
-      <div class="code-body"><pre>curl <span class="hl-flag">-X POST</span> https://pages.rosabuilds.com/api/upload \
-  <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span> \
-  <span class="hl-flag">-F</span> <span class="hl-string">"file=@bundle.tar.gz"</span> \
-  <span class="hl-flag">-F</span> <span class="hl-string">'headers={"Cache-Control":"max-age=86400","X-Robots-Tag":"noindex"}'</span></pre></div>
-    </div>
-
-    <!-- ERRORS -->
+    <!-- ERROR CODES -->
     <h2 id="errors">Error codes</h2>
-    <p>Errors return a JSON object with <code>error</code> (machine code) and <code>message</code> (human readable).</p>
+    <p>All errors return JSON with an <code>error</code> field describing the problem.</p>
 
     <div class="code-block">
-      <div class="code-block-header"><span class="code-lang">json</span></div>
-      <div class="code-body"><pre>{
-  <span class="hl-key">"error"</span>:   <span class="hl-value">"bundle_too_large"</span>,
-  <span class="hl-key">"message"</span>: <span class="hl-value">"Bundle exceeds plan limit of 10 MB. Upgrade to Pro."</span>,
-  <span class="hl-key">"docs"</span>:   <span class="hl-value">"https://pages.rosabuilds.com/docs#errors"</span>
-}</pre></div>
+      <div class="code-block-header"><span class="code-lang">json — error response</span></div>
+      <div class="code-body"><pre>{ <span class="hl-key">"error"</span>: <span class="hl-value">"Missing x-api-key header"</span> }</pre></div>
     </div>
 
     <div style="background:var(--cream-dark);border:1px solid var(--border);border-radius:6px;padding:20px 24px;margin-top:16px;">
       <div class="error-row" style="font-size:0.75rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);padding-bottom:10px;">
-        <span>HTTP</span><span>Error code</span><span>Description</span>
+        <span>HTTP</span><span>Cause</span><span>Description</span>
       </div>
-      <div class="error-row"><span class="err-code">400</span><span class="err-name">missing_file</span><span class="err-desc">No file was included in the request.</span></div>
-      <div class="error-row"><span class="err-code">400</span><span class="err-name">invalid_archive</span><span class="err-desc">Archive is corrupt or not a supported format.</span></div>
-      <div class="error-row"><span class="err-code">400</span><span class="err-name">no_index_html</span><span class="err-desc">Archive has no index.html at its root.</span></div>
-      <div class="error-row"><span class="err-code">400</span><span class="err-name">slug_taken</span><span class="err-desc">Requested slug is already in use by another account.</span></div>
-      <div class="error-row"><span class="err-code">400</span><span class="err-name">bundle_too_large</span><span class="err-desc">Bundle exceeds your plan's size limit.</span></div>
-      <div class="error-row"><span class="err-code">401</span><span class="err-name">unauthorized</span><span class="err-desc">Missing or invalid API key.</span></div>
-      <div class="error-row"><span class="err-code">403</span><span class="err-name">sites_limit_reached</span><span class="err-desc">Active site limit reached. Delete a site or upgrade.</span></div>
-      <div class="error-row"><span class="err-code">404</span><span class="err-name">not_found</span><span class="err-desc">Deploy ID does not exist or belongs to another account.</span></div>
-      <div class="error-row"><span class="err-code">429</span><span class="err-name">rate_limited</span><span class="err-desc">Too many requests. See rate limit headers.</span></div>
-      <div class="error-row"><span class="err-code">500</span><span class="err-name">internal_error</span><span class="err-desc">Unexpected server error. Retry with exponential backoff.</span></div>
+      <div class="error-row"><span class="err-code">400</span><span class="err-name">no files</span><span class="err-desc">Request body has no files array, or all files are empty.</span></div>
+      <div class="error-row"><span class="err-code">400</span><span class="err-name">bad content</span><span class="err-desc">A file's content field is not valid base64.</span></div>
+      <div class="error-row"><span class="err-code">401</span><span class="err-name">unauthorized</span><span class="err-desc">Missing or invalid <code>x-api-key</code> header.</span></div>
+      <div class="error-row"><span class="err-code">403</span><span class="err-name">forbidden</span><span class="err-desc">API key doesn't own the site you're trying to modify.</span></div>
+      <div class="error-row"><span class="err-code">404</span><span class="err-name">not found</span><span class="err-desc">Site ID doesn't exist or was already deleted.</span></div>
+      <div class="error-row"><span class="err-code">413</span><span class="err-name">too large</span><span class="err-desc">Upload exceeds the 50 MB request body limit.</span></div>
+      <div class="error-row"><span class="err-code">500</span><span class="err-name">internal error</span><span class="err-desc">Server error. Retry with exponential backoff.</span></div>
     </div>
 
     <!-- RATE LIMITS -->
     <h2 id="limits">Rate limits</h2>
-    <p>Rate limits are per API key. Headers on every response show your current usage:</p>
+    <p>Currently no enforced rate limits — the server runs on dedicated infrastructure. Reasonable use expected.</p>
 
     <table class="params-table">
-      <thead>
-        <tr><th>Plan</th><th>Deploys / min</th><th>API requests / min</th></tr>
-      </thead>
+      <thead><tr><th>Plan</th><th>Deploys / day</th><th>Max upload</th><th>Concurrent</th></tr></thead>
       <tbody>
-        <tr><td>Hobby</td><td>2</td><td>30</td></tr>
-        <tr><td>Pro</td><td>30</td><td>300</td></tr>
-        <tr><td>Team</td><td>120</td><td>1 200</td></tr>
+        <tr><td>Free</td><td>10</td><td>10 MB per deploy</td><td>1</td></tr>
+        <tr><td>Pro ($9/mo)</td><td>Unlimited</td><td>100 MB per deploy</td><td>10</td></tr>
+        <tr><td>Team ($29/mo)</td><td>Unlimited</td><td>500 MB per deploy</td><td>50</td></tr>
       </tbody>
     </table>
-
-    <div class="code-block">
-      <div class="code-block-header"><span class="code-lang">http response headers</span></div>
-      <div class="code-body"><pre>X-RateLimit-Limit:     30
-X-RateLimit-Remaining: 27
-X-RateLimit-Reset:     1709856000</pre></div>
-    </div>
 
     <!-- SDKs -->
-    <h2 id="sdks">SDKs &amp; wrappers</h2>
-    <p>Official thin wrappers around the REST API. All are open source on GitHub.</p>
+    <h2 id="sdks">SDKs &amp; snippets</h2>
+    <p>The API is simple enough that you don't need an SDK. Here are copy-paste snippets for common runtimes.</p>
 
-    <table class="params-table">
-      <thead>
-        <tr><th>Language</th><th>Install</th><th>Status</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Python</td><td><code>pip install pages-rosabuilds</code></td><td><span class="badge badge-live">Live</span></td></tr>
-        <tr><td>Node.js / TypeScript</td><td><code>npm install @rosabuilds/pages</code></td><td><span class="badge badge-live">Live</span></td></tr>
-        <tr><td>Go</td><td><code>go get github.com/rosasolana2026/pages-go</code></td><td><span class="badge badge-beta">Beta</span></td></tr>
-        <tr><td>Ruby</td><td><code>gem install pages_rosabuilds</code></td><td><span class="badge badge-new">Soon</span></td></tr>
-      </tbody>
-    </table>
-
-    <!-- EXAMPLES -->
-    <h2 id="examples">Agent examples</h2>
-
-    <h3>Claude agent — deploy a report</h3>
+    <h3>Python — one-liner deploy function</h3>
     <div class="code-block">
       <div class="code-block-header">
         <span class="code-lang">python</span>
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <div class="code-body"><pre><span class="hl-dim">import</span> anthropic, requests, tarfile, io, os, pathlib
+      <div class="code-body"><pre><span class="hl-dim">import</span> requests, base64, os
+
+<span class="hl-dim">def</span> deploy(html: str, api_key: str = None) -> str:
+    <span class="hl-string">"""Deploy HTML string and return live URL."""</span>
+    key = api_key or os.environ[<span class="hl-string">"PAGES_API_KEY"</span>]
+    content = base64.b64encode(html.encode()).decode()
+    r = requests.post(
+        <span class="hl-string">"https://pages.rosabuilds.com/api/upload"</span>,
+        headers={<span class="hl-string">"x-api-key"</span>: key},
+        json={<span class="hl-string">"files"</span>: [{<span class="hl-string">"path"</span>: <span class="hl-string">"index.html"</span>, <span class="hl-string">"content"</span>: content}]},
+        timeout=30,
+    )
+    r.raise_for_status()
+    <span class="hl-dim">return</span> r.json()[<span class="hl-string">"url"</span>]
+
+<span class="hl-comment"># Usage</span>
+url = deploy(<span class="hl-string">"&lt;h1&gt;Hello&lt;/h1&gt;"</span>)
+print(url)  <span class="hl-comment"># https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
+    </div>
+
+    <h3>Node.js — deploy utility</h3>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">javascript</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre><span class="hl-comment">// deploy.js — works in Node 18+ (native fetch)</span>
+<span class="hl-dim">export async function</span> deploy(html, apiKey = process.env.PAGES_API_KEY) {
+  <span class="hl-dim">const</span> content = Buffer.from(html).toString(<span class="hl-string">'base64'</span>);
+  <span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(<span class="hl-string">'https://pages.rosabuilds.com/api/upload'</span>, {
+    method: <span class="hl-string">'POST'</span>,
+    headers: { <span class="hl-string">'x-api-key'</span>: apiKey, <span class="hl-string">'Content-Type'</span>: <span class="hl-string">'application/json'</span> },
+    body: JSON.stringify({ files: [{ path: <span class="hl-string">'index.html'</span>, content }] }),
+  });
+  <span class="hl-dim">if</span> (!res.ok) <span class="hl-dim">throw new</span> Error(<span class="hl-dim">await</span> res.text());
+  <span class="hl-dim">return</span> (<span class="hl-dim">await</span> res.json()).url;
+}
+
+<span class="hl-comment">// Usage</span>
+<span class="hl-dim">const</span> url = <span class="hl-dim">await</span> deploy(<span class="hl-string">`&lt;h1&gt;Hello&lt;/h1&gt;`</span>);
+console.log(url);</pre></div>
+    </div>
+
+    <!-- EXAMPLES -->
+    <h2 id="examples">Agent examples</h2>
+
+    <h3>Claude agent — deploy a report as a tool</h3>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">python</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre><span class="hl-dim">import</span> anthropic, requests, base64, os
 
 client = anthropic.Anthropic()
 
 <span class="hl-dim">def</span> deploy_html(html: str) -> str:
-    <span class="hl-string">"""Deploy an HTML string and return the live URL."""</span>
-    buf = io.BytesIO()
-    <span class="hl-dim">with</span> tarfile.open(fileobj=buf, mode=<span class="hl-string">"w:gz"</span>) <span class="hl-dim">as</span> tar:
-        data = html.encode()
-        info = tarfile.TarInfo(name=<span class="hl-string">"index.html"</span>)
-        info.size = len(data)
-        tar.addfile(info, io.BytesIO(data))
-    buf.seek(0)
-    resp = requests.post(
+    content = base64.b64encode(html.encode()).decode()
+    r = requests.post(
         <span class="hl-string">"https://pages.rosabuilds.com/api/upload"</span>,
-        headers={<span class="hl-string">"x-api-key"</span>: os.environ[<span class="hl-string">'PAGES_API_KEY'</span>]},
-        files={<span class="hl-string">"file"</span>: (<span class="hl-string">"index.html"</span>, buf, <span class="hl-string">"text/html"</span>)},
+        headers={<span class="hl-string">"x-api-key"</span>: os.environ[<span class="hl-string">"PAGES_API_KEY"</span>]},
+        json={<span class="hl-string">"files"</span>: [{<span class="hl-string">"path"</span>: <span class="hl-string">"index.html"</span>, <span class="hl-string">"content"</span>: content}]},
     )
-    <span class="hl-dim">return</span> resp.json()[<span class="hl-string">"url"</span>]
+    <span class="hl-dim">return</span> r.json()[<span class="hl-string">"url"</span>]
 
-<span class="hl-comment"># Give Claude a deploy tool</span>
 tools = [{
     <span class="hl-string">"name"</span>: <span class="hl-string">"deploy_page"</span>,
-    <span class="hl-string">"description"</span>: <span class="hl-string">"Deploy an HTML page and return its live URL"</span>,
+    <span class="hl-string">"description"</span>: <span class="hl-string">"Deploy an HTML page and return its live HTTPS URL"</span>,
     <span class="hl-string">"input_schema"</span>: {
         <span class="hl-string">"type"</span>: <span class="hl-string">"object"</span>,
         <span class="hl-string">"properties"</span>: {<span class="hl-string">"html"</span>: {<span class="hl-string">"type"</span>: <span class="hl-string">"string"</span>}},
         <span class="hl-string">"required"</span>: [<span class="hl-string">"html"</span>]
     }
-}]</pre></div>
+}]
+
+msg = client.messages.create(
+    model=<span class="hl-string">"claude-opus-4-6"</span>,
+    max_tokens=4096,
+    tools=tools,
+    messages=[{<span class="hl-string">"role"</span>: <span class="hl-string">"user"</span>,
+               <span class="hl-string">"content"</span>: <span class="hl-string">"Write a beautiful HTML page summarising the top AI trends of 2026 and deploy it."</span>}],
+)</pre></div>
     </div>
 
-    <h3>Shell one-liner</h3>
+    <h3>Shell pipeline — build, deploy, open</h3>
     <div class="code-block">
       <div class="code-block-header">
         <span class="code-lang">bash</span>
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <div class="code-body"><pre><span class="hl-comment"># Build, bundle, and deploy in one pipeline</span>
-curl -s -X POST https://pages.rosabuilds.com/api/upload \
-  -H <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span> \
-  -F <span class="hl-string">"file=@index.html"</span> | jq -r .url</pre></div>
+      <div class="code-body"><pre><span class="hl-comment"># Build, encode, deploy, open — all in one line</span>
+URL=$(CONTENT=$(base64 -w0 index.html 2>/dev/null || base64 index.html) && \
+  curl -s -X POST https://pages.rosabuilds.com/api/upload \
+    -H "x-api-key: $PAGES_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{\"files\":[{\"path\":\"index.html\",\"content\":\"$CONTENT\"}]}" \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['url'])")
+
+echo "Live at: $URL"
+open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre></div>
     </div>
 
     <!-- WEBHOOKS -->
-    <h2 id="webhooks">Webhooks</h2>
-    <p>Pro and Team accounts can register a webhook URL to receive events on every deploy, deletion, or expiry. Configure from the dashboard.</p>
+    <h2 id="webhooks">Webhooks (Pro+)</h2>
+    <p>Pro and Team accounts can register a webhook URL to receive events on every deploy, deletion, or expiry. Configure from the dashboard when available.</p>
 
     <div class="code-block">
       <div class="code-block-header"><span class="code-lang">json — webhook payload</span></div>
       <div class="code-body"><pre>{
   <span class="hl-key">"event"</span>:     <span class="hl-value">"deploy.created"</span>,
-  <span class="hl-key">"deploy_id"</span>: <span class="hl-value">"dep_01j8xt9r"</span>,
-  <span class="hl-key">"url"</span>:       <span class="hl-value">"https://k9xm2p.pages.rosabuilds.com"</span>,
-  <span class="hl-key">"created_at"</span>:<span class="hl-value">"2025-03-08T00:14:22Z"</span>
+  <span class="hl-key">"site_id"</span>:   <span class="hl-value">"a3f9c12e"</span>,
+  <span class="hl-key">"url"</span>:       <span class="hl-value">"https://a3f9c12e.pages.rosabuilds.com"</span>,
+  <span class="hl-key">"timestamp"</span>: <span class="hl-value">1741392000</span>
 }</pre></div>
     </div>
 
@@ -605,10 +716,10 @@ curl -s -X POST https://pages.rosabuilds.com/api/upload \
 <footer class="footer">
   <div class="container">
     <div class="footer-bottom">
-      <span class="footer-copy">© 2025 pages.rosabuilds.com</span>
+      <span class="footer-copy">© 2026 pages.rosabuilds.com</span>
       <ul class="footer-legal">
         <li><a href="/">Home</a></li>
-        <li><a href="index.html#pricing">Pricing</a></li>
+        <li><a href="/#pricing">Pricing</a></li>
         <li><a href="/dashboard">Dashboard</a></li>
         <li><a href="https://rosabuilds.com">rosabuilds.com</a></li>
       </ul>
@@ -626,7 +737,7 @@ curl -s -X POST https://pages.rosabuilds.com/api/upload \
   function switchTab(group, lang, btn) {
     document.querySelectorAll(`#qs-tabs .lang-tab`).forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    ['curl','python','node','go'].forEach(l => {
+    ['curl','python','node'].forEach(l => {
       const el = document.getElementById(`${group}-${l}`);
       if (el) el.classList.toggle('active', l === lang);
     });
@@ -640,6 +751,61 @@ curl -s -X POST https://pages.rosabuilds.com/api/upload \
       btn.textContent = 'Copied!';
       setTimeout(() => btn.textContent = orig, 2000);
     });
+  }
+
+  // ---- Try it now ----
+  function updateTryCurl() {
+    const key   = document.getElementById('try-key').value.trim() || 'YOUR_API_KEY';
+    const url   = document.getElementById('try-url').value.trim();
+    let content = 'BASE64_CONTENT';
+    if (url) {
+      // show what the fetch-and-encode would look like
+      content = `$(curl -s "${url}" | base64)`;
+    }
+    document.getElementById('tc-key').textContent = key;
+    document.getElementById('tc-content').textContent = content.length > 40
+      ? content.slice(0, 40) + '...' : content;
+  }
+
+  function copyTryCurl() {
+    const key   = document.getElementById('try-key').value.trim() || 'YOUR_API_KEY';
+    const url   = document.getElementById('try-url').value.trim();
+    let fetchPart = '';
+    if (url) {
+      fetchPart = `CONTENT=$(curl -s "${url}" | base64)\n`;
+    } else {
+      fetchPart = `CONTENT=$(base64 -w0 index.html 2>/dev/null || base64 index.html)\n`;
+    }
+    const cmd = `${fetchPart}curl -s -X POST https://pages.rosabuilds.com/api/upload \\
+  -H "x-api-key: ${key}" \\
+  -H "Content-Type: application/json" \\
+  -d "{\\"files\\":[{\\"path\\":\\"index.html\\",\\"content\\":\\"$CONTENT\\"}]}" \\
+| jq -r .url`;
+    navigator.clipboard.writeText(cmd).then(() => alert('Copied!'));
+  }
+
+  async function runTryDeploy() {
+    const key = document.getElementById('try-key').value.trim();
+    const url = document.getElementById('try-url').value.trim();
+    const out = document.getElementById('try-output');
+
+    if (!key) { alert('Enter your API key first'); return; }
+    if (!url)  { alert('Enter a URL to fetch'); return; }
+
+    out.textContent = 'Fetching and deploying...';
+    out.classList.add('show');
+
+    try {
+      // Fetch via our own CORS proxy isn't available, so we just show the curl command
+      out.innerHTML = `<span style="color:rgba(232,221,212,0.4)">To deploy a URL's content, run this in your terminal:</span>\n\n` +
+        `CONTENT=$(curl -s "${url}" | base64)\n` +
+        `curl -s -X POST https://pages.rosabuilds.com/api/upload \\\n` +
+        `  -H "x-api-key: ${key}" \\\n` +
+        `  -H "Content-Type: application/json" \\\n` +
+        `  -d "{\\"files\\":[{\\"path\\":\\"index.html\\",\\"content\\":\\"$CONTENT\\"}]}" | jq -r .url`;
+    } catch (e) {
+      out.textContent = 'Error: ' + e.message;
+    }
   }
 
   // Highlight active sidebar link on scroll
@@ -657,6 +823,10 @@ curl -s -X POST https://pages.rosabuilds.com/api/upload \
   }, { rootMargin: '-64px 0px -60% 0px', threshold: 0 });
 
   headings.forEach(h => obs.observe(h));
+
+  // Load saved API key
+  const savedKey = localStorage.getItem('pages_api_key');
+  if (savedKey) document.getElementById('try-key').value = savedKey;
 </script>
 </body>
 </html>

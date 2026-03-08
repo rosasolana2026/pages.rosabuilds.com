@@ -33,11 +33,14 @@
       background: var(--cream);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 24px;
-      margin-bottom: 28px;
-      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 20px 24px;
+      margin-bottom: 24px;
     }
-    .key-label { font-size:0.8125rem; font-weight:600; color:var(--text); white-space:nowrap; }
+    .key-row {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 0;
+    }
+    .key-row + .key-row { margin-top: 10px; }
+    .key-label { font-size:0.8125rem; font-weight:600; color:var(--text); white-space:nowrap; min-width: 70px; }
     .key-input {
       flex: 1; min-width: 260px;
       font-family: var(--mono); font-size: 0.875rem;
@@ -46,24 +49,48 @@
       outline: none; transition: border-color 0.15s;
     }
     .key-input:focus { border-color: var(--rose); }
+    .key-display {
+      flex: 1; min-width: 260px;
+      font-family: var(--mono); font-size: 0.875rem;
+      background: var(--cream-dark); border: 1px solid var(--border-dk);
+      border-radius: 6px; padding: 9px 14px; color: var(--muted);
+      letter-spacing: 0.04em;
+    }
     .key-status { font-size:0.8125rem; color:var(--muted); white-space:nowrap; }
     .key-status.ok { color: #27ae60; }
     .key-status.err { color: #e74c3c; }
+    .key-status.loading { color: var(--muted); }
+
+    /* Live indicator */
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.75rem; font-weight: 600; color: var(--rose);
+      background: var(--rose-dim); padding: 3px 8px; border-radius: 99px;
+      letter-spacing: 0.03em;
+    }
+    .live-dot-sm { width: 5px; height: 5px; border-radius: 50%; background: var(--rose); animation: pulse 2s infinite; }
 
     /* Stats row */
-    .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:28px; }
-    .stat-card { background:var(--cream); border:1px solid var(--border); border-radius:8px; padding:20px 24px; }
-    .stat-label { font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:8px; }
-    .stat-value { font-family:var(--serif); font-style:italic; font-size:2rem; font-weight:500; color:var(--text); line-height:1; }
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+    .stat-card { background:var(--cream); border:1px solid var(--border); border-radius:8px; padding:18px 20px; }
+    .stat-label { font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:6px; }
+    .stat-value { font-family:var(--serif); font-style:italic; font-size:1.875rem; font-weight:500; color:var(--text); line-height:1; }
+
+    /* Storage meter */
+    .storage-bar-wrap { margin-top: 6px; }
+    .storage-bar-track {
+      height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 6px;
+    }
+    .storage-bar-fill { height: 100%; background: var(--rose); border-radius: 2px; transition: width 0.4s; }
 
     /* Upload zone */
     .upload-zone {
       background: var(--cream);
       border: 2px dashed var(--border-dk);
       border-radius: 10px;
-      padding: 48px 24px;
+      padding: 44px 24px;
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       cursor: pointer;
       transition: border-color 0.2s, background 0.2s;
       position: relative;
@@ -74,70 +101,119 @@
     .upload-title { font-weight:600; font-size:0.9375rem; color:var(--text); margin-bottom:6px; }
     .upload-sub { font-size:0.875rem; color:var(--muted); }
 
-    /* Upload progress/result */
+    /* Upload result */
     .upload-result {
       background: var(--cream);
-      border: 1px solid var(--border);
+      border: 1px solid #c6e6c8;
+      background: #f4fef4;
       border-radius: 10px;
-      padding: 20px 24px;
-      margin-bottom: 28px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
       display: none;
     }
     .upload-result.show { display: block; }
     .upload-result-url {
-      font-family: var(--mono); font-size: 0.9375rem; color: var(--rose);
+      font-family: var(--mono); font-size: 1rem; color: var(--rose);
       font-weight: 500; margin-bottom: 8px;
     }
     .upload-result-url a { text-decoration: underline; text-underline-offset: 2px; }
     .upload-result-meta { font-size: 0.8125rem; color: var(--muted); }
 
     /* Sites section */
-    .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .section-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:14px; flex-wrap: wrap; gap: 10px;
+    }
     .section-title { font-weight:600; font-size:1rem; color:var(--text); }
+    .poll-status { font-size:0.75rem; color:var(--muted); display:flex; align-items:center; gap:6px; }
+    .poll-dot { width:6px; height:6px; border-radius:50%; background:var(--border-dk); }
+    .poll-dot.polling { background: var(--rose); animation: pulse 1.5s infinite; }
 
-    /* Sites grid */
-    .sites-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:16px; }
-
-    .site-card {
+    /* Sites list (table layout) */
+    .sites-table {
       background: var(--cream);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 20px;
-      display: flex; flex-direction: column; gap: 12px;
-      transition: border-color 0.15s;
+      overflow: hidden;
     }
-    .site-card:hover { border-color: var(--border-dk); }
-    .site-id { font-family:var(--mono); font-size:0.75rem; color:var(--muted); }
-    .site-url { font-family:var(--mono); font-size:0.875rem; color:var(--rose); font-weight:500; }
-    .site-url a { text-decoration:underline; text-underline-offset:2px; }
-    .site-meta { font-size:0.8125rem; color:var(--muted); }
-    .site-actions { display:flex; gap:8px; margin-top:4px; }
-    .btn-visit { font-size:0.8125rem; padding:6px 14px; }
-    .btn-delete {
-      font-size:0.8125rem; padding:6px 14px;
+    .sites-table-head {
+      display: grid;
+      grid-template-columns: 1fr 160px 100px 80px 130px;
+      padding: 10px 18px;
+      background: var(--cream-dark);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .site-row {
+      display: grid;
+      grid-template-columns: 1fr 160px 100px 80px 130px;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      transition: background 0.1s;
+    }
+    .site-row:last-child { border-bottom: none; }
+    .site-row:hover { background: var(--cream-dark); }
+    .site-url-col { min-width: 0; }
+    .site-url-link {
+      font-family: var(--mono); font-size: 0.875rem; color: var(--rose);
+      font-weight: 500; display: block;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      text-decoration: underline; text-underline-offset: 2px;
+    }
+    .site-id-sm { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+    .site-cell { font-size: 0.8125rem; color: var(--muted); }
+
+    /* Buttons in site rows */
+    .site-actions { display:flex; gap:6px; }
+    .btn-copy-url {
+      font-size:0.75rem; padding:5px 10px;
+      background: var(--cream-dark); color: var(--muted);
+      border: 1px solid var(--border-dk); border-radius: 5px;
+      cursor: pointer; transition: all 0.15s; font-family: var(--sans);
+      white-space: nowrap;
+    }
+    .btn-copy-url:hover { border-color: var(--rose); color: var(--rose); }
+    .btn-copy-url.copied { border-color: #27ae60; color: #27ae60; }
+    .btn-delete-sm {
+      font-size:0.75rem; padding:5px 10px;
       background:transparent; color:var(--muted);
-      border:1px solid var(--border-dk); border-radius:6px;
+      border:1px solid var(--border-dk); border-radius:5px;
       cursor:pointer; transition:all 0.15s; font-family:var(--sans);
     }
-    .btn-delete:hover { border-color:#e74c3c; color:#e74c3c; background:rgba(231,76,60,0.05); }
+    .btn-delete-sm:hover { border-color:#e74c3c; color:#e74c3c; background:rgba(231,76,60,0.05); }
 
     /* Empty / loading states */
     .state-empty, .state-loading {
       background: var(--cream); border: 1px solid var(--border); border-radius: 8px;
-      padding: 56px 24px; text-align: center; grid-column: 1/-1;
+      padding: 56px 24px; text-align: center;
     }
     .state-empty-title { font-weight:600; font-size:0.9375rem; color:var(--text); margin-bottom:6px; }
     .state-empty-sub { font-size:0.875rem; color:var(--muted); }
+    .state-loading { color: var(--muted); font-size: 0.875rem; }
 
     /* Upload in progress */
     .uploading { opacity:0.6; pointer-events:none; }
 
+    @media (max-width: 860px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .sites-table-head { grid-template-columns: 1fr 100px 120px; }
+      .site-row { grid-template-columns: 1fr 100px 120px; }
+      .site-row > :nth-child(3),
+      .sites-table-head > :nth-child(3) { display: none; }
+    }
     @media (max-width: 680px) {
       .stats-row { grid-template-columns: 1fr 1fr; }
       .dash-bar { padding: 0 16px; }
       .dash-main { padding: 24px 16px 60px; }
-      .key-section { flex-direction: column; align-items: flex-start; }
-      .key-input { width: 100%; }
+      .key-row { flex-direction: column; align-items: flex-start; }
+      .key-input, .key-display { width: 100%; }
+      .sites-table-head { display: none; }
+      .site-row { grid-template-columns: 1fr auto; gap: 8px; }
+      .site-row > :nth-child(2),
+      .site-row > :nth-child(3),
+      .site-row > :nth-child(4) { display: none; }
     }
   </style>
 </head>
@@ -156,27 +232,42 @@
     </div>
     <span>pages<em>.rosabuilds</em></span>
   </a>
-  <nav class="dash-nav">
-    <a href="/">Home</a>
-    <a href="/docs">Docs</a>
-  </nav>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span class="live-badge" id="live-badge" style="display:none">
+      <span class="live-dot-sm"></span>
+      <span id="live-count">—</span> live
+    </span>
+    <nav class="dash-nav">
+      <a href="/">Home</a>
+      <a href="/docs">Docs</a>
+    </nav>
+  </div>
 </header>
 
 <!-- MAIN -->
 <main class="dash-main">
 
-  <!-- API Key input -->
+  <!-- API Key section -->
   <div class="key-section">
-    <span class="key-label">API Key</span>
-    <input type="text" class="key-input" id="apiKey" placeholder="pages_agent_Kx9mR4pQ3w" autocomplete="off" spellcheck="false">
-    <button class="btn btn-rose btn-sm" onclick="loadSites()">Load sites</button>
-    <span class="key-status" id="keyStatus"></span>
+    <div class="key-row">
+      <span class="key-label">API Key</span>
+      <input type="text" class="key-input" id="apiKey"
+        placeholder="pages_agent_Kx9mR4pQ3w"
+        autocomplete="off" spellcheck="false">
+      <button class="btn btn-rose btn-sm" onclick="loadSites()">Load sites</button>
+      <span class="key-status" id="keyStatus"></span>
+    </div>
+    <div class="key-row" id="keyDisplayRow" style="display:none">
+      <span class="key-label">Active key</span>
+      <div class="key-display" id="keyDisplay"></div>
+      <button class="btn btn-outline btn-sm" onclick="copyApiKey(this)">Copy key</button>
+    </div>
   </div>
 
   <!-- Stats -->
   <div class="stats-row" id="statsRow" style="display:none">
     <div class="stat-card">
-      <div class="stat-label">Total sites</div>
+      <div class="stat-label">Sites deployed</div>
       <div class="stat-value" id="statTotal">0</div>
     </div>
     <div class="stat-card">
@@ -185,7 +276,16 @@
     </div>
     <div class="stat-card">
       <div class="stat-label">Storage used</div>
-      <div class="stat-value" id="statSize">0 KB</div>
+      <div class="stat-value" id="statSize">0 B</div>
+      <div class="storage-bar-wrap">
+        <div class="storage-bar-track">
+          <div class="storage-bar-fill" id="storageBar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Last deployed</div>
+      <div class="stat-value" id="statLast" style="font-size:1.1rem;">—</div>
     </div>
   </div>
 
@@ -197,7 +297,7 @@
       <rect x="6" y="6" width="28" height="28" rx="4"/>
     </svg>
     <div class="upload-title">Drop files here or click to browse</div>
-    <div class="upload-sub">Upload HTML, CSS, JS, images — any static files. Requires API key above.</div>
+    <div class="upload-sub">HTML, CSS, JS, images — any static files. API key required above.</div>
   </div>
 
   <!-- Upload result -->
@@ -210,8 +310,12 @@
   <div id="sitesSection" style="display:none">
     <div class="section-header">
       <span class="section-title" id="sitesTitle">Your sites</span>
+      <span class="poll-status">
+        <span class="poll-dot" id="pollDot"></span>
+        <span id="pollStatus">auto-refresh every 10s</span>
+      </span>
     </div>
-    <div class="sites-grid" id="sitesGrid"></div>
+    <div id="sitesContainer"></div>
   </div>
 
 </main>
@@ -219,7 +323,8 @@
 <script>
   const API = '/api';
   let currentKey = '';
-  let sitesData = [];
+  let sitesData  = [];
+  let pollTimer  = null;
 
   // Restore key from localStorage
   const savedKey = localStorage.getItem('pages_api_key');
@@ -232,32 +337,77 @@
     if (e.key === 'Enter') loadSites();
   });
 
-  async function loadSites() {
+  // ---- Load global stats (public) ----
+  async function loadGlobalStats() {
+    try {
+      const res = await fetch(`${API}/stats`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const count = data.sites || data.total_deploys || 0;
+      const badge = document.getElementById('live-badge');
+      const liveCount = document.getElementById('live-count');
+      if (count >= 0) {
+        liveCount.textContent = count.toLocaleString();
+        badge.style.display = 'inline-flex';
+      }
+    } catch (e) {}
+  }
+  loadGlobalStats();
+  setInterval(loadGlobalStats, 30000);
+
+  // ---- Load user's sites ----
+  async function loadSites(silent = false) {
     const key = document.getElementById('apiKey').value.trim();
     if (!key) return;
     currentKey = key;
     localStorage.setItem('pages_api_key', key);
 
     const status = document.getElementById('keyStatus');
-    status.textContent = 'Loading...';
-    status.className = 'key-status';
+    if (!silent) {
+      status.textContent = 'Loading...';
+      status.className = 'key-status loading';
+    }
+
+    // Show poll indicator
+    document.getElementById('pollDot').classList.add('polling');
 
     try {
       const res = await fetch(`${API}/sites`, { headers: { 'x-api-key': key } });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: res.statusText }));
-        status.textContent = `Error: ${err.error || res.statusText}`;
-        status.className = 'key-status err';
+        if (!silent) {
+          status.textContent = `Error: ${err.error || res.statusText}`;
+          status.className = 'key-status err';
+        }
+        document.getElementById('pollDot').classList.remove('polling');
         return;
       }
       sitesData = await res.json();
-      status.textContent = `✓ Valid key — ${sitesData.length} site${sitesData.length !== 1 ? 's' : ''}`;
-      status.className = 'key-status ok';
+      if (!silent) {
+        status.textContent = `✓ ${sitesData.length} site${sitesData.length !== 1 ? 's' : ''}`;
+        status.className = 'key-status ok';
+      }
+
+      // Show key display row
+      const displayRow = document.getElementById('keyDisplayRow');
+      const keyDisplay = document.getElementById('keyDisplay');
+      displayRow.style.display = 'flex';
+      keyDisplay.textContent = key.slice(0, 8) + '···' + key.slice(-4);
+
       renderStats();
       renderSites();
+
+      // Set up auto-poll
+      if (!pollTimer) {
+        pollTimer = setInterval(() => loadSites(true), 10000);
+      }
     } catch (err) {
-      status.textContent = `Network error: ${err.message}`;
-      status.className = 'key-status err';
+      if (!silent) {
+        status.textContent = `Network error: ${err.message}`;
+        status.className = 'key-status err';
+      }
+    } finally {
+      setTimeout(() => document.getElementById('pollDot').classList.remove('polling'), 500);
     }
   }
 
@@ -265,22 +415,33 @@
     const total = sitesData.length;
     const files = sitesData.reduce((s, x) => s + (x.file_count || 0), 0);
     const bytes = sitesData.reduce((s, x) => s + (x.size_bytes || 0), 0);
+    const lastTs = sitesData.length > 0
+      ? Math.max(...sitesData.map(s => s.created_at || 0)) : 0;
+
     document.getElementById('statTotal').textContent = total;
     document.getElementById('statFiles').textContent = files;
     document.getElementById('statSize').textContent = formatBytes(bytes);
-    document.getElementById('statsRow').style.display = total > 0 || sitesData !== null ? 'grid' : 'none';
+
+    // Storage meter — assume 1 GB free tier limit
+    const pct = Math.min(100, (bytes / (1024*1024*1024)) * 100);
+    document.getElementById('storageBar').style.width = pct.toFixed(1) + '%';
+
+    document.getElementById('statLast').textContent = lastTs
+      ? formatDate(lastTs) : '—';
+
+    document.getElementById('statsRow').style.display = 'grid';
   }
 
   function renderSites() {
-    const section = document.getElementById('sitesSection');
-    const grid = document.getElementById('sitesGrid');
-    const title = document.getElementById('sitesTitle');
+    const section   = document.getElementById('sitesSection');
+    const container = document.getElementById('sitesContainer');
+    const title     = document.getElementById('sitesTitle');
 
     section.style.display = 'block';
     title.textContent = `Your sites (${sitesData.length})`;
 
     if (sitesData.length === 0) {
-      grid.innerHTML = `
+      container.innerHTML = `
         <div class="state-empty">
           <div class="state-empty-title">No sites yet</div>
           <div class="state-empty-sub">Upload files above to deploy your first site instantly.</div>
@@ -288,21 +449,51 @@
       return;
     }
 
-    grid.innerHTML = sitesData.map(site => `
-      <div class="site-card" id="card-${site.id}">
-        <div>
-          <div class="site-id">${site.id}</div>
-          <div class="site-url"><a href="${site.url}" target="_blank">${site.url}</a></div>
+    container.innerHTML = `
+      <div class="sites-table">
+        <div class="sites-table-head">
+          <div>URL</div>
+          <div>Deployed</div>
+          <div>Size</div>
+          <div>Files</div>
+          <div>Actions</div>
         </div>
-        <div class="site-meta">
-          ${site.file_count} file${site.file_count !== 1 ? 's' : ''} · ${formatBytes(site.size_bytes)} · ${formatDate(site.created_at)}
-        </div>
-        <div class="site-actions">
-          <a href="${site.url}" target="_blank" class="btn btn-outline btn-visit">Visit →</a>
-          <button class="btn-delete" onclick="deleteSite('${site.id}')">Delete</button>
-        </div>
-      </div>
-    `).join('');
+        ${sitesData.map(site => `
+          <div class="site-row" id="row-${site.id}">
+            <div class="site-url-col">
+              <a href="${site.url}" target="_blank" class="site-url-link">${site.url}</a>
+              <div class="site-id-sm">${site.id}</div>
+            </div>
+            <div class="site-cell">${formatDate(site.created_at)}</div>
+            <div class="site-cell">${formatBytes(site.size_bytes)}</div>
+            <div class="site-cell">${site.file_count || 0}</div>
+            <div class="site-actions">
+              <button class="btn-copy-url" onclick="copyUrl('${site.url}', this)">Copy URL</button>
+              <button class="btn-delete-sm" onclick="deleteSite('${site.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+  }
+
+  function copyApiKey(btn) {
+    const key = document.getElementById('apiKey').value.trim();
+    navigator.clipboard.writeText(key).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
+  }
+
+  function copyUrl(url, btn) {
+    navigator.clipboard.writeText(url).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy URL';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
   }
 
   async function deleteSite(id) {
@@ -338,44 +529,30 @@
 
   async function handleFiles(fileList) {
     const key = document.getElementById('apiKey').value.trim();
-    if (!key) {
-      alert('Enter your API key first');
-      return;
-    }
+    if (!key) { alert('Enter your API key first'); return; }
     if (!fileList || fileList.length === 0) return;
 
     zone.classList.add('uploading');
     zone.querySelector('.upload-title').textContent = `Uploading ${fileList.length} file(s)...`;
 
     try {
-      // Read files as base64
       const files = await Promise.all(Array.from(fileList).map(f => readFileAsBase64(f)));
-
       const res = await fetch(`${API}/upload`, {
         method: 'POST',
-        headers: {
-          'x-api-key': key,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'x-api-key': key, 'Content-Type': 'application/json' },
         body: JSON.stringify({ files })
       });
-
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || res.statusText);
 
-      if (!res.ok) {
-        throw new Error(data.error || res.statusText);
-      }
-
-      // Show result
       const result = document.getElementById('uploadResult');
       document.getElementById('resultUrl').innerHTML = `
-        <a href="${data.url}" target="_blank">${data.url}</a>
+        ✓ Deployed: <a href="${data.url}" target="_blank">${data.url}</a>
       `;
       document.getElementById('resultMeta').textContent =
-        `${fileList.length} file${fileList.length !== 1 ? 's' : ''} deployed · ID: ${data.id}`;
+        `${fileList.length} file${fileList.length !== 1 ? 's' : ''} · ID: ${data.id}`;
       result.classList.add('show');
 
-      // Refresh sites
       await loadSites();
     } catch (err) {
       alert('Upload failed: ' + err.message);
@@ -406,8 +583,14 @@
   }
 
   function formatDate(unix) {
-    if (!unix) return '';
-    return new Date(unix * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    if (!unix) return '—';
+    const d = new Date(unix * 1000);
+    const now = new Date();
+    const diff = Math.floor((now - d) / 1000);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
   // Auto-load if key is saved
