@@ -45,7 +45,7 @@
 <!-- NAV -->
 <nav class="nav" role="navigation">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
+    <a href="/" class="nav-logo">
       <div class="nav-logo-mark">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <rect x="2" y="2" width="5" height="7" rx="1" fill="white" opacity="0.9"/>
@@ -57,14 +57,14 @@
       <span class="nav-logo-text">pages<em>.rosabuilds</em></span>
     </a>
     <ul class="nav-links" id="nav-links">
-      <li><a href="index.html">Home</a></li>
+      <li><a href="/">Home</a></li>
       <li><a href="index.html#features">Features</a></li>
       <li><a href="index.html#pricing">Pricing</a></li>
-      <li><a href="docs.html" class="active">Docs</a></li>
-      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="/docs" class="active">Docs</a></li>
+      <li><a href="/dashboard">Dashboard</a></li>
     </ul>
     <div class="nav-actions">
-      <a href="dashboard.html" class="btn btn-rose btn-sm">Get API key</a>
+      <a href="/dashboard" class="btn btn-rose btn-sm">Get API key</a>
     </div>
     <button class="nav-mobile-btn" id="mobile-toggle" aria-label="Toggle menu">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
@@ -93,7 +93,7 @@
     <div class="docs-nav-section">
       <div class="docs-nav-label">Deploy API</div>
       <ul class="docs-nav-list">
-        <li><a href="#deploy">POST /deploy</a></li>
+        <li><a href="#deploy">POST /api/upload</a></li>
         <li><a href="#list">GET /sites</a></li>
         <li><a href="#get-site">GET /sites/:id</a></li>
         <li><a href="#delete">DELETE /sites/:id</a></li>
@@ -133,7 +133,7 @@
     <p>Get from zero to a live URL in under 2 minutes.</p>
 
     <h3>1. Get your API key</h3>
-    <p>Sign up at <a href="dashboard.html" style="color:var(--rose);">pages.rosabuilds.com/dashboard</a> and copy your API key from the Keys section. Keys look like <code>pk_live_xxxxxxxxxxxxxxxx</code>.</p>
+    <p>Visit <a href="/dashboard" style="color:var(--rose);">pages.rosabuilds.com/dashboard</a>, enter your API key, and start deploying. The default agent key is <code>pages_agent_Kx9mR4pQ3w</code>.</p>
 
     <h3>2. Bundle your files</h3>
     <p>Zip or tar your output directory. The archive must contain an <code>index.html</code> at the root.</p>
@@ -162,15 +162,15 @@ zip -r bundle.zip ./dist/.</pre></div>
         </div>
       </div>
       <div class="code-body" style="padding-top:16px;">
-        <div class="code-tab active" id="qs-curl"><pre><span class="hl-prompt">$</span> curl <span class="hl-flag">-X POST</span> https://sites.rosabuilds.com/deploy \
-  <span class="hl-flag">-H</span> <span class="hl-string">"Authorization: Bearer <span class="hl-key">$PAGES_API_KEY</span>"</span> \
-  <span class="hl-flag">-F</span> <span class="hl-string">"file=@bundle.tar.gz"</span></pre></div>
+        <div class="code-tab active" id="qs-curl"><pre><span class="hl-prompt">$</span> curl <span class="hl-flag">-X POST</span> https://pages.rosabuilds.com/api/upload \
+  <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: <span class="hl-key">$PAGES_API_KEY</span>"</span> \
+  <span class="hl-flag">-F</span> <span class="hl-string">"file=@index.html"</span></pre></div>
         <div class="code-tab" id="qs-python"><pre><span class="hl-dim">import</span> requests, os
 
 resp = requests.post(
-    <span class="hl-string">"https://sites.rosabuilds.com/deploy"</span>,
-    headers={<span class="hl-string">"Authorization"</span>: <span class="hl-string">f"Bearer {os.environ['PAGES_API_KEY']}"</span>},
-    files={<span class="hl-string">"file"</span>: open(<span class="hl-string">"bundle.tar.gz"</span>, <span class="hl-string">"rb"</span>)},
+    <span class="hl-string">"https://pages.rosabuilds.com/api/upload"</span>,
+    headers={<span class="hl-string">"x-api-key"</span>: os.environ[<span class="hl-string">'PAGES_API_KEY'</span>]},
+    files={<span class="hl-string">"file"</span>: open(<span class="hl-string">"index.html"</span>, <span class="hl-string">"rb"</span>)},
 )
 print(resp.json()[<span class="hl-string">"url"</span>])  <span class="hl-comment"># https://k9xm2p.pages.rosabuilds.com</span></pre></div>
         <div class="code-tab" id="qs-node"><pre><span class="hl-dim">import</span> FormData <span class="hl-dim">from</span> <span class="hl-string">'form-data'</span>;
@@ -180,9 +180,9 @@ print(resp.json()[<span class="hl-string">"url"</span>])  <span class="hl-commen
 <span class="hl-dim">const</span> form = <span class="hl-dim">new</span> FormData();
 form.append(<span class="hl-string">'file'</span>, fs.createReadStream(<span class="hl-string">'bundle.tar.gz'</span>));
 
-<span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(<span class="hl-string">'https://sites.rosabuilds.com/deploy'</span>, {
+<span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(<span class="hl-string">'https://pages.rosabuilds.com/api/upload'</span>, {
   method: <span class="hl-string">'POST'</span>,
-  headers: { Authorization: <span class="hl-string">`Bearer ${process.env.PAGES_API_KEY}`</span> },
+  headers: { <span class="hl-string">'x-api-key'</span>: process.env.PAGES_API_KEY },
   body: form,
 });
 <span class="hl-dim">const</span> { url } = <span class="hl-dim">await</span> res.json();
@@ -195,8 +195,8 @@ io.Copy(fw, f)
 w.Close()
 
 req, _ := http.NewRequest(<span class="hl-string">"POST"</span>,
-    <span class="hl-string">"https://sites.rosabuilds.com/deploy"</span>, body)
-req.Header.Set(<span class="hl-string">"Authorization"</span>, <span class="hl-string">"Bearer "</span>+os.Getenv(<span class="hl-string">"PAGES_API_KEY"</span>))
+    <span class="hl-string">"https://pages.rosabuilds.com/api/upload"</span>, body)
+req.Header.Set(<span class="hl-string">"x-api-key"</span>, os.Getenv(<span class="hl-string">"PAGES_API_KEY"</span>))
 req.Header.Set(<span class="hl-string">"Content-Type"</span>, w.FormDataContentType())
 resp, _ := http.DefaultClient.Do(req)</pre></div>
       </div>
@@ -222,13 +222,13 @@ resp, _ := http.DefaultClient.Do(req)</pre></div>
 
     <!-- AUTH -->
     <h2 id="authentication">Authentication</h2>
-    <p>All API requests must include your API key as a Bearer token in the <code>Authorization</code> header.</p>
+    <p>All API requests must include your API key in the <code>x-api-key</code> header.</p>
 
     <div class="code-block">
       <div class="code-block-header">
         <span class="code-lang">http</span>
       </div>
-      <div class="code-body"><pre>Authorization: Bearer pk_live_xxxxxxxxxxxxxxxx</pre></div>
+      <div class="code-body"><pre>x-api-key: pages_agent_Kx9mR4pQ3w</pre></div>
     </div>
 
     <div class="callout">
@@ -243,18 +243,18 @@ resp, _ := http.DefaultClient.Do(req)</pre></div>
 
     <div class="api-endpoint">
       <span class="method method-get">BASE</span>
-      <span class="endpoint-path">https://sites.rosabuilds.com</span>
+      <span class="endpoint-path">https://pages.rosabuilds.com/api</span>
     </div>
 
     <p>All responses are JSON. All requests that include a body should use <code>multipart/form-data</code> for file uploads or <code>application/json</code> for metadata-only updates.</p>
 
     <!-- DEPLOY -->
-    <h2 id="deploy">POST /deploy</h2>
-    <p>Deploy a bundle of static files. Returns a live HTTPS URL within milliseconds.</p>
+    <h2 id="deploy">POST /api/upload</h2>
+    <p>Deploy files and get an instant HTTPS URL. Accepts JSON with base64-encoded files or multipart form data.</p>
 
     <div class="api-endpoint">
       <span class="method method-post">POST</span>
-      <span class="endpoint-path">/deploy</span>
+      <span class="endpoint-path">/api/upload</span>
     </div>
 
     <h3>Request parameters</h3>
@@ -361,8 +361,8 @@ resp, _ := http.DefaultClient.Do(req)</pre></div>
         <span class="code-lang">bash</span>
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <div class="code-body"><pre>curl https://sites.rosabuilds.com/sites \
-  -H <span class="hl-string">"Authorization: Bearer $PAGES_API_KEY"</span></pre></div>
+      <div class="code-body"><pre>curl https://pages.rosabuilds.com/api/sites \
+  -H <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span></pre></div>
     </div>
 
     <!-- GET SITE -->
@@ -388,8 +388,8 @@ resp, _ := http.DefaultClient.Do(req)</pre></div>
         <span class="code-lang">bash</span>
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <div class="code-body"><pre>curl <span class="hl-flag">-X DELETE</span> https://sites.rosabuilds.com/sites/dep_01j8xt9r \
-  <span class="hl-flag">-H</span> <span class="hl-string">"Authorization: Bearer $PAGES_API_KEY"</span></pre></div>
+      <div class="code-body"><pre>curl <span class="hl-flag">-X DELETE</span> https://pages.rosabuilds.com/api/sites/dep_01j8xt9r \
+  <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span></pre></div>
     </div>
 
     <!-- UPDATE -->
@@ -406,8 +406,8 @@ resp, _ := http.DefaultClient.Do(req)</pre></div>
         <span class="code-lang">bash</span>
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <div class="code-body"><pre>curl <span class="hl-flag">-X PATCH</span> https://sites.rosabuilds.com/sites/dep_01j8xt9r \
-  <span class="hl-flag">-H</span> <span class="hl-string">"Authorization: Bearer $PAGES_API_KEY"</span> \
+      <div class="code-body"><pre>curl <span class="hl-flag">-X PATCH</span> https://pages.rosabuilds.com/api/sites/dep_01j8xt9r \
+  <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span> \
   <span class="hl-flag">-H</span> <span class="hl-string">"Content-Type: application/json"</span> \
   <span class="hl-flag">-d</span> <span class="hl-string">'{"ttl_hours": 0, "label": "Q1 report"}'</span></pre></div>
     </div>
@@ -454,8 +454,8 @@ resp, _ := http.DefaultClient.Do(req)</pre></div>
         <span class="code-lang">bash</span>
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <div class="code-body"><pre>curl <span class="hl-flag">-X POST</span> https://sites.rosabuilds.com/deploy \
-  <span class="hl-flag">-H</span> <span class="hl-string">"Authorization: Bearer $PAGES_API_KEY"</span> \
+      <div class="code-body"><pre>curl <span class="hl-flag">-X POST</span> https://pages.rosabuilds.com/api/upload \
+  <span class="hl-flag">-H</span> <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span> \
   <span class="hl-flag">-F</span> <span class="hl-string">"file=@bundle.tar.gz"</span> \
   <span class="hl-flag">-F</span> <span class="hl-string">'headers={"Cache-Control":"max-age=86400","X-Robots-Tag":"noindex"}'</span></pre></div>
     </div>
@@ -550,9 +550,9 @@ client = anthropic.Anthropic()
         tar.addfile(info, io.BytesIO(data))
     buf.seek(0)
     resp = requests.post(
-        <span class="hl-string">"https://sites.rosabuilds.com/deploy"</span>,
-        headers={<span class="hl-string">"Authorization"</span>: <span class="hl-string">f"Bearer {os.environ['PAGES_API_KEY']}"</span>},
-        files={<span class="hl-string">"file"</span>: (<span class="hl-string">"bundle.tar.gz"</span>, buf, <span class="hl-string">"application/gzip"</span>)},
+        <span class="hl-string">"https://pages.rosabuilds.com/api/upload"</span>,
+        headers={<span class="hl-string">"x-api-key"</span>: os.environ[<span class="hl-string">'PAGES_API_KEY'</span>]},
+        files={<span class="hl-string">"file"</span>: (<span class="hl-string">"index.html"</span>, buf, <span class="hl-string">"text/html"</span>)},
     )
     <span class="hl-dim">return</span> resp.json()[<span class="hl-string">"url"</span>]
 
@@ -575,11 +575,9 @@ tools = [{
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
       <div class="code-body"><pre><span class="hl-comment"># Build, bundle, and deploy in one pipeline</span>
-npm run build && \
-  tar -czf /tmp/deploy.tar.gz -C dist . && \
-  curl -s -X POST https://sites.rosabuilds.com/deploy \
-    -H <span class="hl-string">"Authorization: Bearer $PAGES_API_KEY"</span> \
-    -F <span class="hl-string">"file=@/tmp/deploy.tar.gz"</span> | jq -r .url</pre></div>
+curl -s -X POST https://pages.rosabuilds.com/api/upload \
+  -H <span class="hl-string">"x-api-key: $PAGES_API_KEY"</span> \
+  -F <span class="hl-string">"file=@index.html"</span> | jq -r .url</pre></div>
     </div>
 
     <!-- WEBHOOKS -->
@@ -609,9 +607,9 @@ npm run build && \
     <div class="footer-bottom">
       <span class="footer-copy">© 2025 pages.rosabuilds.com</span>
       <ul class="footer-legal">
-        <li><a href="index.html">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li><a href="index.html#pricing">Pricing</a></li>
-        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
         <li><a href="https://rosabuilds.com">rosabuilds.com</a></li>
       </ul>
     </div>
