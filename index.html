@@ -195,9 +195,11 @@
       .trust-item { padding: 6px 14px; }
       .trust-item:nth-child(n+4) { display: none; }
       .ce-code { font-size: 0.8125rem; }
+      .trust-bar { overflow-x: auto; justify-content: flex-start; flex-wrap: nowrap; }
     }
     @media (max-width: 480px) {
       .ce-inner { padding: 0 16px; }
+      .hero-cta .hero-cta-note { display: block; width: 100%; margin-top: 4px; }
     }
 
     /* ---- Example cards ---- */
@@ -858,6 +860,13 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       <div class="demo-heading">Drop a file. Get a URL.</div>
       <div class="demo-sub">Drag any HTML file here — it deploys instantly, no account needed.</div>
 
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+        <label style="font-size:0.8125rem;color:rgba(232,221,212,0.4);font-family:var(--mono);flex-shrink:0;">API key</label>
+        <input type="text" id="demoApiKey" placeholder="pages_agent_Kx9mR4pQ3w  (default — works now)"
+          style="flex:1;min-width:200px;font-family:var(--mono);font-size:0.8125rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:7px 12px;color:rgba(232,221,212,0.8);outline:none;transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='rgba(194,71,110,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      </div>
+
       <div class="drop-zone" id="homeDropZone">
         <input type="file" class="drop-file-input" id="homeFileInput" accept="*/*" multiple>
         <svg class="drop-icon" width="36" height="36" viewBox="0 0 36 36" fill="none">
@@ -1222,10 +1231,11 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
           reader.readAsDataURL(f);
         })));
 
+        const apiKey = (document.getElementById('demoApiKey').value.trim()) || 'pages_agent_Kx9mR4pQ3w';
         status.textContent = 'Deploying…';
         const res = await fetch('/api/upload', {
           method: 'POST',
-          headers: { 'x-api-key': 'pages_agent_Kx9mR4pQ3w', 'Content-Type': 'application/json' },
+          headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
           body: JSON.stringify({ files: fileObjs }),
         });
         const data = await res.json();
@@ -1276,9 +1286,11 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
           : ago < 3600 ? Math.floor(ago/60) + 'm ago'
           : ago < 86400 ? Math.floor(ago/3600) + 'h ago'
           : Math.floor(ago/86400) + 'd ago';
+        const files = s.file_count ? `${s.file_count} file${s.file_count !== 1 ? 's' : ''}` : '';
+        const kb = s.size_bytes ? ` · ${(s.size_bytes/1024).toFixed(1)} KB` : '';
         return `<a href="${s.url}" target="_blank" class="recent-card">
           <div class="recent-card-id">${s.id}</div>
-          <div class="recent-card-time">${label}</div>
+          <div class="recent-card-time">${label}${files ? ' · ' + files + kb : ''}</div>
         </a>`;
       }).join('');
     } catch (e) {

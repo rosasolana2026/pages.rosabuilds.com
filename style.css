@@ -49,6 +49,7 @@ img { display: block; max-width: 100%; }
   position: sticky;
   top: 0;
   z-index: 200;
+  overflow: visible;
   height: 64px;
   background: rgba(250, 246, 241, 0.9);
   backdrop-filter: blur(16px);
@@ -1287,6 +1288,24 @@ img { display: block; max-width: 100%; }
 
 @media (max-width: 680px) {
   .nav-links, .nav-actions .btn:not(.btn-rose) { display: none; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: rgba(250,246,241,0.98);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px 16px;
+    z-index: 199;
+    gap: 2px;
+  }
+  .nav-links.open li { width: 100%; }
+  .nav-links.open a  { display: block; width: 100%; padding: 10px 12px; }
   .nav-mobile-btn { display: block; }
 
   .hero { padding: 64px 0 56px; }

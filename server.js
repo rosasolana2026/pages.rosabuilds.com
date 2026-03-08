@@ -199,11 +199,13 @@ app.get('/api/stats', (req, res) => {
 
 // GET /api/recent (public) — last 8 deployed sites
 app.get('/api/recent', (req, res) => {
-  const sites = db.prepare('SELECT id, created_at FROM sites ORDER BY created_at DESC LIMIT 8').all();
+  const sites = db.prepare('SELECT id, created_at, file_count, size_bytes FROM sites ORDER BY created_at DESC LIMIT 8').all();
   res.json(sites.map(s => ({
     id: s.id,
     url: `https://${s.id}.pages.rosabuilds.com`,
     created_at: s.created_at,
+    file_count: s.file_count,
+    size_bytes: s.size_bytes,
   })));
 });
 
