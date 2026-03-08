@@ -1315,4 +1315,8 @@ img { display: block; max-width: 100%; }
   .container, .container--narrow { padding: 0 16px; }
   .nav-inner { padding: 0 16px; }
   .section   { padding: 60px 0; }
+  .response-field { grid-template-columns: 1fr; gap: 4px; }
+  .error-row { grid-template-columns: 50px 1fr; }
+  .err-desc  { display: none; }
+  .recent-grid { grid-template-columns: repeat(2, 1fr); }
 }

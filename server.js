@@ -8,6 +8,7 @@ const multer = require('multer');
 const Database = require('better-sqlite3');
 
 const app = express();
+const SERVER_START = Date.now();
 const PORT = process.env.PORT || 3004;
 const SITES_DIR = process.env.SITES_DIR || '/var/www/pages-sites';
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'data', 'db.sqlite');
@@ -188,7 +189,22 @@ app.get('/api/health', (req, res) => {
 // GET /api/stats (public)
 app.get('/api/stats', (req, res) => {
   const { c } = db.prepare('SELECT COUNT(*) as c FROM sites').get();
-  res.json({ sites: c });
+  const { f } = db.prepare('SELECT COALESCE(SUM(file_count),0) as f FROM sites').get();
+  res.json({
+    sites: c,
+    total_files: f,
+    uptime_seconds: Math.floor((Date.now() - SERVER_START) / 1000),
+  });
+});
+
+// GET /api/recent (public) — last 8 deployed sites
+app.get('/api/recent', (req, res) => {
+  const sites = db.prepare('SELECT id, created_at FROM sites ORDER BY created_at DESC LIMIT 8').all();
+  res.json(sites.map(s => ({
+    id: s.id,
+    url: `https://${s.id}.pages.rosabuilds.com`,
+    created_at: s.created_at,
+  })));
 });
 
 // Clean URL routes

@@ -275,12 +275,13 @@
 
     <h3>2. Deploy a file</h3>
     <div class="code-block" style="margin-top:12px;">
-      <div class="code-block-header" style="background:#1a1210; border:none; border-bottom:1px solid rgba(255,255,255,0.05); padding:0;">
+      <div class="code-block-header" style="background:#1a1210; border:none; border-bottom:1px solid rgba(255,255,255,0.05); padding:0; display:flex; align-items:center; justify-content:space-between;">
         <div class="lang-tabs" id="qs-tabs">
           <button class="lang-tab active" onclick="switchTab('qs','curl',this)">curl</button>
           <button class="lang-tab" onclick="switchTab('qs','python',this)">python</button>
           <button class="lang-tab" onclick="switchTab('qs','node',this)">node</button>
         </div>
+        <button class="code-copy-btn" style="margin-right:16px;" onclick="copyActiveTab()">Copy</button>
       </div>
       <div class="code-body" style="padding-top:18px;">
         <div class="code-tab active" id="qs-curl"><pre><span class="hl-comment"># Base64-encode your HTML and POST it</span>
@@ -342,8 +343,8 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
       <div class="code-body"><pre>{
-  <span class="hl-key">"url"</span>: <span class="hl-value">"https://a3f9c12e.pages.rosabuilds.com"</span>,
-  <span class="hl-key">"id"</span>:  <span class="hl-value">"a3f9c12e"</span>
+  "url": "https://a3f9c12e.pages.rosabuilds.com",
+  "id":  "a3f9c12e"
 }</pre></div>
     </div>
 
@@ -352,7 +353,10 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     <p>All write API requests must include your API key in the <code>x-api-key</code> header.</p>
 
     <div class="code-block">
-      <div class="code-block-header"><span class="code-lang">http header</span></div>
+      <div class="code-block-header">
+        <span class="code-lang">http header</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
       <div class="code-body"><pre>x-api-key: pages_agent_Kx9mR4pQ3w</pre></div>
     </div>
 
@@ -743,6 +747,22 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
     ['curl','python','node'].forEach(l => {
       const el = document.getElementById(`${group}-${l}`);
       if (el) el.classList.toggle('active', l === lang);
+    });
+  }
+
+  // Copy the active quickstart tab
+  function copyActiveTab() {
+    const active = document.querySelector('#qs-tabs .lang-tab.active');
+    if (!active) return;
+    const lang = active.textContent.trim();
+    const tabId = lang === 'curl' ? 'qs-curl' : lang === 'python' ? 'qs-python' : 'qs-node';
+    const pre = document.getElementById(tabId)?.querySelector('pre');
+    if (!pre) return;
+    const btn = document.querySelector('[onclick="copyActiveTab()"]');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = orig, 2000);
     });
   }
 
