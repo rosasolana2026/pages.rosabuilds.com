@@ -190,9 +190,11 @@ app.get('/api/health', (req, res) => {
 app.get('/api/stats', (req, res) => {
   const { c } = db.prepare('SELECT COUNT(*) as c FROM sites').get();
   const { f } = db.prepare('SELECT COALESCE(SUM(file_count),0) as f FROM sites').get();
+  const { b } = db.prepare('SELECT COALESCE(SUM(size_bytes),0) as b FROM sites').get();
   res.json({
     sites: c,
     total_files: f,
+    total_bytes: b,
     uptime_seconds: Math.floor((Date.now() - SERVER_START) / 1000),
   });
 });
