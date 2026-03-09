@@ -227,6 +227,7 @@
         <li><a href="#list">GET /api/sites</a></li>
         <li><a href="#delete">DELETE /api/sites/:id</a></li>
         <li><a href="#stats">GET /api/stats</a></li>
+        <li><a href="#recent">GET /api/recent</a></li>
         <li><a href="#health">GET /api/health</a></li>
       </ul>
     </div>
@@ -263,6 +264,7 @@
       <a href="#list">List</a>
       <a href="#delete">Delete</a>
       <a href="#stats">Stats</a>
+      <a href="#recent">Recent</a>
       <a href="#file-formats">Formats</a>
       <a href="#errors">Errors</a>
       <a href="#sdks">SDKs</a>
@@ -574,6 +576,62 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       <div class="code-body"><pre>{ <span class="hl-key">"status"</span>: <span class="hl-value">"ok"</span>, <span class="hl-key">"sites"</span>: <span class="hl-value">42</span> }</pre></div>
     </div>
 
+    <!-- GET /api/recent -->
+    <h2 id="recent">GET /api/recent</h2>
+    <p>Returns the 8 most recently deployed sites across the platform. Public endpoint — no authentication required. Powers the "Recently deployed" feed on the homepage.</p>
+
+    <div class="api-endpoint">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/api/recent</span>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">bash</span><button class="code-copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre>curl https://pages.rosabuilds.com/api/recent</pre></div>
+    </div>
+
+    <h3>Response</h3>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">json — response</span><button class="code-copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre>[
+  {
+    <span class="hl-key">"id"</span>:           <span class="hl-value">"a3f9c12e"</span>,
+    <span class="hl-key">"url"</span>:          <span class="hl-value">"https://a3f9c12e.pages.rosabuilds.com"</span>,
+    <span class="hl-key">"file_count"</span>:   <span class="hl-value">3</span>,
+    <span class="hl-key">"size_bytes"</span>:   <span class="hl-value">14820</span>,
+    <span class="hl-key">"created_at"</span>:   <span class="hl-value">1741392000</span>
+  }
+]</pre></div>
+    </div>
+
+    <div class="response-schema">
+      <div class="response-field">
+        <span class="rf-name">id</span>
+        <span class="rf-type">string</span>
+        <span class="rf-desc">8-character hex site ID.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">url</span>
+        <span class="rf-type">string</span>
+        <span class="rf-desc">Live HTTPS URL of the deployed site.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">file_count</span>
+        <span class="rf-type">integer</span>
+        <span class="rf-desc">Number of files in the deployment.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">size_bytes</span>
+        <span class="rf-type">integer</span>
+        <span class="rf-desc">Total deploy size in bytes.</span>
+      </div>
+      <div class="response-field">
+        <span class="rf-name">created_at</span>
+        <span class="rf-type">integer</span>
+        <span class="rf-desc">Unix timestamp (seconds) of when the site was deployed.</span>
+      </div>
+    </div>
+
     <!-- FILE FORMATS -->
     <h2 id="file-formats">File formats</h2>
     <p>Two upload modes are supported:</p>
@@ -637,7 +695,30 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
 
     <!-- SDKs -->
     <h2 id="sdks">SDKs &amp; snippets</h2>
-    <p>The API is simple enough that you don't need an SDK. Here are copy-paste snippets for common runtimes.</p>
+    <p>The API is simple enough that you don't need an SDK. Copy-paste the snippet for your runtime and you're done.</p>
+
+    <h3>Browser (vanilla JS / fetch)</h3>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-lang">javascript — browser</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="code-body"><pre><span class="hl-comment">// Works in any browser — no Node.js, no dependencies</span>
+<span class="hl-dim">async function</span> deploy(htmlString, apiKey) {
+  <span class="hl-dim">const</span> content = btoa(unescape(encodeURIComponent(htmlString)));
+  <span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(<span class="hl-string">'https://pages.rosabuilds.com/api/upload'</span>, {
+    method: <span class="hl-string">'POST'</span>,
+    headers: { <span class="hl-string">'x-api-key'</span>: apiKey, <span class="hl-string">'Content-Type'</span>: <span class="hl-string">'application/json'</span> },
+    body: JSON.stringify({ files: [{ path: <span class="hl-string">'index.html'</span>, content }] }),
+  });
+  <span class="hl-dim">const</span> { url, id } = <span class="hl-dim">await</span> res.json();
+  <span class="hl-dim">return</span> { url, id };
+}
+
+<span class="hl-comment">// Usage</span>
+<span class="hl-dim">const</span> { url } = <span class="hl-dim">await</span> deploy(<span class="hl-string">`&lt;h1&gt;Hello world&lt;/h1&gt;`</span>, <span class="hl-string">'pages_agent_Kx9mR4pQ3w'</span>);
+console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
+    </div>
 
     <h3>Python — one-liner deploy function</h3>
     <div class="code-block">

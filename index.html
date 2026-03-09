@@ -345,6 +345,10 @@
     <span class="trust-badge">REST API</span>
     No signup required
   </div>
+  <div class="trust-item" id="trust-uptime-item" style="display:none;">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M6.5 3.5v3l2 1.5" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
+    <strong><span id="trust-uptime">—</span></strong>&nbsp;uptime
+  </div>
 </div>
 
 <!-- CODE EXAMPLES (dark panel) -->
@@ -891,6 +895,17 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         <span class="demo-result-url" id="demoUrl"></span>
         <button class="demo-result-copy" onclick="copyDemoUrl()" id="demoCopyBtn">Copy URL</button>
         <a class="demo-result-copy" id="demoOpenBtn" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">Open →</a>
+        <button class="demo-result-copy" onclick="resetDemo()" style="margin-left:auto;">← Another file</button>
+      </div>
+      <div id="demoPreview" style="display:none;margin-top:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:0.75rem;color:rgba(232,221,212,0.3);font-family:var(--mono);">Live preview</span>
+          <span id="demoPreviewHint" style="font-size:0.75rem;color:rgba(232,221,212,0.2);font-family:var(--mono);"></span>
+        </div>
+        <iframe id="demoIframe" src="" loading="lazy"
+          style="width:100%;height:280px;border:1px solid rgba(155,48,96,0.3);border-radius:8px;background:#0a0a0a;"
+          title="Deployed site preview"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
       </div>
     </div>
   </div>
@@ -1190,6 +1205,22 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     });
   }
 
+  // Count-up animation
+  function countUp(el, toVal, formatter) {
+    const from = 0;
+    const dur = 700;
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      el.textContent = formatter(Math.round(from + (toVal - from) * ease));
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  let statsLoaded = false;
+
   // Live stats — fetches /api/stats every 30s
   async function fetchStats() {
     try {
@@ -1199,19 +1230,42 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       const sites = data.sites || 0;
       const files = data.total_files || 0;
       const bytes = data.total_bytes || 0;
-      if (sites > 0) {
-        const heroCount = document.getElementById('hero-count');
-        const trustCount = document.getElementById('trust-count');
-        const trustFiles = document.getElementById('trust-files');
-        const trustBytes = document.getElementById('trust-bytes');
-        if (heroCount) heroCount.textContent = ' · ' + sites.toLocaleString() + ' sites live';
+      const upSec = data.uptime_seconds || 0;
+
+      const heroCount = document.getElementById('hero-count');
+      const trustCount = document.getElementById('trust-count');
+      const trustFiles = document.getElementById('trust-files');
+      const trustBytes = document.getElementById('trust-bytes');
+      const trustUptime = document.getElementById('trust-uptime');
+      const trustUptimeItem = document.getElementById('trust-uptime-item');
+
+      if (heroCount) heroCount.textContent = sites > 0 ? ' · ' + sites.toLocaleString() + ' sites live' : '';
+
+      if (!statsLoaded) {
+        statsLoaded = true;
+        if (trustCount && sites > 0) countUp(trustCount, sites, n => n.toLocaleString());
+        if (trustFiles && files > 0) countUp(trustFiles, files, n => n.toLocaleString());
+        if (trustBytes) {
+          const mb = bytes / (1048576);
+          const kb = bytes / 1024;
+          const fmtBytes = n => mb >= 1 ? (n/1048576).toFixed(1)+' MB' : kb >= 1 ? (n/1024).toFixed(1)+' KB' : n+' B';
+          countUp(trustBytes, bytes, fmtBytes);
+        }
+      } else {
         if (trustCount) trustCount.textContent = sites.toLocaleString();
         if (trustFiles) trustFiles.textContent = files.toLocaleString();
         if (trustBytes) {
-          const kb = bytes / 1024;
-          const mb = bytes / (1024 * 1024);
-          trustBytes.textContent = mb >= 1 ? mb.toFixed(1) + ' MB' : kb >= 1 ? kb.toFixed(1) + ' KB' : bytes + ' B';
+          const kb = bytes / 1024, mb = bytes / 1048576;
+          trustBytes.textContent = mb >= 1 ? mb.toFixed(1)+' MB' : kb >= 1 ? kb.toFixed(1)+' KB' : bytes+' B';
         }
+      }
+
+      // Uptime
+      if (trustUptime && trustUptimeItem && upSec > 0) {
+        const d = Math.floor(upSec / 86400);
+        const h = Math.floor((upSec % 86400) / 3600);
+        trustUptime.textContent = d > 0 ? d + 'd ' + h + 'h' : h > 0 ? h + 'h' : Math.floor(upSec/60) + 'm';
+        trustUptimeItem.style.display = '';
       }
     } catch (e) {}
   }
@@ -1241,8 +1295,16 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       if (!files || files.length === 0) return;
       zone.classList.add('uploading');
       result.classList.remove('show');
+      const preview = document.getElementById('demoPreview');
+      const iframe = document.getElementById('demoIframe');
+      if (preview) preview.style.display = 'none';
+      if (iframe) iframe.src = '';
       errEl.classList.remove('show');
-      status.textContent = `Reading ${files.length} file${files.length > 1 ? 's' : ''}…`;
+      const totalBytes = Array.from(files).reduce((s, f) => s + f.size, 0);
+      const sizeLabel = totalBytes >= 1048576 ? (totalBytes/1048576).toFixed(1)+' MB'
+        : totalBytes >= 1024 ? (totalBytes/1024).toFixed(1)+' KB' : totalBytes+' B';
+      const names = Array.from(files).map(f => f.name).join(', ');
+      status.textContent = `Reading ${names} (${sizeLabel})…`;
 
       try {
         const fileObjs = await Promise.all(Array.from(files).map(f => new Promise((resolve, reject) => {
@@ -1266,7 +1328,16 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         const openBtn = document.getElementById('demoOpenBtn');
         if (openBtn) openBtn.href = data.url;
         result.classList.add('show');
-        status.textContent = '✓ Live in under a second. Click the URL to open it.';
+        status.textContent = '✓ Live in under a second.';
+        // Show iframe preview
+        const preview = document.getElementById('demoPreview');
+        const iframe = document.getElementById('demoIframe');
+        if (preview && iframe) {
+          iframe.src = data.url;
+          preview.style.display = 'block';
+          const hint = document.getElementById('demoPreviewHint');
+          if (hint) hint.textContent = data.id;
+        }
         // Refresh recent
         fetchRecent();
       } catch (e) {
@@ -1282,11 +1353,23 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     window.copyDemoUrl = function() {
       const url = urlEl.textContent;
       navigator.clipboard.writeText(url).then(() => {
-        const btn = document.querySelector('.demo-result-copy');
+        const btn = document.getElementById('demoCopyBtn');
+        if (!btn) return;
         const orig = btn.textContent;
         btn.textContent = 'Copied!';
         setTimeout(() => btn.textContent = orig, 2000);
       });
+    };
+
+    window.resetDemo = function() {
+      result.classList.remove('show');
+      const preview = document.getElementById('demoPreview');
+      const iframe = document.getElementById('demoIframe');
+      if (preview) preview.style.display = 'none';
+      if (iframe) iframe.src = '';
+      status.textContent = '';
+      errEl.classList.remove('show');
+      urlEl.textContent = '';
     };
   })();
 
