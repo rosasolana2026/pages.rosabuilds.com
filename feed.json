@@ -1,0 +1,16 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "pages.rosabuilds.com updates",
+  "home_page_url": "https://pages.rosabuilds.com/",
+  "feed_url": "https://pages.rosabuilds.com/feed.json",
+  "description": "Product and documentation updates for pages.rosabuilds.com",
+  "items": [
+    {
+      "id": "https://pages.rosabuilds.com/#2026-03-09-seo-pass",
+      "url": "https://pages.rosabuilds.com/docs",
+      "title": "SEO + metadata polish",
+      "content_text": "Added robots.txt, sitemap.xml, canonical URLs, and OG/Twitter metadata coverage for docs and dashboard pages.",
+      "date_published": "2026-03-09T07:30:00-04:00"
+    }
+  ]
+}
