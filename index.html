@@ -5,14 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>pages.rosabuilds.com — Instant Static Hosting for AI Agents</title>
   <meta name="description" content="AI agents POST a file, get back a live HTTPS URL in under a second. Instant static hosting built on AgentHost. No config. No CLI. One curl command.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://pages.rosabuilds.com/">
+  <meta name="theme-color" content="#1c1410">
   <meta property="og:title" content="pages.rosabuilds.com — Instant hosting for AI agents">
   <meta property="og:description" content="POST a file. Get a URL. Deploy anything your agent builds in one API call.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pages.rosabuilds.com/">
   <meta property="og:image" content="https://pages.rosabuilds.com/static/og.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="pages.rosabuilds.com — instant static hosting for AI agents">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="pages.rosabuilds.com — Instant hosting for AI agents">
+  <meta name="twitter:description" content="POST a file, get a live HTTPS URL in under a second. Built for AI agents.">
   <meta name="twitter:image" content="https://pages.rosabuilds.com/static/og.jpg">
+  <meta name="twitter:image:alt" content="pages.rosabuilds.com — instant static hosting for AI agents">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231c1410'/><text x='6' y='24' font-size='20' fill='%239b3060'>p</text></svg>">
   <script type="application/ld+json">
@@ -236,6 +244,7 @@
   </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
 
 <!-- NAV -->
 <nav class="nav" role="navigation">
@@ -261,8 +270,8 @@
     </ul>
 
     <div class="nav-actions">
-      <a href="/docs" class="btn btn-outline btn-sm">Read the docs</a>
-      <a href="/dashboard" class="btn btn-rose btn-sm">Get started</a>
+      <a href="/docs" class="btn btn-outline btn-sm" data-cta="nav_docs" data-cta-location="top-nav">Read the docs</a>
+      <a href="/dashboard" class="btn btn-rose btn-sm" data-cta="nav_start" data-cta-location="top-nav">Start free</a>
     </div>
 
     <button class="nav-mobile-btn" id="mobile-toggle" aria-label="Toggle menu" aria-expanded="false">
@@ -274,6 +283,8 @@
     </button>
   </div>
 </nav>
+
+<main id="main-content">
 
 <!-- HERO -->
 <section class="hero">
@@ -290,13 +301,13 @@
 
     <p class="hero-sub">
       POST a file. Get back a live HTTPS URL in under a second.
-      No config, no CLI, no deploy pipeline. One curl command from anywhere your agent runs.
+      No config, no CLI, no deploy pipeline. Ship from any agent runtime in one API call.
     </p>
 
     <div class="hero-cta">
-      <a href="/dashboard" class="btn btn-primary btn-lg">Get your API key</a>
-      <a href="/docs" class="btn btn-outline btn-lg">View the API →</a>
-      <span class="hero-cta-note">Free tier · No credit card</span>
+      <a href="/dashboard" class="btn btn-primary btn-lg" data-cta="hero_get_api_key" data-cta-location="hero">Get your API key</a>
+      <a href="/docs" class="btn btn-outline btn-lg" data-cta="hero_view_api" data-cta-location="hero">View the API →</a>
+      <span class="hero-cta-note">Free tier · No credit card · Start in under 60 seconds</span>
     </div>
 
     <!-- Animated Terminal -->
@@ -313,7 +324,7 @@
         <div id="term-out"></div>
       </div>
       <div class="terminal-copy">
-        <button class="btn-code" onclick="copyDemo(this)">Copy command</button>
+        <button class="btn-code" onclick="copyDemo(this)" data-cta="hero_copy_command" data-cta-location="hero-terminal">Copy command</button>
       </div>
     </div>
   </div>
@@ -359,7 +370,7 @@
         <div class="ce-title">Quickstart</div>
         <div class="ce-heading">Deploy in any language.<br>Receive a URL in return.</div>
       </div>
-      <a href="/docs" class="btn btn-outline btn-sm" style="border-color:rgba(255,255,255,0.15);color:rgba(232,221,212,0.6);">Full API docs →</a>
+      <a href="/docs" class="btn btn-outline btn-sm" data-cta="quickstart_docs" data-cta-location="quickstart" style="border-color:rgba(255,255,255,0.15);color:rgba(232,221,212,0.6);">Full API docs →</a>
     </div>
 
     <div class="ce-tabs">
@@ -667,7 +678,7 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
           <li>Public stats API</li>
         </ul>
         <div class="pricing-cta">
-          <a href="/dashboard" class="btn btn-outline" style="width:100%;justify-content:center;">Get started free</a>
+          <a href="/dashboard" class="btn btn-outline" data-cta="pricing_free" data-cta-location="pricing" style="width:100%;justify-content:center;">Get started free</a>
         </div>
       </div>
 
@@ -692,7 +703,7 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
           <li>Priority support</li>
         </ul>
         <div class="pricing-cta">
-          <a href="/dashboard" class="btn btn-rose" style="width:100%;justify-content:center;">Start Pro trial</a>
+          <a href="/dashboard" class="btn btn-rose" data-cta="pricing_pro" data-cta-location="pricing" style="width:100%;justify-content:center;">Start Pro trial</a>
         </div>
       </div>
 
@@ -717,7 +728,7 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
           <li>Audit log + SLA</li>
         </ul>
         <div class="pricing-cta">
-          <a href="/dashboard" class="btn btn-outline" style="width:100%;justify-content:center;">Contact us</a>
+          <a href="mailto:hello@rosabuilds.com?subject=pages.rosabuilds.com%20Team%20Plan" class="btn btn-outline" data-cta="pricing_team" data-cta-location="pricing" style="width:100%;justify-content:center;">Talk to sales</a>
         </div>
       </div>
     </div>
@@ -946,7 +957,7 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     <h2 class="section-title">What agents just shipped.</h2>
     <p class="section-sub">The latest deploys across the platform — each a live HTTPS URL under a second after POST.</p>
     <div class="recent-grid" id="recentGrid">
-      <div class="recent-empty">Loading...</div>
+      <div class="recent-empty">Loading recent deploys...</div>
     </div>
   </div>
 </section>
@@ -962,11 +973,12 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       One API key. One curl command. Live in under a second.
     </p>
     <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-      <a href="/dashboard" class="btn btn-rose btn-lg">Get started free</a>
-      <a href="/docs" class="btn" style="background:rgba(250,246,241,0.1); color:var(--cream); border:1px solid rgba(250,246,241,0.15); padding:13px 28px; font-size:0.9375rem;">Read the docs</a>
+      <a href="/dashboard" class="btn btn-rose btn-lg" data-cta="footer_get_started" data-cta-location="bottom-cta">Get started free</a>
+      <a href="/docs" class="btn" data-cta="footer_read_docs" data-cta-location="bottom-cta" style="background:rgba(250,246,241,0.1); color:var(--cream); border:1px solid rgba(250,246,241,0.15); padding:13px 28px; font-size:0.9375rem;">Read the docs</a>
     </div>
   </div>
 </section>
+</main>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -1030,12 +1042,55 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
 </footer>
 
 <script>
+  function trackEvent(name, props = {}) {
+    try {
+      if (Array.isArray(window.dataLayer)) {
+        window.dataLayer.push({ event: name, ...props });
+      }
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', name, props);
+      }
+      if (typeof window.plausible === 'function') {
+        window.plausible(name, { props });
+      }
+      window.dispatchEvent(new CustomEvent('pages:analytics', { detail: { name, props } }));
+    } catch (err) {
+      // Analytics hooks are best-effort and must never break UX.
+    }
+  }
+
+  function bindTrackedClicks() {
+    document.querySelectorAll('[data-cta]').forEach((el) => {
+      if (el.dataset.trackBound === '1') return;
+      el.dataset.trackBound = '1';
+      el.addEventListener('click', () => {
+        trackEvent(el.dataset.cta, {
+          location: el.dataset.ctaLocation || 'unknown',
+          href: el.getAttribute('href') || '',
+        });
+      });
+    });
+  }
+  bindTrackedClicks();
+
   // Mobile nav
   const toggle = document.getElementById('mobile-toggle');
   const links  = document.getElementById('nav-links');
   toggle.addEventListener('click', () => {
     const open = links.classList.toggle('open');
     toggle.setAttribute('aria-expanded', open);
+  });
+  links.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
   });
 
   // ---- Typewriter Terminal ----
@@ -1184,6 +1239,7 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       const orig = btn.textContent;
       btn.textContent = 'Copied!';
       setTimeout(() => btn.textContent = orig, 2000);
+      trackEvent('hero_copy_command');
     });
   }
 
@@ -1202,6 +1258,7 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       const orig = btn.textContent;
       btn.textContent = 'Copied!';
       setTimeout(() => btn.textContent = orig, 2000);
+      trackEvent('quickstart_copy_code', { pane: paneId });
     });
   }
 
@@ -1323,10 +1380,19 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || res.statusText);
+        trackEvent('demo_upload_success', { file_count: fileObjs.length });
 
         urlEl.textContent = data.url;
         const openBtn = document.getElementById('demoOpenBtn');
-        if (openBtn) openBtn.href = data.url;
+        if (openBtn) {
+          openBtn.href = data.url;
+          if (openBtn.dataset.trackBound !== '1') {
+            openBtn.dataset.trackBound = '1';
+            openBtn.addEventListener('click', () => {
+              trackEvent('demo_open_url', { source: 'homepage-demo' });
+            });
+          }
+        }
         result.classList.add('show');
         status.textContent = '✓ Live in under a second.';
         // Show iframe preview
@@ -1341,9 +1407,10 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         // Refresh recent
         fetchRecent();
       } catch (e) {
-        errEl.textContent = 'Error: ' + e.message;
+        errEl.textContent = 'Deployment failed: ' + e.message + ' Try another file or check your API key.';
         errEl.classList.add('show');
         status.textContent = '';
+        trackEvent('demo_upload_error', { reason: e.message || 'unknown' });
       } finally {
         zone.classList.remove('uploading');
         fileInput.value = '';
@@ -1358,6 +1425,7 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         const orig = btn.textContent;
         btn.textContent = 'Copied!';
         setTimeout(() => btn.textContent = orig, 2000);
+        trackEvent('demo_copy_url');
       });
     };
 
@@ -1379,7 +1447,10 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     if (!grid) return;
     try {
       const res = await fetch('/api/recent');
-      if (!res.ok) return;
+      if (!res.ok) {
+        grid.innerHTML = '<div class="recent-empty">Recent deploys are temporarily unavailable. <button class="btn btn-ghost btn-sm" type="button" onclick="fetchRecent()">Retry</button></div>';
+        return;
+      }
       const sites = await res.json();
       if (sites.length === 0) {
         grid.innerHTML = '<div class="recent-empty">No deploys yet — be the first!</div>';
@@ -1407,7 +1478,7 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         </a>`;
       }).join('');
     } catch (e) {
-      grid.innerHTML = '<div class="recent-empty">Could not load recent deploys.</div>';
+      grid.innerHTML = '<div class="recent-empty">Could not load recent deploys. <button class="btn btn-ghost btn-sm" type="button" onclick="fetchRecent()">Retry</button></div>';
     }
   }
   fetchRecent();
@@ -1462,7 +1533,8 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       if (window.scrollY >= s.offsetTop - 100) cur = s.id;
     });
     navLinks.forEach(a => {
-      a.classList.toggle('active', a.getAttribute('href') === `#${cur}`);
+      const href = a.getAttribute('href') || '';
+      a.classList.toggle('active', href === `#${cur}` || href === `/#${cur}`);
     });
   }, { passive: true });
 </script>

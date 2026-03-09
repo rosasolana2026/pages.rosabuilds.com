@@ -4,6 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard — pages.rosabuilds.com</title>
+  <meta name="description" content="Manage API keys and deployments on pages.rosabuilds.com. Upload files, monitor live sites, and manage deploy history.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://pages.rosabuilds.com/dashboard">
+  <meta name="theme-color" content="#1c1410">
+  <meta property="og:title" content="Dashboard — pages.rosabuilds.com">
+  <meta property="og:description" content="Upload files, manage your sites, and monitor deployment activity.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pages.rosabuilds.com/dashboard">
+  <meta property="og:image" content="https://pages.rosabuilds.com/static/og.jpg">
+  <meta property="og:image:alt" content="pages.rosabuilds.com dashboard for deployments and API keys">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dashboard — pages.rosabuilds.com">
+  <meta name="twitter:description" content="Manage your pages.rosabuilds deployments and API workflow.">
+  <meta name="twitter:image" content="https://pages.rosabuilds.com/static/og.jpg">
+  <meta name="twitter:image:alt" content="pages.rosabuilds.com dashboard for deployments and API keys">
   <link rel="stylesheet" href="/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231c1410'/><text x='6' y='24' font-size='20' fill='%239b3060'>p</text></svg>">
   <style>
@@ -192,6 +207,20 @@
     .state-empty-title { font-weight:600; font-size:0.9375rem; color:var(--text); margin-bottom:6px; }
     .state-empty-sub { font-size:0.875rem; color:var(--muted); }
     .state-loading { color: var(--muted); font-size: 0.875rem; }
+    .dash-notice {
+      display: none;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--cream);
+      color: var(--text);
+      font-size: 0.875rem;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .dash-notice.show { display: block; }
+    .dash-notice.success { border-color: #c8e7d0; background: #f4fbf6; }
+    .dash-notice.error { border-color: #f0cbc7; background: #fff5f4; }
+    .dash-notice.info { border-color: var(--border); background: var(--cream); }
 
     /* Upload in progress */
     .uploading { opacity:0.6; pointer-events:none; }
@@ -224,6 +253,7 @@
   </style>
 </head>
 <body>
+<a class="skip-link" href="#dashboard-main">Skip to dashboard content</a>
 
 <!-- TOP BAR -->
 <header class="dash-bar">
@@ -244,14 +274,16 @@
       <span id="live-count">—</span> live
     </span>
     <nav class="dash-nav">
-      <a href="/">Home</a>
-      <a href="/docs">Docs</a>
+      <a href="/" data-cta="dashboard_nav_home" data-cta-location="top-nav">Home</a>
+      <a href="/docs" data-cta="dashboard_nav_docs" data-cta-location="top-nav">Docs</a>
     </nav>
   </div>
 </header>
 
 <!-- MAIN -->
-<main class="dash-main">
+<main class="dash-main" id="dashboard-main">
+  <h1 class="sr-only">pages.rosabuilds dashboard</h1>
+  <div class="dash-notice" id="dashNotice" role="status" aria-live="polite"></div>
 
   <!-- API Key section -->
   <div class="key-section">
@@ -260,13 +292,13 @@
       <input type="text" class="key-input" id="apiKey"
         placeholder="pages_agent_Kx9mR4pQ3w"
         autocomplete="off" spellcheck="false">
-      <button class="btn btn-rose btn-sm" onclick="loadSites()">Load sites</button>
+      <button class="btn btn-rose btn-sm" id="loadSitesBtn" data-cta="dashboard_load_sites" data-cta-location="key-section" onclick="loadSites()">Load sites</button>
       <span class="key-status" id="keyStatus"></span>
     </div>
     <div class="key-row" id="keyDisplayRow" style="display:none">
       <span class="key-label">Active key</span>
       <div class="key-display" id="keyDisplay"></div>
-      <button class="btn btn-outline btn-sm" onclick="copyApiKey(this)">Copy key</button>
+      <button class="btn btn-outline btn-sm" data-cta="dashboard_copy_key" data-cta-location="key-section" onclick="copyApiKey(this)">Copy key</button>
     </div>
   </div>
 
@@ -327,10 +359,41 @@
 </main>
 
 <script>
+  function trackEvent(name, props = {}) {
+    try {
+      if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event: name, ...props });
+      if (typeof window.gtag === 'function') window.gtag('event', name, props);
+      if (typeof window.plausible === 'function') window.plausible(name, { props });
+      window.dispatchEvent(new CustomEvent('pages:analytics', { detail: { name, props } }));
+    } catch (err) {
+      // no-op
+    }
+  }
+
+  function bindTrackedClicks() {
+    document.querySelectorAll('[data-cta]').forEach((el) => {
+      if (el.dataset.trackBound === '1') return;
+      el.dataset.trackBound = '1';
+      el.addEventListener('click', () => {
+        trackEvent(el.dataset.cta, {
+          location: el.dataset.ctaLocation || 'unknown',
+          href: el.getAttribute('href') || '',
+        });
+      });
+    });
+  }
+  bindTrackedClicks();
+
   const API = '/api';
   let currentKey = '';
   let sitesData  = [];
   let pollTimer  = null;
+  const notice = document.getElementById('dashNotice');
+
+  function setNotice(type, message) {
+    notice.className = `dash-notice show ${type}`;
+    notice.textContent = message;
+  }
 
   // Restore key from localStorage
   const savedKey = localStorage.getItem('pages_api_key');
@@ -364,14 +427,25 @@
   // ---- Load user's sites ----
   async function loadSites(silent = false) {
     const key = document.getElementById('apiKey').value.trim();
-    if (!key) return;
+    if (!key) {
+      setNotice('info', 'Enter your API key to load your sites.');
+      return;
+    }
     currentKey = key;
     localStorage.setItem('pages_api_key', key);
+    const loadBtn = document.getElementById('loadSitesBtn');
+    const loadOrig = loadBtn.textContent;
+    if (!silent) {
+      loadBtn.disabled = true;
+      loadBtn.textContent = 'Loading...';
+    }
 
     const status = document.getElementById('keyStatus');
     if (!silent) {
       status.textContent = 'Loading...';
       status.className = 'key-status loading';
+      document.getElementById('sitesSection').style.display = 'block';
+      document.getElementById('sitesContainer').innerHTML = '<div class="state-loading">Loading your latest deployments...</div>';
     }
 
     // Show poll indicator
@@ -384,6 +458,7 @@
         if (!silent) {
           status.textContent = `Error: ${err.error || res.statusText}`;
           status.className = 'key-status err';
+          setNotice('error', err.error || 'Could not load sites. Check your API key and try again.');
         }
         document.getElementById('pollDot').classList.remove('polling');
         return;
@@ -392,6 +467,7 @@
       if (!silent) {
         status.textContent = `✓ ${sitesData.length} site${sitesData.length !== 1 ? 's' : ''}`;
         status.className = 'key-status ok';
+        setNotice('success', `Loaded ${sitesData.length} site${sitesData.length !== 1 ? 's' : ''}.`);
       }
 
       // Show key display row
@@ -411,8 +487,13 @@
       if (!silent) {
         status.textContent = `Network error: ${err.message}`;
         status.className = 'key-status err';
+        setNotice('error', 'Network error while loading sites. Please retry.');
       }
     } finally {
+      if (!silent) {
+        loadBtn.disabled = false;
+        loadBtn.textContent = loadOrig;
+      }
       setTimeout(() => document.getElementById('pollDot').classList.remove('polling'), 500);
     }
   }
@@ -450,7 +531,7 @@
       container.innerHTML = `
         <div class="state-empty">
           <div class="state-empty-title">No sites yet</div>
-          <div class="state-empty-sub">Upload files above to deploy your first site instantly.</div>
+          <div class="state-empty-sub">Upload files above to deploy your first site in one API call.</div>
         </div>`;
       return;
     }
@@ -474,12 +555,13 @@
             <div class="site-cell">${formatBytes(site.size_bytes)}</div>
             <div class="site-cell">${site.file_count || 0}</div>
             <div class="site-actions">
-              <button class="btn-copy-url" onclick="copyUrl('${site.url}', this)">Copy URL</button>
-              <button class="btn-delete-sm" onclick="deleteSite('${site.id}')">Delete</button>
+              <button class="btn-copy-url" data-cta="dashboard_copy_site_url" data-cta-location="site-row" onclick="copyUrl('${site.url}', this)">Copy URL</button>
+              <button class="btn-delete-sm" data-cta="dashboard_delete_site" data-cta-location="site-row" onclick="deleteSite('${site.id}')">Delete</button>
             </div>
           </div>
         `).join('')}
       </div>`;
+    bindTrackedClicks();
   }
 
   function copyApiKey(btn) {
@@ -488,6 +570,8 @@
       const orig = btn.textContent;
       btn.textContent = 'Copied!';
       setTimeout(() => btn.textContent = orig, 2000);
+      setNotice('success', 'API key copied.');
+      trackEvent('dashboard_copy_api_key');
     });
   }
 
@@ -499,6 +583,8 @@
         btn.textContent = 'Copy URL';
         btn.classList.remove('copied');
       }, 2000);
+      setNotice('success', 'Site URL copied to clipboard.');
+      trackEvent('dashboard_copy_url', { url });
     });
   }
 
@@ -514,12 +600,14 @@
         sitesData = sitesData.filter(s => s.id !== id);
         renderStats();
         renderSites();
+        setNotice('success', `Deleted site ${id}.`);
+        trackEvent('dashboard_delete_site_success', { site_id: id });
       } else {
         const err = await res.json().catch(() => ({}));
-        alert(err.error || 'Delete failed');
+        setNotice('error', err.error || 'Delete failed.');
       }
     } catch (err) {
-      alert('Network error: ' + err.message);
+      setNotice('error', 'Network error: ' + err.message);
     }
   }
 
@@ -535,7 +623,10 @@
 
   async function handleFiles(fileList) {
     const key = document.getElementById('apiKey').value.trim();
-    if (!key) { alert('Enter your API key first'); return; }
+    if (!key) {
+      setNotice('info', 'Enter your API key first.');
+      return;
+    }
     if (!fileList || fileList.length === 0) return;
 
     zone.classList.add('uploading');
@@ -558,10 +649,13 @@
       document.getElementById('resultMeta').textContent =
         `${fileList.length} file${fileList.length !== 1 ? 's' : ''} · ID: ${data.id}`;
       result.classList.add('show');
+      setNotice('success', `Deployment created: ${data.id}`);
+      trackEvent('dashboard_upload_success', { file_count: fileList.length, site_id: data.id });
 
       await loadSites();
     } catch (err) {
-      alert('Upload failed: ' + err.message);
+      setNotice('error', 'Upload failed: ' + err.message);
+      trackEvent('dashboard_upload_error', { reason: err.message || 'unknown' });
     } finally {
       zone.classList.remove('uploading');
       zone.querySelector('.upload-title').textContent = 'Drop files here or click to browse';

@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>API Docs — pages.rosabuilds.com</title>
   <meta name="description" content="Complete API reference for pages.rosabuilds.com. Deploy static sites from your AI agent with one POST request.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://pages.rosabuilds.com/docs">
+  <meta name="theme-color" content="#1c1410">
+  <meta property="og:title" content="API Docs — pages.rosabuilds.com">
+  <meta property="og:description" content="API reference, quickstart snippets, and live deploy examples for pages.rosabuilds.com.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pages.rosabuilds.com/docs">
+  <meta property="og:image" content="https://pages.rosabuilds.com/static/og.jpg">
+  <meta property="og:image:alt" content="API docs for pages.rosabuilds.com static hosting">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="API Docs — pages.rosabuilds.com">
+  <meta name="twitter:description" content="Deploy static sites with one API call. Full endpoint reference and examples.">
+  <meta name="twitter:image" content="https://pages.rosabuilds.com/static/og.jpg">
+  <meta name="twitter:image:alt" content="API docs for pages.rosabuilds.com static hosting">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231c1410'/><text x='6' y='24' font-size='20' fill='%239b3060'>p</text></svg>">
   <style>
@@ -169,6 +183,7 @@
   </style>
 </head>
 <body>
+<a class="skip-link" href="#docs-main">Skip to docs content</a>
 
 <!-- NAV -->
 <nav class="nav" role="navigation">
@@ -192,9 +207,9 @@
       <li><a href="/dashboard">Dashboard</a></li>
     </ul>
     <div class="nav-actions">
-      <a href="/dashboard" class="btn btn-rose btn-sm">Get API key</a>
+      <a href="/dashboard" class="btn btn-rose btn-sm" data-cta="docs_get_api_key" data-cta-location="top-nav">Get API key</a>
     </div>
-    <button class="nav-mobile-btn" id="mobile-toggle" aria-label="Toggle menu">
+    <button class="nav-mobile-btn" id="mobile-toggle" aria-label="Toggle menu" aria-expanded="false">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
         <rect x="2" y="5" width="16" height="1.5" rx="1"/>
         <rect x="2" y="9.25" width="16" height="1.5" rx="1"/>
@@ -902,9 +917,49 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
 </footer>
 
 <script>
+  function trackEvent(name, props = {}) {
+    try {
+      if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event: name, ...props });
+      if (typeof window.gtag === 'function') window.gtag('event', name, props);
+      if (typeof window.plausible === 'function') window.plausible(name, { props });
+      window.dispatchEvent(new CustomEvent('pages:analytics', { detail: { name, props } }));
+    } catch (err) {
+      // no-op
+    }
+  }
+
+  function bindTrackedClicks() {
+    document.querySelectorAll('[data-cta]').forEach((el) => {
+      if (el.dataset.trackBound === '1') return;
+      el.dataset.trackBound = '1';
+      el.addEventListener('click', () => {
+        trackEvent(el.dataset.cta, {
+          location: el.dataset.ctaLocation || 'unknown',
+          href: el.getAttribute('href') || '',
+        });
+      });
+    });
+  }
+  bindTrackedClicks();
+
   // Mobile nav
-  document.getElementById('mobile-toggle').addEventListener('click', function() {
-    document.getElementById('nav-links').classList.toggle('open');
+  const docsToggle = document.getElementById('mobile-toggle');
+  const docsLinks = document.getElementById('nav-links');
+  docsToggle.addEventListener('click', function() {
+    const open = docsLinks.classList.toggle('open');
+    docsToggle.setAttribute('aria-expanded', open);
+  });
+  docsLinks.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => {
+      docsLinks.classList.remove('open');
+      docsToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      docsLinks.classList.remove('open');
+      docsToggle.setAttribute('aria-expanded', 'false');
+    }
   });
 
   // Language tabs
@@ -930,6 +985,7 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
       const orig = btn.textContent;
       btn.textContent = 'Copied!';
       setTimeout(() => btn.textContent = orig, 2000);
+      trackEvent('docs_copy_active_quickstart', { tab: lang.toLowerCase() });
     });
   }
 
@@ -940,6 +996,7 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
       const orig = btn.textContent;
       btn.textContent = 'Copied!';
       setTimeout(() => btn.textContent = orig, 2000);
+      trackEvent('docs_copy_code_block');
     });
   }
 
@@ -968,6 +1025,7 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
       const btn = document.querySelector('[onclick="copyTryCurl()"]');
       const orig = btn.textContent; btn.textContent = 'Copied!';
       setTimeout(() => btn.textContent = orig, 2000);
+      trackEvent('docs_copy_try_curl');
     });
   }
 
@@ -1001,8 +1059,10 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
         `<span style="color:#4ec9b0">✓ Deployed!</span>\n\n` +
         `<span class="url-link" onclick="window.open('${data.url}','_blank')">${data.url}</span>\n\n` +
         `<span style="color:rgba(232,221,212,0.3)">id: ${data.id} · click the URL to open it</span>`;
+      trackEvent('docs_try_deploy_success', { site_id: data.id });
     } catch (e) {
       out.innerHTML = `<span style="color:#e06c75">Error: ${e.message}</span>`;
+      trackEvent('docs_try_deploy_error', { reason: e.message || 'unknown' });
     } finally {
       btn.textContent = 'Deploy it live →'; btn.disabled = false;
     }
@@ -1027,6 +1087,9 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
   // Load saved API key
   const savedKey = localStorage.getItem('pages_api_key');
   if (savedKey) document.getElementById('try-key').value = savedKey;
+  document.getElementById('try-key').addEventListener('input', (e) => {
+    localStorage.setItem('pages_api_key', e.target.value.trim());
+  });
 </script>
 </body>
 </html>
