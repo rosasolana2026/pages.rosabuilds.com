@@ -1083,17 +1083,37 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
   toggle.addEventListener('click', () => {
     const open = links.classList.toggle('open');
     toggle.setAttribute('aria-expanded', open);
+    document.body.style.overflow = open ? 'hidden' : '';
   });
   links.querySelectorAll('a').forEach((a) => {
     a.addEventListener('click', () => {
       links.classList.remove('open');
       toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
     });
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       links.classList.remove('open');
       toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!links.classList.contains('open')) return;
+    if (!links.contains(e.target) && !toggle.contains(e.target)) {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 680 && links.classList.contains('open')) {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
     }
   });
 
