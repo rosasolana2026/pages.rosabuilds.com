@@ -3,7 +3,7 @@
    Instant static hosting for AI agents
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+/* Fonts loaded via <link> in page head for faster first paint (avoids CSS @import waterfall). */
 
 /* ---- reset ---- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,6 +25,11 @@
   --serif:      'Cormorant Garamond', Georgia, serif;
   --sans:       'Inter', system-ui, -apple-system, sans-serif;
   --mono:       'Fira Code', 'Cascadia Code', 'Consolas', 'Menlo', monospace;
+  --space-section: clamp(64px, 8vw, 96px);
+  --space-section-tight: clamp(52px, 6vw, 76px);
+  --heading-xl: clamp(2.4rem, 6.2vw, 5.4rem);
+  --heading-lg: clamp(1.8rem, 3.6vw, 2.9rem);
+  --body-lg: clamp(1.02rem, 1.9vw, 1.2rem);
 }
 
 html { scroll-behavior: smooth; font-size: 16px; }
@@ -41,6 +46,29 @@ body {
 
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--rose);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 14px;
+  top: -100px;
+  background: var(--text);
+  color: var(--cream);
+  font-size: 0.8125rem;
+  padding: 9px 12px;
+  border-radius: 6px;
+  z-index: 999;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
 
 /* =========================================================
    NAV
@@ -240,7 +268,7 @@ img { display: block; max-width: 100%; }
    HERO
    ========================================================= */
 .hero {
-  padding: 96px 0 80px;
+  padding: calc(var(--space-section) + 8px) 0 var(--space-section-tight);
   border-bottom: 1px solid var(--border);
   overflow: hidden;
   position: relative;
@@ -276,7 +304,7 @@ img { display: block; max-width: 100%; }
 .hero-title {
   font-family: var(--serif);
   font-style: italic;
-  font-size: clamp(3rem, 6.5vw, 5.5rem);
+  font-size: var(--heading-xl);
   font-weight: 500;
   line-height: 1.05;
   letter-spacing: -0.02em;
@@ -291,7 +319,7 @@ img { display: block; max-width: 100%; }
 }
 
 .hero-sub {
-  font-size: clamp(1rem, 1.8vw, 1.1875rem);
+  font-size: var(--body-lg);
   color: var(--muted);
   max-width: 560px;
   line-height: 1.7;
@@ -310,6 +338,7 @@ img { display: block; max-width: 100%; }
 .hero-cta-note {
   font-size: 0.8125rem;
   color: var(--muted);
+  min-height: 1.4em;
 }
 
 /* terminal demo */
@@ -429,7 +458,7 @@ img { display: block; max-width: 100%; }
    FEATURES / WHY
    ========================================================= */
 .section {
-  padding: 88px 0;
+  padding: var(--space-section) 0;
   border-bottom: 1px solid var(--border);
 }
 
@@ -445,7 +474,7 @@ img { display: block; max-width: 100%; }
 .section-title {
   font-family: var(--serif);
   font-style: italic;
-  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-size: var(--heading-lg);
   font-weight: 500;
   line-height: 1.15;
   color: var(--text);
@@ -453,7 +482,7 @@ img { display: block; max-width: 100%; }
 }
 
 .section-sub {
-  font-size: 1rem;
+  font-size: 1.03rem;
   color: var(--muted);
   max-width: 520px;
   line-height: 1.7;
@@ -1333,7 +1362,7 @@ img { display: block; max-width: 100%; }
 @media (max-width: 480px) {
   .container, .container--narrow { padding: 0 16px; }
   .nav-inner { padding: 0 16px; }
-  .section   { padding: 60px 0; }
+  .section   { padding: 58px 0; }
   .response-field { grid-template-columns: 1fr; gap: 4px; }
   .error-row { grid-template-columns: 50px 1fr; }
   .err-desc  { display: none; }
