@@ -781,53 +781,166 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
 console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
     </div>
 
-    <h3>Python — one-liner deploy function</h3>
+    <h3>Python — Pages client class</h3>
     <div class="code-block">
       <div class="code-block-header">
         <span class="code-lang">python</span>
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
       <div class="code-body"><pre><span class="hl-dim">import</span> requests, base64, os
+<span class="hl-dim">from</span> typing <span class="hl-dim">import</span> Union
 
-<span class="hl-dim">def</span> deploy(html: str, api_key: str = None) -> str:
-    <span class="hl-string">"""Deploy HTML string and return live URL."""</span>
-    key = api_key or os.environ[<span class="hl-string">"PAGES_API_KEY"</span>]
-    content = base64.b64encode(html.encode()).decode()
-    r = requests.post(
-        <span class="hl-string">"https://pages.rosabuilds.com/api/upload"</span>,
-        headers={<span class="hl-string">"x-api-key"</span>: key},
-        json={<span class="hl-string">"files"</span>: [{<span class="hl-string">"path"</span>: <span class="hl-string">"index.html"</span>, <span class="hl-string">"content"</span>: content}]},
-        timeout=30,
-    )
-    r.raise_for_status()
-    <span class="hl-dim">return</span> r.json()[<span class="hl-string">"url"</span>]
+<span class="hl-dim">class</span> Pages:
+    <span class="hl-string">"""Minimal client for pages.rosabuilds.com."""</span>
+    BASE = <span class="hl-string">"https://pages.rosabuilds.com/api"</span>
+
+    <span class="hl-dim">def</span> __init__(self, api_key: str = None):
+        self.api_key = api_key <span class="hl-dim">or</span> os.environ[<span class="hl-string">"PAGES_API_KEY"</span>]
+
+    <span class="hl-dim">def</span> _headers(self):
+        <span class="hl-dim">return</span> {<span class="hl-string">"x-api-key"</span>: self.api_key}
+
+    <span class="hl-dim">def</span> _encode(self, files: dict) -> list:
+        <span class="hl-dim">return</span> [
+            {<span class="hl-string">"path"</span>: p, <span class="hl-string">"content"</span>: base64.b64encode(
+                c.encode() <span class="hl-dim">if isinstance</span>(c, str) <span class="hl-dim">else</span> c
+            ).decode()}
+            <span class="hl-dim">for</span> p, c <span class="hl-dim">in</span> files.items()
+        ]
+
+    <span class="hl-dim">def</span> deploy(self, files: dict[str, Union[str, bytes]]) -> dict:
+        <span class="hl-string">"""Deploy files and return {url, id}. files: {path: content}"""</span>
+        r = requests.post(
+            <span class="hl-string">f"{self.BASE}/upload"</span>,
+            headers=self._headers(),
+            json={<span class="hl-string">"files"</span>: self._encode(files)},
+            timeout=30,
+        )
+        r.raise_for_status()
+        <span class="hl-dim">return</span> r.json()
+
+    <span class="hl-dim">def</span> update(self, site_id: str, files: dict[str, Union[str, bytes]]) -> dict:
+        <span class="hl-string">"""Replace all files in an existing site, keep same URL."""</span>
+        r = requests.post(
+            <span class="hl-string">f"{self.BASE}/update/{site_id}"</span>,
+            headers=self._headers(),
+            json={<span class="hl-string">"files"</span>: self._encode(files)},
+            timeout=30,
+        )
+        r.raise_for_status()
+        <span class="hl-dim">return</span> r.json()
+
+    <span class="hl-dim">def</span> list_sites(self) -> list:
+        <span class="hl-string">"""Return list of deployed sites for this API key."""</span>
+        r = requests.get(<span class="hl-string">f"{self.BASE}/sites"</span>, headers=self._headers(), timeout=30)
+        r.raise_for_status()
+        <span class="hl-dim">return</span> r.json()
+
+    <span class="hl-dim">def</span> delete(self, site_id: str) -> None:
+        <span class="hl-string">"""Permanently delete a site by ID."""</span>
+        r = requests.delete(<span class="hl-string">f"{self.BASE}/sites/{site_id}"</span>, headers=self._headers(), timeout=30)
+        r.raise_for_status()
 
 <span class="hl-comment"># Usage</span>
-url = deploy(<span class="hl-string">"&lt;h1&gt;Hello&lt;/h1&gt;"</span>)
-print(url)  <span class="hl-comment"># https://a3f9c12e.pages.rosabuilds.com</span></pre></div>
+pages = Pages()  <span class="hl-comment"># reads PAGES_API_KEY from env</span>
+
+result = pages.deploy({<span class="hl-string">"index.html"</span>: <span class="hl-string">"&lt;h1&gt;Hello from my agent&lt;/h1&gt;"</span>})
+print(result[<span class="hl-string">"url"</span>])  <span class="hl-comment"># https://a3f9c12e.pages.rosabuilds.com</span>
+
+<span class="hl-comment"># Multi-file deploy</span>
+result = pages.deploy({
+    <span class="hl-string">"index.html"</span>: html_content,
+    <span class="hl-string">"style.css"</span>: css_content,
+    <span class="hl-string">"script.js"</span>: js_content,
+})
+
+<span class="hl-comment"># Update in place (same URL)</span>
+pages.update(result[<span class="hl-string">"id"</span>], {<span class="hl-string">"index.html"</span>: updated_html})
+
+<span class="hl-comment"># List and clean up</span>
+<span class="hl-dim">for</span> site <span class="hl-dim">in</span> pages.list_sites():
+    print(site[<span class="hl-string">"url"</span>], site[<span class="hl-string">"file_count"</span>])
+    pages.delete(site[<span class="hl-string">"id"</span>])</pre></div>
     </div>
 
-    <h3>Node.js — deploy utility</h3>
+    <h3>Node.js / Browser — Pages client class</h3>
     <div class="code-block">
       <div class="code-block-header">
         <span class="code-lang">javascript</span>
         <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <div class="code-body"><pre><span class="hl-comment">// deploy.js — works in Node 18+ (native fetch)</span>
-<span class="hl-dim">export async function</span> deploy(html, apiKey = process.env.PAGES_API_KEY) {
-  <span class="hl-dim">const</span> content = Buffer.from(html).toString(<span class="hl-string">'base64'</span>);
-  <span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(<span class="hl-string">'https://pages.rosabuilds.com/api/upload'</span>, {
-    method: <span class="hl-string">'POST'</span>,
-    headers: { <span class="hl-string">'x-api-key'</span>: apiKey, <span class="hl-string">'Content-Type'</span>: <span class="hl-string">'application/json'</span> },
-    body: JSON.stringify({ files: [{ path: <span class="hl-string">'index.html'</span>, content }] }),
-  });
-  <span class="hl-dim">if</span> (!res.ok) <span class="hl-dim">throw new</span> Error(<span class="hl-dim">await</span> res.text());
-  <span class="hl-dim">return</span> (<span class="hl-dim">await</span> res.json()).url;
+      <div class="code-body"><pre><span class="hl-comment">// pages-client.js — Node 18+ / Bun / Deno / browser (native fetch)</span>
+<span class="hl-dim">export class</span> Pages {
+  <span class="hl-dim">constructor</span>(apiKey = process.env.PAGES_API_KEY) {
+    this.apiKey = apiKey;
+    this.base   = <span class="hl-string">'https://pages.rosabuilds.com/api'</span>;
+  }
+
+  <span class="hl-comment">/** Deploy files: { 'index.html': '&lt;h1&gt;...&lt;/h1&gt;', 'style.css': '...' } */</span>
+  <span class="hl-dim">async</span> deploy(files) {
+    <span class="hl-dim">return</span> this._post(<span class="hl-string">'/upload'</span>, { files: this._encode(files) });
+  }
+
+  <span class="hl-comment">/** Replace all files in an existing deploy, preserving the URL. */</span>
+  <span class="hl-dim">async</span> update(id, files) {
+    <span class="hl-dim">return</span> this._post(<span class="hl-string">`/update/${id}`</span>, { files: this._encode(files) });
+  }
+
+  <span class="hl-comment">/** List all sites for this API key. */</span>
+  <span class="hl-dim">async</span> list() {
+    <span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(<span class="hl-string">`${this.base}/sites`</span>, { headers: this._headers() });
+    <span class="hl-dim">if</span> (!res.ok) <span class="hl-dim">throw new</span> Error(<span class="hl-dim">await</span> res.text());
+    <span class="hl-dim">return</span> res.json();
+  }
+
+  <span class="hl-comment">/** Delete a site by ID. */</span>
+  <span class="hl-dim">async</span> delete(id) {
+    <span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(<span class="hl-string">`${this.base}/sites/${id}`</span>, {
+      method: <span class="hl-string">'DELETE'</span>, headers: this._headers(),
+    });
+    <span class="hl-dim">if</span> (!res.ok) <span class="hl-dim">throw new</span> Error(<span class="hl-dim">await</span> res.text());
+  }
+
+  <span class="hl-dim">async</span> _post(path, body) {
+    <span class="hl-dim">const</span> res = <span class="hl-dim">await</span> fetch(this.base + path, {
+      method: <span class="hl-string">'POST'</span>,
+      headers: { ...this._headers(), <span class="hl-string">'Content-Type'</span>: <span class="hl-string">'application/json'</span> },
+      body: JSON.stringify(body),
+    });
+    <span class="hl-dim">if</span> (!res.ok) <span class="hl-dim">throw new</span> Error(<span class="hl-dim">await</span> res.text());
+    <span class="hl-dim">return</span> res.json();
+  }
+
+  _headers() { <span class="hl-dim">return</span> { <span class="hl-string">'x-api-key'</span>: this.apiKey }; }
+
+  _encode(files) {
+    <span class="hl-dim">return</span> Object.entries(files).map(([path, content]) => ({
+      path,
+      content: <span class="hl-dim">typeof</span> Buffer !== <span class="hl-string">'undefined'</span>
+        ? Buffer.from(content).toString(<span class="hl-string">'base64'</span>)
+        : btoa(unescape(encodeURIComponent(content))),
+    }));
+  }
 }
 
 <span class="hl-comment">// Usage</span>
-<span class="hl-dim">const</span> url = <span class="hl-dim">await</span> deploy(<span class="hl-string">`&lt;h1&gt;Hello&lt;/h1&gt;`</span>);
-console.log(url);</pre></div>
+<span class="hl-dim">const</span> pages = <span class="hl-dim">new</span> Pages();  <span class="hl-comment">// reads PAGES_API_KEY from env</span>
+
+<span class="hl-dim">const</span> { url, id } = <span class="hl-dim">await</span> pages.deploy({
+  <span class="hl-string">'index.html'</span>: <span class="hl-string">`&lt;h1&gt;Hello from my agent&lt;/h1&gt;`</span>,
+  <span class="hl-string">'style.css'</span>:  <span class="hl-string">'body { font-family: sans-serif; }'</span>,
+});
+console.log(url);  <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.com</span>
+
+<span class="hl-comment">// Update in place</span>
+<span class="hl-dim">await</span> pages.update(id, { <span class="hl-string">'index.html'</span>: <span class="hl-string">`&lt;h1&gt;v2&lt;/h1&gt;`</span> });
+
+<span class="hl-comment">// List and clean up</span>
+<span class="hl-dim">const</span> sites = <span class="hl-dim">await</span> pages.list();
+<span class="hl-dim">for</span> (<span class="hl-dim">const</span> site <span class="hl-dim">of</span> sites) {
+  console.log(site.url, site.file_count + <span class="hl-string">' files'</span>);
+  <span class="hl-dim">await</span> pages.delete(site.id);
+}</pre></div>
     </div>
 
     <h3>TypeScript — typed deploy client</h3>
@@ -1059,8 +1172,10 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
     const btn = document.querySelector('[onclick="copyActiveTab()"]');
     navigator.clipboard.writeText(pre.innerText).then(() => {
       const orig = btn.textContent;
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = orig, 2000);
+      btn.textContent = '✓ Copied';
+      btn.style.color = 'var(--rose2)';
+      btn.style.fontWeight = '600';
+      setTimeout(() => { btn.textContent = orig; btn.style.color = ''; btn.style.fontWeight = ''; }, 2000);
       trackEvent('docs_copy_active_quickstart', { tab: lang.toLowerCase() });
     });
   }
@@ -1070,8 +1185,10 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
     const pre = btn.closest('.code-block').querySelector('pre');
     navigator.clipboard.writeText(pre.innerText).then(() => {
       const orig = btn.textContent;
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = orig, 2000);
+      btn.textContent = '✓ Copied';
+      btn.style.color = 'var(--rose2)';
+      btn.style.fontWeight = '600';
+      setTimeout(() => { btn.textContent = orig; btn.style.color = ''; btn.style.fontWeight = ''; }, 2000);
       trackEvent('docs_copy_code_block');
     });
   }
