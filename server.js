@@ -45,6 +45,17 @@ db.exec(`
 db.prepare('INSERT OR IGNORE INTO counters (key, value) VALUES (?, ?)').run('total_deploys', 0);
 db.prepare('INSERT OR IGNORE INTO counters (key, value) VALUES (?, ?)').run('total_files_deployed', 0);
 
+// Ensure total_deploys and total_files_deployed are seeded to at least match current DB state
+// (forward-compat: if counter was added after sites existed, catch up)
+{
+  const { c: siteCount } = db.prepare('SELECT COUNT(*) as c FROM sites').get();
+  const { f: fileCount } = db.prepare('SELECT COALESCE(SUM(file_count),0) as f FROM sites').get();
+  const { value: tdVal } = db.prepare('SELECT value FROM counters WHERE key = ?').get('total_deploys') || { value: 0 };
+  const { value: tfVal } = db.prepare('SELECT value FROM counters WHERE key = ?').get('total_files_deployed') || { value: 0 };
+  if (tdVal < siteCount) db.prepare('UPDATE counters SET value = ? WHERE key = ?').run(siteCount, 'total_deploys');
+  if (tfVal < fileCount) db.prepare('UPDATE counters SET value = ? WHERE key = ?').run(fileCount, 'total_files_deployed');
+}
+
 // Seed default keys
 db.prepare('INSERT OR IGNORE INTO api_keys (key, name) VALUES (?, ?)').run(ADMIN_KEY, 'admin');
 db.prepare('INSERT OR IGNORE INTO api_keys (key, name) VALUES (?, ?)').run(AGENT_KEY, 'default-agent');
@@ -206,6 +217,7 @@ app.get('/api/stats', (req, res) => {
   const { value: totalFilesDeployed } = db.prepare('SELECT value FROM counters WHERE key = ?').get('total_files_deployed') || { value: 0 };
   res.json({
     sites: c,
+    files_hosted: f,
     total_deploys: totalDeploys,
     total_files: f,
     total_files_deployed: totalFilesDeployed,

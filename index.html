@@ -347,7 +347,7 @@
   </div>
   <div class="trust-item">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
-    <strong><span id="trust-files">—</span> files</strong>&nbsp;deployed
+    <strong><span id="trust-files">—</span> files</strong>&nbsp;hosted
   </div>
   <div class="trust-item">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
@@ -360,6 +360,10 @@
   <div class="trust-item">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
     <strong>&lt; 1 second</strong>&nbsp;deploy time
+  </div>
+  <div class="trust-item">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
+    <strong><span id="trust-uptime">—</span></strong>&nbsp;uptime
   </div>
   <div class="trust-item">
     <span class="trust-badge">REST API</span>
@@ -877,6 +881,27 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     .demo-error { margin-top:12px; font-size:0.875rem; color:#e06c75; font-family:var(--mono); display:none; }
     .demo-error.show { display:block; }
     .demo-status { margin-top:12px; font-size:0.8125rem; color:rgba(232,221,212,0.4); font-family:var(--mono); min-height:20px; }
+    .demo-file-info {
+      margin-top:10px;
+      padding:10px 14px;
+      background:rgba(155,48,96,0.08);
+      border:1px solid rgba(155,48,96,0.2);
+      border-radius:6px;
+      font-family:var(--mono);
+      font-size:0.8125rem;
+      color:rgba(232,221,212,0.7);
+      display:none;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .demo-file-info.show { display:flex; }
+    .demo-file-info-name { font-weight:600; color:rgba(232,221,212,0.9); }
+    .demo-file-info-size { color:rgba(232,221,212,0.35); font-size:0.75rem; }
+    .demo-file-info-type { font-size:0.7rem; padding:1px 5px; border-radius:3px; background:rgba(155,48,96,0.15); border:1px solid rgba(155,48,96,0.2); color:#c2476e; }
+    .drop-zone.has-file { border-color:rgba(155,48,96,0.7); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .upload-spinner { display:inline-block; width:12px; height:12px; border:1.5px solid rgba(194,71,110,0.3); border-top-color:#c2476e; border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle; margin-right:6px; }
     @media (max-width:600px) {
       .drop-zone { padding:32px 16px; }
       .demo-inner { max-width:100%; }
@@ -917,6 +942,11 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         <div class="drop-hint">or <strong>click to browse</strong> · HTML, CSS, images, anything</div>
       </div>
 
+      <div class="demo-file-info" id="demoFileInfo">
+        <span class="demo-file-info-name" id="demoFileName"></span>
+        <span class="demo-file-info-size" id="demoFileSize"></span>
+        <span class="demo-file-info-type" id="demoFileType"></span>
+      </div>
       <div class="demo-status" id="demoStatus"></div>
       <div class="demo-error" id="demoError"></div>
       <div class="demo-result" id="demoResult">
@@ -1344,24 +1374,36 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     return b + ' B';
   }
 
+  function fmtUptime(seconds) {
+    if (seconds < 60) return seconds + 's';
+    if (seconds < 3600) return Math.floor(seconds / 60) + 'm';
+    if (seconds < 86400) return Math.floor(seconds / 3600) + 'h';
+    const d = Math.floor(seconds / 86400);
+    const h = Math.floor((seconds % 86400) / 3600);
+    return h > 0 ? d + 'd ' + h + 'h' : d + 'd';
+  }
+
   async function fetchStats() {
     try {
       const res = await fetch('/api/stats');
       if (!res.ok) return;
       const data = await res.json();
       const sites = data.sites || 0;
-      const totalDeploys = data.total_deploys || sites; // fallback to sites if counter not yet seeded
-      const files = data.total_files_deployed || data.total_files || 0; // all-time files deployed
+      const totalDeploys = data.total_deploys || sites;
+      const files = data.files_hosted || data.total_files || 0; // current live files
       const bytes = data.total_bytes || 0;
+      const uptime = data.uptime_seconds || 0;
 
       const heroCount    = document.getElementById('hero-count');
       const trustCount   = document.getElementById('trust-count');
       const trustDeploys = document.getElementById('trust-deploys');
       const trustFiles   = document.getElementById('trust-files');
       const trustStorage = document.getElementById('trust-storage');
+      const trustUptime  = document.getElementById('trust-uptime');
 
       if (heroCount) heroCount.textContent = totalDeploys > 0 ? ' · ' + totalDeploys.toLocaleString() + ' deploys' : '';
       if (trustStorage) trustStorage.textContent = bytes > 0 ? fmtBytes(bytes) : '0 B';
+      if (trustUptime) trustUptime.textContent = fmtUptime(uptime);
 
       if (!statsLoaded) {
         statsLoaded = true;
@@ -1393,9 +1435,44 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     zone.addEventListener('drop', e => {
       e.preventDefault();
       zone.classList.remove('dragover');
-      handleDemoFiles(e.dataTransfer.files);
+      previewFiles(e.dataTransfer.files);
     });
-    fileInput.addEventListener('change', () => handleDemoFiles(fileInput.files));
+    fileInput.addEventListener('change', () => previewFiles(fileInput.files));
+
+    function fmtSizeLabel(bytes) {
+      return bytes >= 1048576 ? (bytes/1048576).toFixed(1)+' MB'
+        : bytes >= 1024 ? (bytes/1024).toFixed(1)+' KB' : bytes+' B';
+    }
+
+    function fileTypeLabel(name) {
+      const ext = name.split('.').pop().toLowerCase();
+      const map = { html: 'HTML', htm: 'HTML', css: 'CSS', js: 'JS', ts: 'TS', json: 'JSON',
+        png: 'IMG', jpg: 'IMG', jpeg: 'IMG', gif: 'IMG', svg: 'SVG', webp: 'IMG',
+        pdf: 'PDF', txt: 'TXT', md: 'MD', csv: 'CSV', mp4: 'VIDEO', mp3: 'AUDIO' };
+      return map[ext] || ext.toUpperCase() || 'FILE';
+    }
+
+    let pendingFiles = null;
+
+    function previewFiles(files) {
+      if (!files || files.length === 0) return;
+      pendingFiles = files;
+      const totalBytes = Array.from(files).reduce((s, f) => s + f.size, 0);
+      const names = Array.from(files).map(f => f.name);
+      const fileInfoEl = document.getElementById('demoFileInfo');
+      const fileNameEl = document.getElementById('demoFileName');
+      const fileSizeEl = document.getElementById('demoFileSize');
+      const fileTypeEl = document.getElementById('demoFileType');
+      if (fileInfoEl) {
+        fileNameEl.textContent = names.length > 1 ? names.length + ' files' : names[0];
+        fileSizeEl.textContent = fmtSizeLabel(totalBytes);
+        fileTypeEl.textContent = names.length > 1 ? 'MULTI' : fileTypeLabel(names[0]);
+        fileInfoEl.classList.add('show');
+      }
+      zone.classList.add('has-file');
+      // Auto-start upload
+      handleDemoFiles(files);
+    }
 
     async function handleDemoFiles(files) {
       if (!files || files.length === 0) return;
@@ -1407,24 +1484,39 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       if (iframe) iframe.src = '';
       errEl.classList.remove('show');
       const totalBytes = Array.from(files).reduce((s, f) => s + f.size, 0);
-      const sizeLabel = totalBytes >= 1048576 ? (totalBytes/1048576).toFixed(1)+' MB'
-        : totalBytes >= 1024 ? (totalBytes/1024).toFixed(1)+' KB' : totalBytes+' B';
       const names = Array.from(files).map(f => f.name).join(', ');
-      status.textContent = `Reading ${names} (${sizeLabel})…`;
+      status.innerHTML = '<span class="upload-spinner"></span>Reading ' + names + ' (' + fmtSizeLabel(totalBytes) + ')…';
 
       try {
-        const fileObjs = await Promise.all(Array.from(files).map((f, i) => new Promise((resolve, reject) => {
+        const fileObjs = await Promise.all(Array.from(files).map((f) => new Promise((resolve, reject) => {
           const reader = new FileReader();
-          // Single HTML file → serve as index.html so the root URL works immediately
           const isHtml = /\.html?$/i.test(f.name);
-          const path = (files.length === 1 && isHtml) ? 'index.html' : f.name;
+          const isWebAsset = /\.(html?|css|js|json|svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|eot)$/i.test(f.name);
+          // Single non-web file → wrap in an HTML viewer page
+          let path;
+          if (files.length === 1 && isHtml) {
+            path = 'index.html'; // single HTML: serve directly at root
+          } else if (files.length === 1 && !isWebAsset) {
+            path = f.name; // raw file: serve at its name (user gets direct link)
+          } else {
+            path = f.name;
+          }
           reader.onload = () => resolve({ path, content: reader.result.split(',')[1] });
           reader.onerror = reject;
           reader.readAsDataURL(f);
         })));
 
+        // If single non-web file, add an index.html wrapper so the URL opens a page
+        const onlyFile = files.length === 1 ? files[0] : null;
+        if (onlyFile && !/\.html?$/i.test(onlyFile.name) && !/\.(css|js|json|svg|png|jpg|jpeg|gif|webp|ico)$/i.test(onlyFile.name)) {
+          const wrapHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${onlyFile.name}</title>
+<style>body{font-family:monospace;background:#0d0d0d;color:#e8ddd4;padding:32px;} h1{font-size:1rem;color:#c2476e;margin-bottom:8px;} a{color:#c2476e;word-break:break-all;}</style>
+</head><body><h1>${onlyFile.name}</h1><p><a href="${onlyFile.name}" target="_blank">Open file →</a></p><p style="color:rgba(232,221,212,0.35);font-size:0.8rem;">Hosted on <a href="https://pages.rosabuilds.com">pages.rosabuilds.com</a></p></body></html>`;
+          fileObjs.push({ path: 'index.html', content: btoa(unescape(encodeURIComponent(wrapHtml))) });
+        }
+
         const apiKey = (document.getElementById('demoApiKey').value.trim()) || 'pages_agent_Kx9mR4pQ3w';
-        status.textContent = 'Deploying…';
+        status.innerHTML = '<span class="upload-spinner"></span>Deploying…';
         const res = await fetch('/api/upload', {
           method: 'POST',
           headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
@@ -1571,6 +1663,10 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       status.textContent = '';
       errEl.classList.remove('show');
       urlEl.textContent = '';
+      pendingFiles = null;
+      zone.classList.remove('has-file');
+      const fileInfoEl = document.getElementById('demoFileInfo');
+      if (fileInfoEl) fileInfoEl.classList.remove('show');
     };
   })();
 

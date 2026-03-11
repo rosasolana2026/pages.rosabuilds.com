@@ -1378,4 +1378,17 @@ textarea:focus-visible {
   /* Bigger touch targets for copy buttons */
   .code-copy-btn { padding: 7px 14px; min-height: 36px; }
   .btn-code      { padding: 7px 14px; min-height: 36px; }
+  /* Comparison table: shrink padding more */
+  .compare-table { font-size: 0.75rem; min-width: 480px; }
+  .compare-table td, .compare-table th { padding: 10px 10px; }
+  /* Pricing: reduce padding */
+  .pricing-card { padding: 28px 20px; }
+  /* Hero terminal: cap height on tiny screens */
+  .hero-terminal { max-height: 260px; overflow: hidden; }
+  #term-out { min-height: 150px; }
+}
+
+@media (max-width: 360px) {
+  .recent-grid { grid-template-columns: 1fr; }
+  .hero-title { font-size: 2rem; }
 }
