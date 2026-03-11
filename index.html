@@ -204,11 +204,12 @@
     /* ---- Mobile adjustments for code section ---- */
     @media (max-width: 680px) {
       .ce-header { padding: 40px 0 24px; }
-      .trust-item { padding: 6px 12px; font-size: 0.75rem; }
-      .trust-item:nth-child(n+5) { display: none; }
+      .trust-item { padding: 6px 10px; font-size: 0.74rem; }
       .ce-code { font-size: 0.8125rem; }
-      .trust-bar { overflow-x: auto; justify-content: flex-start; flex-wrap: nowrap; scrollbar-width: none; }
+      /* Allow horizontal scroll on mobile so all trust items are visible */
+      .trust-bar { overflow-x: auto; justify-content: flex-start; flex-wrap: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
       .trust-bar::-webkit-scrollbar { display: none; }
+      .trust-item { flex-shrink: 0; }
     }
     @media (max-width: 480px) {
       .ce-inner { padding: 0 16px; }
@@ -338,15 +339,15 @@
 <div class="trust-bar">
   <div class="trust-item">
     <span class="trust-dot"></span>
-    <strong><span id="trust-count">—</span> sites</strong>&nbsp;live
+    <strong><span id="trust-deploys">—</span> deploys</strong>&nbsp;ever
+  </div>
+  <div class="trust-item">
+    <span class="trust-dot" style="background:#28c840;"></span>
+    <strong><span id="trust-count">—</span> sites</strong>&nbsp;live now
   </div>
   <div class="trust-item">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
     <strong><span id="trust-files">—</span> files</strong>&nbsp;served
-  </div>
-  <div class="trust-item">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
-    <strong><span id="trust-bytes">—</span></strong>&nbsp;stored
   </div>
   <div class="trust-item">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
@@ -359,10 +360,6 @@
   <div class="trust-item">
     <span class="trust-badge">REST API</span>
     No signup required
-  </div>
-  <div class="trust-item" id="trust-uptime-item" style="display:none;">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9b3060" stroke-width="1.3"/><path d="M6.5 3.5v3l2 1.5" stroke="#9b3060" stroke-width="1.3" stroke-linecap="round"/></svg>
-    <strong><span id="trust-uptime">—</span></strong>&nbsp;uptime
   </div>
 </div>
 
@@ -884,13 +881,18 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
     <div class="demo-inner">
       <div class="demo-label">Live demo</div>
       <div class="demo-heading">Drop a file. Get a URL.</div>
-      <div class="demo-sub">Drag any HTML file here — it deploys instantly, no account needed.</div>
+      <div class="demo-sub">Drag any HTML file here — or hit the button below to deploy a sample page right now, no file needed.</div>
 
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
         <label style="font-size:0.8125rem;color:rgba(232,221,212,0.4);font-family:var(--mono);flex-shrink:0;">API key</label>
         <input type="text" id="demoApiKey" placeholder="pages_agent_Kx9mR4pQ3w  (default — works now)"
-          style="flex:1;min-width:200px;font-family:var(--mono);font-size:0.8125rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:7px 12px;color:rgba(232,221,212,0.8);outline:none;transition:border-color 0.15s;"
+          style="flex:1;min-width:160px;font-family:var(--mono);font-size:0.8125rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:7px 12px;color:rgba(232,221,212,0.8);outline:none;transition:border-color 0.15s;"
           onfocus="this.style.borderColor='rgba(194,71,110,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        <button onclick="deploySample()" id="deploySampleBtn"
+          style="flex-shrink:0;padding:7px 16px;background:rgba(155,48,96,0.2);border:1px solid rgba(155,48,96,0.4);border-radius:5px;color:rgba(194,71,110,1);font-size:0.8125rem;font-family:var(--mono);cursor:pointer;transition:all 0.15s;white-space:nowrap;"
+          onmouseover="this.style.background='rgba(155,48,96,0.35)'" onmouseout="this.style.background='rgba(155,48,96,0.2)'">
+          ⚡ Deploy sample →
+        </button>
       </div>
 
       <div class="drop-zone" id="homeDropZone">
@@ -1309,44 +1311,26 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
       if (!res.ok) return;
       const data = await res.json();
       const sites = data.sites || 0;
+      const totalDeploys = data.total_deploys || sites; // fallback to sites if counter not yet seeded
       const files = data.total_files || 0;
       const bytes = data.total_bytes || 0;
-      const upSec = data.uptime_seconds || 0;
 
       const heroCount = document.getElementById('hero-count');
       const trustCount = document.getElementById('trust-count');
+      const trustDeploys = document.getElementById('trust-deploys');
       const trustFiles = document.getElementById('trust-files');
-      const trustBytes = document.getElementById('trust-bytes');
-      const trustUptime = document.getElementById('trust-uptime');
-      const trustUptimeItem = document.getElementById('trust-uptime-item');
 
-      if (heroCount) heroCount.textContent = sites > 0 ? ' · ' + sites.toLocaleString() + ' sites live' : '';
+      if (heroCount) heroCount.textContent = totalDeploys > 0 ? ' · ' + totalDeploys.toLocaleString() + ' deploys' : '';
 
       if (!statsLoaded) {
         statsLoaded = true;
+        if (trustDeploys && totalDeploys > 0) countUp(trustDeploys, totalDeploys, n => n.toLocaleString());
         if (trustCount && sites > 0) countUp(trustCount, sites, n => n.toLocaleString());
         if (trustFiles && files > 0) countUp(trustFiles, files, n => n.toLocaleString());
-        if (trustBytes) {
-          const mb = bytes / (1048576);
-          const kb = bytes / 1024;
-          const fmtBytes = n => mb >= 1 ? (n/1048576).toFixed(1)+' MB' : kb >= 1 ? (n/1024).toFixed(1)+' KB' : n+' B';
-          countUp(trustBytes, bytes, fmtBytes);
-        }
       } else {
+        if (trustDeploys) trustDeploys.textContent = totalDeploys.toLocaleString();
         if (trustCount) trustCount.textContent = sites.toLocaleString();
         if (trustFiles) trustFiles.textContent = files.toLocaleString();
-        if (trustBytes) {
-          const kb = bytes / 1024, mb = bytes / 1048576;
-          trustBytes.textContent = mb >= 1 ? mb.toFixed(1)+' MB' : kb >= 1 ? kb.toFixed(1)+' KB' : bytes+' B';
-        }
-      }
-
-      // Uptime
-      if (trustUptime && trustUptimeItem && upSec > 0) {
-        const d = Math.floor(upSec / 86400);
-        const h = Math.floor((upSec % 86400) / 3600);
-        trustUptime.textContent = d > 0 ? d + 'd ' + h + 'h' : h > 0 ? h + 'h' : Math.floor(upSec/60) + 'm';
-        trustUptimeItem.style.display = '';
       }
     } catch (e) {}
   }
@@ -1451,6 +1435,87 @@ console.log(url); <span class="hl-comment">// https://a3f9c12e.pages.rosabuilds.
         setTimeout(() => btn.textContent = orig, 2000);
         trackEvent('demo_copy_url');
       });
+    };
+
+    window.deploySample = async function() {
+      const btn = document.getElementById('deploySampleBtn');
+      const origText = btn.textContent;
+      btn.textContent = 'Deploying…';
+      btn.disabled = true;
+      const now = new Date();
+      const ts = now.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const sampleHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample page — pages.rosabuilds.com</title>
+<style>
+  :root { --rose: #9b3060; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: -apple-system, sans-serif; background: #0d0d0d; color: #e8ddd4; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .card { max-width: 480px; width: 100%; background: #1a1210; border: 1px solid rgba(155,48,96,0.2); border-radius: 12px; padding: 40px 36px; text-align: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #28c840; display: inline-block; margin-right: 6px; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .badge { font-size: 0.75rem; font-family: monospace; color: rgba(155,48,96,.9); background: rgba(155,48,96,.12); border: 1px solid rgba(155,48,96,.25); border-radius: 4px; padding: 2px 8px; display: inline-flex; align-items: center; margin-bottom: 28px; }
+  h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; }
+  p { color: rgba(232,221,212,.5); font-size: 0.9rem; line-height: 1.6; margin-bottom: 24px; }
+  .meta { font-family: monospace; font-size: 0.75rem; color: rgba(232,221,212,.25); margin-top: 28px; border-top: 1px solid rgba(255,255,255,.06); padding-top: 16px; }
+  a { color: #c2476e; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="badge"><span class="dot"></span>live on pages.rosabuilds.com</div>
+  <h1>Hello from the demo! 👋</h1>
+  <p>This page was deployed in under a second via the <a href="https://pages.rosabuilds.com">pages.rosabuilds.com</a> REST API — one POST request, instant HTTPS URL.</p>
+  <p style="color:rgba(232,221,212,.35);font-size:.8rem;">Your agent can ship pages exactly like this.</p>
+  <div class="meta">Deployed ${ts} · pages.rosabuilds.com</div>
+</div>
+</body>
+</html>`;
+      // Reuse the same upload flow
+      const fakeFiles = [{ path: 'index.html', content: btoa(unescape(encodeURIComponent(sampleHtml))) }];
+      const apiKey = (document.getElementById('demoApiKey').value.trim()) || 'pages_agent_Kx9mR4pQ3w';
+      const status = document.getElementById('demoStatus');
+      const errEl = document.getElementById('demoError');
+      const result = document.getElementById('demoResult');
+      const urlEl = document.getElementById('demoUrl');
+      result.classList.remove('show');
+      errEl.classList.remove('show');
+      status.textContent = 'Deploying sample page…';
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ files: fakeFiles }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || res.statusText);
+        trackEvent('demo_sample_deploy_success', {});
+        urlEl.textContent = data.url;
+        const openBtn = document.getElementById('demoOpenBtn');
+        if (openBtn) openBtn.href = data.url;
+        result.classList.add('show');
+        status.textContent = '✓ Live in under a second.';
+        const preview = document.getElementById('demoPreview');
+        const iframe = document.getElementById('demoIframe');
+        if (preview && iframe) {
+          iframe.src = data.url;
+          preview.style.display = 'block';
+          const hint = document.getElementById('demoPreviewHint');
+          if (hint) hint.textContent = data.id;
+        }
+        fetchRecent();
+        fetchStats();
+      } catch (e) {
+        errEl.textContent = 'Deploy failed: ' + e.message;
+        errEl.classList.add('show');
+        status.textContent = '';
+      } finally {
+        btn.textContent = origText;
+        btn.disabled = false;
+      }
     };
 
     window.resetDemo = function() {
