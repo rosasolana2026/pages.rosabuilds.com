@@ -41,8 +41,9 @@ db.exec(`
   );
 `);
 
-// Seed total_deploys counter
+// Seed counters
 db.prepare('INSERT OR IGNORE INTO counters (key, value) VALUES (?, ?)').run('total_deploys', 0);
+db.prepare('INSERT OR IGNORE INTO counters (key, value) VALUES (?, ?)').run('total_files_deployed', 0);
 
 // Seed default keys
 db.prepare('INSERT OR IGNORE INTO api_keys (key, name) VALUES (?, ?)').run(ADMIN_KEY, 'admin');
@@ -132,6 +133,7 @@ app.post('/api/upload', requireAuth, upload.any(), (req, res) => {
     const { fileCount, sizeBytes } = writeFiles(id, files);
     db.prepare('INSERT INTO sites (id, api_key, file_count, size_bytes) VALUES (?, ?, ?, ?)').run(id, req.apiKey, fileCount, sizeBytes);
     db.prepare('UPDATE counters SET value = value + 1 WHERE key = ?').run('total_deploys');
+    db.prepare('UPDATE counters SET value = value + ? WHERE key = ?').run(fileCount, 'total_files_deployed');
     res.json({ url: `https://${id}.pages.rosabuilds.com`, id });
   } catch (err) {
     console.error('Upload error:', err);
@@ -155,6 +157,7 @@ app.post('/api/update/:id', requireAuth, upload.any(), (req, res) => {
     removeSiteDir(id);
     const { fileCount, sizeBytes } = writeFiles(id, files);
     db.prepare('UPDATE sites SET file_count=?, size_bytes=?, updated_at=unixepoch() WHERE id=?').run(fileCount, sizeBytes, id);
+    db.prepare('UPDATE counters SET value = value + ? WHERE key = ?').run(fileCount, 'total_files_deployed');
     res.json({ url: `https://${id}.pages.rosabuilds.com`, id });
   } catch (err) {
     console.error('Update error:', err);
@@ -200,10 +203,12 @@ app.get('/api/stats', (req, res) => {
   const { f } = db.prepare('SELECT COALESCE(SUM(file_count),0) as f FROM sites').get();
   const { b } = db.prepare('SELECT COALESCE(SUM(size_bytes),0) as b FROM sites').get();
   const { value: totalDeploys } = db.prepare('SELECT value FROM counters WHERE key = ?').get('total_deploys') || { value: 0 };
+  const { value: totalFilesDeployed } = db.prepare('SELECT value FROM counters WHERE key = ?').get('total_files_deployed') || { value: 0 };
   res.json({
     sites: c,
     total_deploys: totalDeploys,
     total_files: f,
+    total_files_deployed: totalFilesDeployed,
     total_bytes: b,
     uptime_seconds: Math.floor((Date.now() - SERVER_START) / 1000),
   });

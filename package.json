@@ -4,7 +4,8 @@
   "description": "Instant static hosting for AI agents",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "qa": "node scripts/qa-checks.js"
   },
   "dependencies": {
     "better-sqlite3": "^9.4.3",

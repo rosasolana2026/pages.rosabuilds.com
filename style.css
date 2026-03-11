@@ -1297,8 +1297,11 @@ textarea:focus-visible {
    ========================================================= */
 @media (max-width: 900px) {
   .features-grid      { grid-template-columns: repeat(2, 1fr); }
-  .feature-card:nth-child(2n) { border-right: none; }
-  .feature-card:nth-child(3n) { border-right: 1px solid var(--border); }
+  /* 2-col: even cards (right col) have no border-right; override nth-child(3n) base rule */
+  .feature-card:nth-child(2n)  { border-right: none; }
+  .feature-card:nth-child(3n)  { border-right: 1px solid var(--border); }
+  .feature-card:nth-child(2n):nth-child(3n) { border-right: none; } /* card 6 fix */
+  .feature-card:nth-last-child(-n+2) { border-bottom: none; }
 
   .pricing-grid       { grid-template-columns: 1fr; }
   .pricing-card       { border-right: none; border-bottom: 1px solid var(--border); }
@@ -1312,7 +1315,9 @@ textarea:focus-visible {
   .docs-sidebar       { display: none; }
   .docs-content       { padding: 32px 24px 64px; }
 
-  .compare-table      { font-size: 0.8125rem; }
+  /* Comparison table: scroll horizontally on mobile rather than squashing */
+  .compare-table      { font-size: 0.8125rem; min-width: 580px; }
+  .compare-table td, .compare-table th { padding: 12px 14px; }
 }
 
 @media (max-width: 680px) {
@@ -1366,7 +1371,11 @@ textarea:focus-visible {
   .nav-inner { padding: 0 16px; }
   .section   { padding: 58px 0; }
   .response-field { grid-template-columns: 1fr; gap: 4px; }
-  .error-row { grid-template-columns: 50px 1fr; }
-  .err-desc  { display: none; }
+  /* Error table: stack code+name, show desc below */
+  .error-row { grid-template-columns: 50px auto; flex-wrap: wrap; row-gap: 2px; }
+  .err-desc  { grid-column: 1 / -1; font-size: 0.8rem; padding-top: 2px; }
   .recent-grid { grid-template-columns: repeat(2, 1fr); }
+  /* Bigger touch targets for copy buttons */
+  .code-copy-btn { padding: 7px 14px; min-height: 36px; }
+  .btn-code      { padding: 7px 14px; min-height: 36px; }
 }

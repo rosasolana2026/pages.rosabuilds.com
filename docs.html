@@ -290,16 +290,16 @@
       <a href="#examples">Examples</a>
     </nav>
 
-    <!-- Live stats pill -->
-    <div id="docs-stats-bar" style="display:none;align-items:center;gap:16px;padding:10px 16px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:7px;margin-bottom:28px;font-size:0.8125rem;font-family:var(--mono);flex-wrap:wrap;">
+    <!-- Live stats pill — always visible, populated by JS -->
+    <div id="docs-stats-bar" style="display:flex;align-items:center;gap:16px;padding:10px 16px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:7px;margin-bottom:28px;font-size:0.8125rem;font-family:var(--mono);flex-wrap:wrap;">
       <span style="display:flex;align-items:center;gap:6px;color:rgba(232,221,212,0.5);">
         <span style="width:7px;height:7px;border-radius:50%;background:#28c840;display:inline-block;animation:pulse 2s ease-in-out infinite;"></span>
-        <span id="dstotal" style="color:rgba(232,221,212,0.85);font-weight:600;">—</span> total deploys
+        <span id="dstotal" style="color:rgba(232,221,212,0.85);font-weight:600;">…</span> total deploys
       </span>
       <span style="color:rgba(255,255,255,0.1);">·</span>
-      <span style="color:rgba(232,221,212,0.4);"><span id="dslive" style="color:rgba(232,221,212,0.7);font-weight:600;">—</span> sites live now</span>
+      <span style="color:rgba(232,221,212,0.4);"><span id="dslive" style="color:rgba(232,221,212,0.7);font-weight:600;">…</span> sites live</span>
       <span style="color:rgba(255,255,255,0.1);">·</span>
-      <span style="color:rgba(232,221,212,0.4);"><span id="dsfiles" style="color:rgba(232,221,212,0.7);font-weight:600;">—</span> files hosted</span>
+      <span style="color:rgba(232,221,212,0.4);"><span id="dsfiles" style="color:rgba(232,221,212,0.7);font-weight:600;">…</span> files deployed</span>
       <span style="margin-left:auto;color:rgba(232,221,212,0.2);font-size:0.7rem;">live · updates every 30s</span>
     </div>
 
@@ -1102,32 +1102,26 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
   bindTrackedClicks();
 
   // Live stats bar at top of docs
+  function updateDocsStats(d) {
+    const dtotal  = document.getElementById('dstotal');
+    const dlive   = document.getElementById('dslive');
+    const dsfiles = document.getElementById('dsfiles');
+    if (dtotal)  dtotal.textContent  = (d.total_deploys || d.sites || 0).toLocaleString();
+    if (dlive)   dlive.textContent   = (d.sites || 0).toLocaleString();
+    if (dsfiles) dsfiles.textContent = (d.total_files_deployed || d.total_files || 0).toLocaleString();
+  }
   (async function loadDocsStats() {
     try {
       const res = await fetch('/api/stats');
       if (!res.ok) return;
-      const d = await res.json();
-      const bar = document.getElementById('docs-stats-bar');
-      const dtotal = document.getElementById('dstotal');
-      const dlive = document.getElementById('dslive');
-      const dsfiles = document.getElementById('dsfiles');
-      if (bar) bar.style.display = 'flex';
-      if (dtotal) dtotal.textContent = (d.total_deploys || d.sites || 0).toLocaleString();
-      if (dlive) dlive.textContent = (d.sites || 0).toLocaleString();
-      if (dsfiles) dsfiles.textContent = (d.total_files || 0).toLocaleString();
+      updateDocsStats(await res.json());
     } catch (e) {}
   })();
   setInterval(async () => {
     try {
       const res = await fetch('/api/stats');
       if (!res.ok) return;
-      const d = await res.json();
-      const dtotal = document.getElementById('dstotal');
-      const dlive = document.getElementById('dslive');
-      const dsfiles = document.getElementById('dsfiles');
-      if (dtotal) dtotal.textContent = (d.total_deploys || d.sites || 0).toLocaleString();
-      if (dlive) dlive.textContent = (d.sites || 0).toLocaleString();
-      if (dsfiles) dsfiles.textContent = (d.total_files || 0).toLocaleString();
+      updateDocsStats(await res.json());
     } catch (e) {}
   }, 30000);
 
@@ -1153,7 +1147,9 @@ open "$URL"  <span class="hl-comment"># macOS — opens in browser</span></pre><
 
   // Language tabs
   function switchTab(group, lang, btn) {
-    document.querySelectorAll(`#qs-tabs .lang-tab`).forEach(b => b.classList.remove('active'));
+    // Deactivate all tabs in the same group container
+    const tabContainer = document.getElementById(`${group}-tabs`);
+    if (tabContainer) tabContainer.querySelectorAll('.lang-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     ['curl','python','node'].forEach(l => {
       const el = document.getElementById(`${group}-${l}`);
